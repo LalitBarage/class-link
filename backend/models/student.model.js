@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
 const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
 
 const studentSchema = new mongoose.Schema({
   fullname: {
@@ -58,6 +59,26 @@ const studentSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  password: {
+    type: String,
+    require: true,
+    select: false,
+  },
 });
 
-module.exports = studentSchema;
+studentSchema.methods.generateAuthToken = function () {
+  const token = jwt.sign({ _id: this._id }, process.env.JWT_SECRET);
+  return token;
+};
+
+studentSchema.method.comparePassword = async function () {
+  return await bcrypt.compare(password, this.password);
+};
+
+studentSchema.statics.hashPassword = async function (password) {
+  return await bcrypt.hash(password, 10);
+};
+
+const studentModel = mongoose.model("student", studentSchema);
+
+module.exports = studentModel;
