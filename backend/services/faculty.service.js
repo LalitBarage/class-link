@@ -51,6 +51,12 @@ module.exports.getAllFaculties = async () => {
   return faculties;
 };
 
-module.exports.deleteFaculty = async (id) => {
-  return await Faculty.findByIdAndDelete(id);
+module.exports.deleteFaculty = async (facultyId) => {
+  try {
+    const faculty = await facultyModel.findOneAndDelete(facultyId); // Delete from DB
+    return faculty;
+  } catch (error) {
+    console.error("Error in service:", error);
+    throw new Error("Failed to delete faculty");
+  }
 };

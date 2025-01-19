@@ -107,6 +107,24 @@ const Faculty = () => {
     }
   };
 
+  const handleDelete = async (facultyId) => {
+    try {
+      const response = await axios.delete(
+        `http://localhost:4000/faculty/remove/${facultyId}`,
+        {
+          headers: {
+            "Content-Type": "application/json", // Make sure correct content-type is set
+          },
+        }
+      );
+      console.log("Faculty deleted:", response.data);
+      setFacultyData(facultyData.filter((faculty) => faculty.id !== facultyId));
+    } catch (error) {
+      console.error("Error deleting faculty:", error);
+      alert("Error deleting faculty.");
+    }
+  };
+
   if (loading) {
     return <div>Loading...</div>; // Show loading text while fetching
   }
@@ -188,7 +206,10 @@ const Faculty = () => {
                     <button className="bg-blue-500 text-white px-3 py-2 rounded-md mr-2 hover:bg-blue-600 flex items-center gap-2">
                       <FaEdit />
                     </button>
-                    <button className="bg-red-500 text-white px-3 py-2 rounded-md hover:bg-red-600 flex items-center gap-2">
+                    <button
+                      className="bg-red-500 text-white px-3 py-2 rounded-md hover:bg-red-600 flex items-center gap-2"
+                      onClick={() => handleDelete(faculty.id)}
+                    >
                       <FaTrash />
                     </button>
                   </td>
