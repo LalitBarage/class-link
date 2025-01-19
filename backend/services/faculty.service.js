@@ -50,3 +50,7 @@ module.exports.getAllFaculties = async () => {
   const faculties = await facultyModel.find({}, "-password").lean();
   return faculties;
 };
+
+module.exports.deleteFaculty = async (id) => {
+  return await Faculty.findByIdAndDelete(id);
+};

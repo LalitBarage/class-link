@@ -80,4 +80,6 @@ router.post(
 
 router.get("/list", facultyController.getAllFaculties);
 
+router.delete("/remove/:id", facultyController.deleteFaculty);
+
 module.exports = router;
