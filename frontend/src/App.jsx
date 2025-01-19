@@ -9,27 +9,20 @@ import AddLab from "./Components/AddLab";
 import FHome from "./Components/FacultyModule/FHome";
 import CourseReport from "./Components/FacultyModule/CourseReport";
 
-
 const App = () => {
   return (
-    
-     <div>
-    <Navbar/>
-       <Routes>
-         <Route path="/" element={<Home />} />
-         <Route path="/student" element={<Student />} />
-         <Route path="/faculty" element={<Faculty />} />
-         <Route path="/course" element={<Course />} />
-         <Route path="/addlab" element={<AddLab />} />    
-      <Route path="/FHome" element={<FHome/>}/>
-      <Route path="/report" element={<CourseReport/>}/>
-    
-       </Routes>
-    
-    
-    
-</div>
-    
+    <div>
+      <Navbar />
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/student" element={<Student />} />
+        <Route path="/faculty" element={<Faculty />} />
+        <Route path="/course" element={<Course />} />
+        <Route path="/addlab" element={<AddLab />} />
+        <Route path="/FHome" element={<FHome />} />
+        <Route path="/report" element={<CourseReport />} />
+      </Routes>
+    </div>
   );
 };
 
