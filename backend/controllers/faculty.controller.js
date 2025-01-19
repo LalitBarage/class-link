@@ -8,8 +8,16 @@ module.exports.registerFaculty = async (req, res, next) => {
     return res.status(400).json({ error: errors.array() });
   }
 
-  const { fullname, email, mobileno, facultyId, designation, password } =
-    req.body;
+  const {
+    fullname,
+    email,
+    mobileno,
+    facultyId,
+    qualification,
+    designation,
+    department,
+    password,
+  } = req.body;
 
   const hashedPassword = await facultyModel.hashPassword(password);
 
@@ -20,11 +28,22 @@ module.exports.registerFaculty = async (req, res, next) => {
     email,
     mobileno,
     facultyId,
+    qualification,
     designation,
+    department,
     password: hashedPassword,
   });
 
   const token = faculty.generateAuthToken();
 
   res.status(201).json({ token, faculty });
+};
+
+module.exports.getAllFaculties = async (req, res, next) => {
+  try {
+    const faculties = await facultyService.getAllFaculties();
+    res.status(200).json({ faculties });
+  } catch (error) {
+    next(error); // Pass errors to error-handling middleware
+  }
 };

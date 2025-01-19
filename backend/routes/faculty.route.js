@@ -49,12 +49,24 @@ router.post(
       .isString()
       .withMessage("Faculty ID must be a string"),
 
+    body("qualification")
+      .notEmpty()
+      .withMessage("Qualification is required")
+      .isString()
+      .withMessage("Qualification must be a string"),
+
     // designation
     body("designation")
       .notEmpty()
       .withMessage("Designation is required")
       .isString()
       .withMessage("Designation must be a string"),
+
+    body("department")
+      .notEmpty()
+      .withMessage("Department is required")
+      .isString()
+      .withMessage("Department must be a string"),
 
     // password
     body("password")
@@ -65,5 +77,7 @@ router.post(
   ],
   facultyController.registerFaculty
 );
+
+router.get("/list", facultyController.getAllFaculties);
 
 module.exports = router;

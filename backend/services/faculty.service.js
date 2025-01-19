@@ -7,7 +7,9 @@ module.exports.createFaculty = async ({
   email,
   mobileno,
   facultyId,
+  qualification,
   designation,
+  department,
   password,
 }) => {
   if (
@@ -17,7 +19,9 @@ module.exports.createFaculty = async ({
     !email ||
     !mobileno ||
     !facultyId ||
+    !qualification ||
     !designation ||
+    !department ||
     !password
   ) {
     throw new Error("All fields are required");
@@ -32,10 +36,17 @@ module.exports.createFaculty = async ({
     email,
     mobileno,
     facultyId,
+    qualification,
     designation,
+    department,
     role: "faculty",
     password,
   });
 
   return faculty;
+};
+
+module.exports.getAllFaculties = async () => {
+  const faculties = await facultyModel.find({}, "-password").lean();
+  return faculties;
 };
