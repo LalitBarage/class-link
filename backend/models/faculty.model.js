@@ -8,6 +8,10 @@ const facultySchema = new mongoose.Schema({
       type: String,
       required: true,
     },
+    middlename: {
+      type: String,
+      required: true,
+    },
     lastname: {
       type: String,
       required: true,
@@ -27,13 +31,13 @@ const facultySchema = new mongoose.Schema({
     required: true,
     unique: true,
   },
-  department: {
-    type: String,
-    required: true,
-  },
   designation: {
     type: String,
     required: true,
+  },
+  role: {
+    type: String,
+    enum: ["faculty"],
   },
   password: {
     type: String,

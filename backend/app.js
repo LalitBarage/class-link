@@ -5,6 +5,7 @@ const cors = require("cors");
 const app = express();
 const connectToDb = require("./db/db");
 const studentRoute = require("./routes/student.route");
+const facultyRoute = require("./routes/faculty.route");
 
 connectToDb();
 
@@ -17,5 +18,6 @@ app.get("/", (req, res) => {
 });
 
 app.use("/student", studentRoute);
+app.use("/faculty", facultyRoute);
 
 module.exports = app;
