@@ -26,12 +26,56 @@ const Student = () => {
     setShowForm(false);
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // Add your logic to save the new student data here
-    console.log("New student added");
-    setShowForm(false);
+  
+    // Collect form data
+    const formData = {
+      fullname: {
+        firstname: e.target.studentFName.value,
+        middlename: e.target.studentMName.value,
+        lastname: e.target.studentName.value,
+      },
+      email: e.target.stuEmail.value,
+      mobileno: e.target.mobileNo.value,
+      rollno: e.target.rollNo.value,
+      prnno: e.target.prnNo.value,
+      year: selectedClass,
+      division: selectedDivision,
+      parentfullname: {
+        firstname: e.target.parentFNmame.value,
+        lastname: e.target.parentLNmame.value,
+      },
+      parentemail: e.target.parEmail.value,
+      parentmobileno: e.target.pmobileNo.value,
+      password: "pass@123", 
+    };
+  
+    try {
+      const response = await fetch("http://localhost:4000/student/register", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formData),
+      });
+  
+      if (response.ok) {
+        const data = await response.json();
+        console.log("Student registered successfully:", data);
+        setShowForm(false);
+        // Optionally, refresh the student list or display a success message
+      } else {
+        const errorData = await response.json();
+        console.error("Error registering student:", errorData);
+        alert("Failed to register student. Please try again.");
+      }
+    } catch (error) {
+      console.error("Network error:", error);
+      alert("Network error. Please try again later.");
+    }
   };
+  
 
   return (
     <div className="p-5">
