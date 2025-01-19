@@ -47,3 +47,17 @@ module.exports.getAllFaculties = async (req, res, next) => {
     next(error); // Pass errors to error-handling middleware
   }
 };
+
+module.exports.deleteFaculty = async (req, res, next) => {
+  const { facultyId } = req.params; // Get facultyId from URL params
+  try {
+    const result = await facultyService.deleteFaculty(facultyId); // Call the service to handle deletion logic
+    if (!result) {
+      return res.status(404).json({ message: "Faculty not found" });
+    }
+    res.status(200).json({ message: "Faculty deleted successfully" });
+  } catch (error) {
+    console.error("Error deleting faculty:", error);
+    res.status(500).json({ message: "Internal Server Error", error });
+  }
+};

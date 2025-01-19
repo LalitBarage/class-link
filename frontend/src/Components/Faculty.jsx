@@ -7,17 +7,34 @@ const Faculty = () => {
   const [facultyData, setFacultyData] = useState([]); // Store faculty data
   const [loading, setLoading] = useState(true); // Loading state for fetching data
   const [error, setError] = useState(null); // Error state for API errors
+  const [searchQuery, setSearchQuery] = useState(""); // State for search query
 
   // Fetch data from the database when the component is mounted
   useEffect(() => {
     const fetchFacultyData = async () => {
       try {
-        const response = await axios.get("http://localhost:4000/faculty/list"); // Replace with your actual API endpoint
-        setFacultyData(response.data); // Store the fetched data
+        const response = await axios.get("http://localhost:4000/faculty/list");
+
+        // Access the array inside the `faculties` key
+        const data = response.data.faculties;
+
+        // Transform data to match the table structure
+        const formattedData = data.map((faculty) => ({
+          id: faculty.facultyId,
+          name: `${faculty.fullname.firstname} ${faculty.fullname.middlename} ${faculty.fullname.lastname}`,
+          email: faculty.email,
+          mobile: faculty.mobileno,
+          qualification: faculty.qualification,
+          designation: faculty.designation,
+          department: faculty.department,
+        }));
+
+        setFacultyData(formattedData); // Store the transformed data
       } catch (err) {
-        setError("Failed to fetch faculty data"); // Handle error
+        console.error(err); // Log error for debugging
+        setError("Failed to fetch faculty data");
       } finally {
-        setLoading(false); // Set loading to false when data is fetched or error occurs
+        setLoading(false);
       }
     };
 
@@ -32,11 +49,80 @@ const Faculty = () => {
     setShowForm(false);
   };
 
-  const handleSubmit = (e) => {
+  const handleSearch = (e) => {
+    setSearchQuery(e.target.value); // Update search query state
+  };
+
+  const filteredData = facultyData.filter((faculty) => {
+    const query = searchQuery.toLowerCase();
+    return (
+      faculty.name.toLowerCase().includes(query) ||
+      faculty.email.toLowerCase().includes(query) ||
+      faculty.department.toLowerCase().includes(query)
+    );
+  });
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // Add your logic to save the new faculty data here
-    console.log("New faculty added");
-    setShowForm(false);
+
+    // Collect form data for faculty
+    const formData = {
+      fullname: {
+        firstname: e.target.facultyFName.value,
+        middlename: e.target.facultyMName.value,
+        lastname: e.target.facultyLName.value,
+      },
+      email: e.target.facultyEmail.value,
+      mobileno: e.target.facultyMobile.value,
+      facultyId: e.target.facultyId.value,
+      qualification: e.target.qualification.value,
+      designation: e.target.designation.value,
+      department: e.target.department.value,
+      password: "pass@123", // Default password or generate dynamically
+    };
+
+    try {
+      const response = await fetch("http://localhost:4000/faculty/register", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formData),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        console.log("Faculty registered successfully:", data);
+        setShowForm(false); // Close the form
+        // Optionally, refresh the faculty list or display a success message
+        alert("Faculty registered successfully!");
+      } else {
+        const errorData = await response.json();
+        console.error("Error registering faculty:", errorData);
+        alert("Failed to register faculty. Please try again.");
+      }
+    } catch (error) {
+      console.error("Network error:", error);
+      alert("Network error. Please try again later.");
+    }
+  };
+
+  const handleDelete = async (facultyId) => {
+    try {
+      const response = await axios.delete(
+        `http://localhost:4000/faculty/remove/${facultyId}`,
+        {
+          headers: {
+            "Content-Type": "application/json", // Make sure correct content-type is set
+          },
+        }
+      );
+      console.log("Faculty deleted:", response.data);
+      setFacultyData(facultyData.filter((faculty) => faculty.id !== facultyId));
+    } catch (error) {
+      console.error("Error deleting faculty:", error);
+      alert("Error deleting faculty.");
+    }
   };
 
   if (loading) {
@@ -57,12 +143,9 @@ const Faculty = () => {
               name="search"
               id="search"
               placeholder="Search faculty....."
+              value={searchQuery}
+              onChange={handleSearch} // Handle search query changes
               className="bg-gray-100 border rounded-md p-2 shadow-sm w-64"
-            />
-            <input
-              type="button"
-              value="Search"
-              className="bg-black text-white px-4 py-2 rounded-md shadow-md cursor-pointer hover:bg-gray-800"
             />
           </div>
 
@@ -95,8 +178,8 @@ const Faculty = () => {
             </tr>
           </thead>
           <tbody>
-            {facultyData.length > 0 ? (
-              facultyData.map((faculty) => (
+            {filteredData.length > 0 ? ( // Use filteredData instead of facultyData
+              filteredData.map((faculty) => (
                 <tr key={faculty.id} className="hover:bg-gray-100">
                   <td className="border border-gray-300 px-4 py-2">
                     {faculty.id}
@@ -123,7 +206,10 @@ const Faculty = () => {
                     <button className="bg-blue-500 text-white px-3 py-2 rounded-md mr-2 hover:bg-blue-600 flex items-center gap-2">
                       <FaEdit />
                     </button>
-                    <button className="bg-red-500 text-white px-3 py-2 rounded-md hover:bg-red-600 flex items-center gap-2">
+                    <button
+                      className="bg-red-500 text-white px-3 py-2 rounded-md hover:bg-red-600 flex items-center gap-2"
+                      onClick={() => handleDelete(faculty.id)}
+                    >
                       <FaTrash />
                     </button>
                   </td>
@@ -201,6 +287,15 @@ const Faculty = () => {
 
               <input
                 type="text"
+                id="facultyId"
+                name="facultyId"
+                placeholder="Faculty Id:"
+                required
+                className="w-full border rounded-md p-2 mb-2 bg-gray-100"
+              />
+
+              <input
+                type="text"
                 id="qualification"
                 name="qualification"
                 placeholder="Qualification:"
@@ -226,8 +321,8 @@ const Faculty = () => {
               >
                 <option value="">Select Department</option>
                 <option value="CSE">CSE</option>
-                <option value="ECE">DATA SCIENCE</option>
-                <option value="MECH">ELECTRICAL</option>
+                <option value="DS">DATA SCIENCE</option>
+                <option value="ELECTRICAL">ELECTRICAL</option>
                 <option value="CIVIL">CIVIL</option>
               </select>
 
