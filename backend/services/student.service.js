@@ -53,6 +53,7 @@ module.exports.createStudent = async ({
     },
     parentemail,
     parentmobileno,
+    role: "student",
     password,
   });
 
