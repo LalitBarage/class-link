@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { FaEdit, FaTrash } from "react-icons/fa";
 import axios from "axios"; // Add Axios for API calls
+import { ToastContainer, toast } from "react-toastify"; // Import ToastContainer and toast
+import "react-toastify/dist/ReactToastify.css"; // Import styles for Toastify
 
 const Faculty = () => {
   const [showForm, setShowForm] = useState(false);
@@ -8,6 +10,10 @@ const Faculty = () => {
   const [loading, setLoading] = useState(true); // Loading state for fetching data
   const [error, setError] = useState(null); // Error state for API errors
   const [searchQuery, setSearchQuery] = useState(""); // State for search query
+
+  // State for confirmation modal
+  const [showConfirmModal, setShowConfirmModal] = useState(false);
+  const [facultyToDelete, setFacultyToDelete] = useState(null);
 
   // Fetch data from the database when the component is mounted
   useEffect(() => {
@@ -33,6 +39,7 @@ const Faculty = () => {
       } catch (err) {
         console.error(err); // Log error for debugging
         setError("Failed to fetch faculty data");
+        toast.error("Error fetching faculty data"); // Toastify error message
       } finally {
         setLoading(false);
       }
@@ -42,11 +49,11 @@ const Faculty = () => {
   }, []); // Empty dependency array ensures this only runs once when the component mounts
 
   const handleAddFaculty = () => {
-    setShowForm(true);
+    setShowForm(true); // Show form when Add Faculty button is clicked
   };
 
   const handleCloseForm = () => {
-    setShowForm(false);
+    setShowForm(false); // Hide form when Cancel is clicked
   };
 
   const handleSearch = (e) => {
@@ -95,34 +102,46 @@ const Faculty = () => {
         console.log("Faculty registered successfully:", data);
         setShowForm(false); // Close the form
         // Optionally, refresh the faculty list or display a success message
-        alert("Faculty registered successfully!");
+        toast.success("Faculty registered successfully!"); // Success notification
       } else {
         const errorData = await response.json();
         console.error("Error registering faculty:", errorData);
-        alert("Failed to register faculty. Please try again.");
+        toast.error("Failed to register faculty. Please try again."); // Error notification
       }
     } catch (error) {
       console.error("Network error:", error);
-      alert("Network error. Please try again later.");
+      toast.error("Network error. Please try again later."); // Error notification
     }
   };
 
-  const handleDelete = async (facultyId) => {
+  // Handle delete confirmation
+  const handleDelete = async () => {
+    if (!facultyToDelete) return;
     try {
       const response = await axios.delete(
-        `http://localhost:4000/faculty/remove/${facultyId}`,
+        `http://localhost:4000/faculty/remove/${facultyToDelete}`,
         {
           headers: {
-            "Content-Type": "application/json", // Make sure correct content-type is set
+            "Content-Type": "application/json",
           },
         }
       );
       console.log("Faculty deleted:", response.data);
-      setFacultyData(facultyData.filter((faculty) => faculty.id !== facultyId));
+      setFacultyData(
+        facultyData.filter((faculty) => faculty.id !== facultyToDelete)
+      );
+      setShowConfirmModal(false); // Close the confirmation modal after deletion
+      toast.success("Faculty deleted successfully!"); // Success notification
     } catch (error) {
       console.error("Error deleting faculty:", error);
-      alert("Error deleting faculty.");
+      toast.error("Error deleting faculty."); // Error notification
+      setShowConfirmModal(false); // Close the confirmation modal on error
     }
+  };
+
+  const openConfirmModal = (facultyId) => {
+    setFacultyToDelete(facultyId);
+    setShowConfirmModal(true); // Show the confirmation modal
   };
 
   if (loading) {
@@ -159,82 +178,6 @@ const Faculty = () => {
           </div>
         </div>
       </div>
-
-      {/* Table Section */}
-      <div className="mt-8">
-        <table className="w-full border-collapse border border-gray-300 text-left">
-          <thead className="bg-gray-200">
-            <tr>
-              <th className="border border-gray-300 px-4 py-2">ID</th>
-              <th className="border border-gray-300 px-4 py-2">Faculty Name</th>
-              <th className="border border-gray-300 px-4 py-2">Department</th>
-              <th className="border border-gray-300 px-4 py-2">Email</th>
-              <th className="border border-gray-300 px-4 py-2">Mobile No</th>
-              <th className="border border-gray-300 px-4 py-2">
-                Qualification
-              </th>
-              <th className="border border-gray-300 px-4 py-2">Designation</th>
-              <th className="border border-gray-300 px-4 py-2">Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {filteredData.length > 0 ? ( // Use filteredData instead of facultyData
-              filteredData.map((faculty) => (
-                <tr key={faculty.id} className="hover:bg-gray-100">
-                  <td className="border border-gray-300 px-4 py-2">
-                    {faculty.id}
-                  </td>
-                  <td className="border border-gray-300 px-4 py-2">
-                    {faculty.name}
-                  </td>
-                  <td className="border border-gray-300 px-4 py-2">
-                    {faculty.department}
-                  </td>
-                  <td className="border border-gray-300 px-4 py-2">
-                    {faculty.email}
-                  </td>
-                  <td className="border border-gray-300 px-4 py-2">
-                    {faculty.mobile}
-                  </td>
-                  <td className="border border-gray-300 px-4 py-2">
-                    {faculty.qualification}
-                  </td>
-                  <td className="border border-gray-300 px-4 py-2">
-                    {faculty.designation}
-                  </td>
-                  <td className="flex border border-gray-300 px-4 py-2 text-center">
-                    <button className="bg-blue-500 text-white px-3 py-2 rounded-md mr-2 hover:bg-blue-600 flex items-center gap-2">
-                      <FaEdit />
-                    </button>
-                    <button
-                      className="bg-red-500 text-white px-3 py-2 rounded-md hover:bg-red-600 flex items-center gap-2"
-                      onClick={() => handleDelete(faculty.id)}
-                    >
-                      <FaTrash />
-                    </button>
-                  </td>
-                </tr>
-              ))
-            ) : (
-              <tr>
-                <td
-                  colSpan="8"
-                  className="text-center border border-gray-300 py-4"
-                >
-                  No faculty data available.
-                </td>
-              </tr>
-            )}
-          </tbody>
-        </table>
-      </div>
-
-      {/* Footer Section */}
-      <div className="mt-6 text-center">
-        <p className="text-gray-600">Showing {facultyData.length} entries</p>
-      </div>
-
-      {/* Popup Form */}
       {showForm && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
           <div className="bg-white p-6 rounded-md shadow-md w-1/3">
@@ -345,6 +288,98 @@ const Faculty = () => {
           </div>
         </div>
       )}
+      {/* Table Section */}
+      <div className="mt-8">
+        <table className="w-full border-collapse border border-gray-300 text-left">
+          <thead className="bg-gray-200">
+            <tr>
+              <th className="border border-gray-300 px-4 py-2">ID</th>
+              <th className="border border-gray-300 px-4 py-2">Faculty Name</th>
+              <th className="border border-gray-300 px-4 py-2">Department</th>
+              <th className="border border-gray-300 px-4 py-2">Email</th>
+              <th className="border border-gray-300 px-4 py-2">Mobile No</th>
+              <th className="border border-gray-300 px-4 py-2">
+                Qualification
+              </th>
+              <th className="border border-gray-300 px-4 py-2">Designation</th>
+              <th className="border border-gray-300 px-4 py-2">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {filteredData.length > 0 ? ( // Use filteredData instead of facultyData
+              filteredData.map((faculty) => (
+                <tr key={faculty.id} className="hover:bg-gray-100">
+                  <td className="border border-gray-300 px-4 py-2">
+                    {faculty.id}
+                  </td>
+                  <td className="border border-gray-300 px-4 py-2">
+                    {faculty.name}
+                  </td>
+                  <td className="border border-gray-300 px-4 py-2">
+                    {faculty.department}
+                  </td>
+                  <td className="border border-gray-300 px-4 py-2">
+                    {faculty.email}
+                  </td>
+                  <td className="border border-gray-300 px-4 py-2">
+                    {faculty.mobile}
+                  </td>
+                  <td className="border border-gray-300 px-4 py-2">
+                    {faculty.qualification}
+                  </td>
+                  <td className="border border-gray-300 px-4 py-2">
+                    {faculty.designation}
+                  </td>
+                  <td className="flex border border-gray-300 px-4 py-2 text-center">
+                    <button className="bg-blue-500 text-white px-3 py-2 rounded-md mr-2 hover:bg-blue-600 flex items-center gap-2">
+                      <FaEdit />
+                    </button>
+                    <button
+                      className="bg-red-500 text-white px-3 py-2 rounded-md hover:bg-red-600 flex items-center gap-2"
+                      onClick={() => openConfirmModal(faculty.id)} // Open confirmation modal
+                    >
+                      <FaTrash />
+                    </button>
+                  </td>
+                </tr>
+              ))
+            ) : (
+              <tr>
+                <td
+                  colSpan="8"
+                  className="text-center border border-gray-300 py-4"
+                >
+                  No faculty data available.
+                </td>
+              </tr>
+            )}
+          </tbody>
+        </table>
+      </div>
+      {/* Confirmation Modal */}
+      {showConfirmModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
+          <div className="bg-white p-6 rounded-md shadow-md w-1/3">
+            <h2 className="text-xl font-bold mb-4">Confirm Deletion</h2>
+            <p>Are you sure you want to delete this faculty member?</p>
+            <div className="flex justify-end gap-3 mt-4">
+              <button
+                className="bg-gray-500 text-white px-4 py-2 rounded-md hover:bg-gray-600"
+                onClick={() => setShowConfirmModal(false)} // Close the modal without deletion
+              >
+                Cancel
+              </button>
+              <button
+                className="bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-600"
+                onClick={handleDelete} // Confirm deletion
+              >
+                Delete
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+      <ToastContainer /> {/* Add ToastContainer to render notifications */}
     </div>
   );
 };
