@@ -15,6 +15,7 @@ module.exports.createStudent = async ({
   parentemail,
   parentmobileno,
   password,
+  department
 }) => {
   if (
     !firstname ||
@@ -30,7 +31,8 @@ module.exports.createStudent = async ({
     !parentlastname ||
     !parentemail ||
     !parentmobileno ||
-    !password
+    !password ||
+    !department
   ) {
     throw new Error("All field are required");
   }
@@ -55,6 +57,7 @@ module.exports.createStudent = async ({
     parentmobileno,
     role: "student",
     password,
+    department
   });
 
   return student;

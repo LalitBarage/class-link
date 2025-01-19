@@ -68,6 +68,12 @@ router.post(
       .isString()
       .withMessage("Division must be a string"),
 
+      body("department")
+      .notEmpty()
+      .withMessage("Department is required")
+      .isString()
+      .withMessage("Department must be a string"),
+
     // parentfullname.firstname
     body("parentfullname.firstname")
       .notEmpty()

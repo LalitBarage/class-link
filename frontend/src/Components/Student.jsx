@@ -5,6 +5,7 @@ const Student = () => {
   const [showForm, setShowForm] = useState(false);
   const [selectedClass, setSelectedClass] = useState("");
   const [selectedDivision, setSelectedDivision] = useState("");
+  const [selectedDepartment, setSelectedDepartment] = useState("");
 
   const handleClassSelect = (event) => {
     setSelectedClass(event.target.value);
@@ -12,6 +13,10 @@ const Student = () => {
 
   const handleDivisionSelect = (event) => {
     setSelectedDivision(event.target.value);
+  };
+
+  const handleDeptSelect = (event) => {
+    setSelectedDepartment(event.target.value);
   };
 
   const handleSelect = (event) => {
@@ -42,6 +47,7 @@ const Student = () => {
       prnno: e.target.prnNo.value,
       year: selectedClass,
       division: selectedDivision,
+      department: selectedDepartment,
       parentfullname: {
         firstname: e.target.parentFNmame.value,
         lastname: e.target.parentLNmame.value,
@@ -234,6 +240,20 @@ const Student = () => {
 
               <div className="flex gap-2 mb-2">
                 {/* Class Dropdown */}
+                <select
+                  id="class"
+                  value={selectedDepartment}
+                  onChange={handleDeptSelect}
+                  className="w-full bg-gray-100 border rounded-md p-2"
+                >
+                  <option value="" disabled>
+                   Department
+                  </option>
+                  <option value="Computer Science">Computer Science</option>
+                  <option value="Computer Science(Data Science)">Computer Science(Data Science)</option>
+                  <option value="Civil Engineering">Civil Engineering</option>
+                  <option value="Electrical Engineering">Electrical Engineering</option>
+                </select>
                 <select
                   id="class"
                   value={selectedClass}

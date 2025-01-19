@@ -20,6 +20,7 @@ module.exports.registerStudent = async (req, res, next) => {
     parentemail,
     parentmobileno,
     password,
+    department,
   } = req.body;
 
   const hashedPassword = await studentModel.hashPassword(password);
@@ -39,6 +40,7 @@ module.exports.registerStudent = async (req, res, next) => {
     parentemail,
     parentmobileno,
     password: hashedPassword,
+    department,
   });
 
   const token = student.generateAuthToken();

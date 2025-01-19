@@ -68,6 +68,10 @@ const studentSchema = new mongoose.Schema({
     require: true,
     select: false,
   },
+  department: {
+    type: String,
+    require: true,
+  }
 });
 
 studentSchema.methods.generateAuthToken = function () {
