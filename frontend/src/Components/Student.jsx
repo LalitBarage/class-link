@@ -140,62 +140,6 @@ const Student = () => {
     }
   };
 
-  const handleUpdate = async (id, updatedData) => {
-    try {
-      const response = await fetch(`http://localhost:4000/student/${id}`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(updatedData),
-      });
-  
-      if (response.ok) {
-        const result = await response.json();
-        alert("Student updated successfully!");
-        setStudents((prev) =>
-          prev.map((student) =>
-            student.id === id ? { ...student, ...updatedData } : student
-          )
-        );
-        setShowForm(false);
-      } else {
-        const errorData = await response.json();
-        console.error("Error updating student:", errorData);
-        alert("Failed to update student. Please try again.");
-      }
-    } catch (error) {
-      console.error("Network error:", error);
-      alert("Network error. Please try again later.");
-    }
-  };
-
-  const handleEdit = (student) => {
-    setSelectedDepartment(student.department);
-    setSelectedClass(student.year);
-    setSelectedDivision(student.division);
-    setShowForm(true);
-  
-    // Prefill the form fields
-    setTimeout(() => {
-      document.getElementById("studentFName").value = student.fullname.firstname;
-      document.getElementById("studentMName").value = student.fullname.middlename;
-      document.getElementById("studentName").value = student.fullname.lastname;
-      document.getElementById("stuEmail").value = student.email;
-      document.getElementById("mobileNo").value = student.mobileno;
-      document.getElementById("rollNo").value = student.rollno;
-      document.getElementById("prnNo").value = student.prnno;
-      document.getElementById("parentFName").value = student.parentfullname.firstname;
-      document.getElementById("parentLName").value = student.parentfullname.lastname;
-      document.getElementById("parEmail").value = student.parentemail;
-      document.getElementById("pmobileNo").value = student.parentmobileno;
-      document.getElementById("pmobileNo").value = student.parentmobileno;
-      document.getElementById("pmobileNo").value = student.parentmobileno;
-    }, 0);
-  };
-  
-  
-
   return (
     <div className="p-5">
       <div className="flex flex-col gap-4">
@@ -249,8 +193,7 @@ const Student = () => {
                   <td className="border border-gray-300 px-4 py-2">{student.parent}</td>
                   <td className="border border-gray-300 px-4 py-2">{student.parentmobileno}</td>
                   <td className="flex border border-gray-300 px-4 py-2 text-center">
-                    <button className="bg-blue-500 text-white px-3 py-2 rounded-md mr-2 hover:bg-blue-600 flex items-center gap-2"
-                    onClick={() => handleEdit(student)}>
+                    <button className="bg-blue-500 text-white px-3 py-2 rounded-md mr-2 hover:bg-blue-600 flex items-center gap-2">
                       <FaEdit />
                     </button>
                     <button
@@ -349,12 +292,12 @@ const Student = () => {
                   <option value="" disabled>
                     Department
                   </option>
-                  <option value="CSE">CSE</option>
-                  <option value="DS">
-                    DS
+                  <option value="Computer Science">Computer Science</option>
+                  <option value="Computer Science(Data Science)">
+                    Computer Science(Data Science)
                   </option>
-                  <option value="Civil">Civil</option>
-                  <option value="Electrical">Electrical</option>
+                  <option value="Civil Engineering">Civil Engineering</option>
+                  <option value="Electrical Engineering">Electrical Engineering</option>
                 </select>
                 <select
                   id="class"
@@ -445,4 +388,3 @@ const Student = () => {
 };
 
 export default Student;
-
