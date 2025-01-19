@@ -24,7 +24,7 @@ const Navbar = () => {
           <NavLink to="/course" className="hover:text-blue-500">
             Course
           </NavLink>
-          <NavLink to="/lab" className="hover:text-blue-500">
+          <NavLink to="/addlab" className="hover:text-blue-500">
             Lab
           </NavLink>
           <NavLink to="/student" className="hover:text-blue-500">
