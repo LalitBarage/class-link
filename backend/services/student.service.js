@@ -62,3 +62,17 @@ module.exports.createStudent = async ({
 
   return student;
 };
+
+
+module.exports.getAllStudents = async () => {
+  const students = await studentModel.find({}, "-password").lean();
+  return students;
+};
+
+module.exports.deleteStudent = async (id) => {
+  if (!id) {
+    throw new Error("Student ID is required");
+  }
+
+  return await studentModel.findByIdAndDelete(id); // Use studentModel instead of students
+};

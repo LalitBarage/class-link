@@ -47,3 +47,29 @@ module.exports.registerStudent = async (req, res, next) => {
 
   res.status(201).json({ token, student });
 };
+
+module.exports.getAllStudents = async (req, res, next) => {
+  try {
+    const students = await studentService.getAllStudents();
+    res.status(200).json({ students });
+  } catch (error) {
+    next(error); 
+  }
+};
+
+
+module.exports.deleteStudent = async (req, res, next) => {
+  const { id } = req.params;
+
+  try {
+    const deletedStudent = await studentService.deleteStudent(id);
+
+    if (!deletedStudent) {
+      return res.status(404).json({ message: "Student not found" });
+    }
+
+    res.status(200).json({ message: "Student deleted successfully" });
+  } catch (error) {
+    next(error);
+  }
+};

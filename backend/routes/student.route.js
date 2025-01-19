@@ -112,4 +112,7 @@ router.post(
   studentController.registerStudent
 );
 
+router.get("/list", studentController.getAllStudents);
+router.delete("/student/:id", studentController.deleteStudent);
+
 module.exports = router;

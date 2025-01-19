@@ -1,27 +1,59 @@
-import React, { useState } from "react";
+import { useState, useEffect } from "react";
 import { FaEdit, FaTrash } from "react-icons/fa";
 
 const Student = () => {
+  const [students, setStudents] = useState([]);
+  const [searchQuery, setSearchQuery] = useState(""); // State for search query
   const [showForm, setShowForm] = useState(false);
   const [selectedClass, setSelectedClass] = useState("");
   const [selectedDivision, setSelectedDivision] = useState("");
   const [selectedDepartment, setSelectedDepartment] = useState("");
 
-  const handleClassSelect = (event) => {
-    setSelectedClass(event.target.value);
+  // Fetch student data
+  useEffect(() => {
+    const fetchStudents = async () => {
+      try {
+        const response = await fetch("http://localhost:4000/student/list");
+        if (response.ok) {
+          const result = await response.json();
+          const formattedData = result.students.map((student) => ({
+            id: student._id, // Assuming each student has a unique _id field
+            rollno: student.rollno,
+            prnno: student.prnno,
+            name: `${student.fullname.firstname} ${student.fullname.middlename} ${student.fullname.lastname}`,
+            year: student.year,
+            division: student.division,
+            mobileno: student.mobileno,
+            email: student.email,
+            parent: `${student.parentfullname.firstname} ${student.parentfullname.lastname}`,
+            parentmobileno: student.parentmobileno,
+            parentemail: student.parentemail,
+            department: student.department,
+          }));
+          setStudents(formattedData);
+        } else {
+          console.error("Failed to fetch student data");
+        }
+      } catch (error) {
+        console.error("Error fetching students:", error);
+      }
+    };
+
+    fetchStudents();
+  }, []);
+
+  const handleSearch = (e) => {
+    setSearchQuery(e.target.value);
   };
 
-  const handleDivisionSelect = (event) => {
-    setSelectedDivision(event.target.value);
-  };
-
-  const handleDeptSelect = (event) => {
-    setSelectedDepartment(event.target.value);
-  };
-
-  const handleSelect = (event) => {
-    setSelectedOption(event.target.value);
-  };
+  const filteredStudents = students.filter((student) => {
+    const query = searchQuery.toLowerCase();
+    return (
+      student.name.toLowerCase().includes(query) ||
+      student.email.toLowerCase().includes(query) ||
+      student.department.toLowerCase().includes(query)
+    );
+  });
 
   const handleAddStudent = () => {
     setShowForm(true);
@@ -31,32 +63,58 @@ const Student = () => {
     setShowForm(false);
   };
 
+  const handleDeptSelect = (e) => setSelectedDepartment(e.target.value);
+  const handleClassSelect = (e) => setSelectedClass(e.target.value);
+  const handleDivisionSelect = (e) => setSelectedDivision(e.target.value);
+
+  const handleDelete = async (id) => {
+    const confirmed = window.confirm("Are you sure you want to delete this student?");
+    if (!confirmed) return;
+
+    try {
+      const response = await fetch(`http://localhost:4000/student/student/${id}`, {
+        method: "DELETE",
+      });
+
+      if (response.ok) {
+        alert("Student deleted successfully!");
+        setStudents((prev) => prev.filter((student) => student.id !== id)); // Remove deleted student from the list
+      } else {
+        const errorData = await response.json();
+        console.error("Error deleting student:", errorData);
+        alert("Failed to delete student. Please try again.");
+      }
+    } catch (error) {
+      console.error("Network error:", error);
+      alert("Network error. Please try again later.");
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-  
-    // Collect form data
+
     const formData = {
       fullname: {
-        firstname: e.target.studentFName.value,
-        middlename: e.target.studentMName.value,
-        lastname: e.target.studentName.value,
+        firstname: e.target.studentFName.value.trim(),
+        middlename: e.target.studentMName.value.trim(),
+        lastname: e.target.studentName.value.trim(),
       },
-      email: e.target.stuEmail.value,
-      mobileno: e.target.mobileNo.value,
-      rollno: e.target.rollNo.value,
-      prnno: e.target.prnNo.value,
+      email: e.target.stuEmail.value.trim(),
+      mobileno: e.target.mobileNo.value.trim(),
+      rollno: e.target.rollNo.value.trim(),
+      prnno: e.target.prnNo.value.trim(),
       year: selectedClass,
       division: selectedDivision,
       department: selectedDepartment,
       parentfullname: {
-        firstname: e.target.parentFNmame.value,
-        lastname: e.target.parentLNmame.value,
+        firstname: e.target.parentFName.value.trim(),
+        lastname: e.target.parentLName.value.trim(),
       },
-      parentemail: e.target.parEmail.value,
-      parentmobileno: e.target.pmobileNo.value,
-      password: "pass@123", 
+      parentemail: e.target.parEmail.value.trim(),
+      parentmobileno: e.target.pmobileNo.value.trim(),
+      password: "pass@123",
     };
-  
+
     try {
       const response = await fetch("http://localhost:4000/student/register", {
         method: "POST",
@@ -65,12 +123,12 @@ const Student = () => {
         },
         body: JSON.stringify(formData),
       });
-  
+
       if (response.ok) {
         const data = await response.json();
         console.log("Student registered successfully:", data);
+        setStudents((prev) => [...prev, { ...formData, id: data.student.id }]); // Add the new student to the list
         setShowForm(false);
-        // Optionally, refresh the student list or display a success message
       } else {
         const errorData = await response.json();
         console.error("Error registering student:", errorData);
@@ -81,35 +139,26 @@ const Student = () => {
       alert("Network error. Please try again later.");
     }
   };
-  
 
   return (
     <div className="p-5">
       <div className="flex flex-col gap-4">
         <div className="flex justify-between items-center">
-          <div className="flex gap-3">
-            <input
-              type="text"
-              name="search"
-              id="search"
-              placeholder="Search course....."
-              className="bg-gray-100 border rounded-md p-2 shadow-sm w-64"
-            />
-            <input
-              type="button"
-              value="Search"
-              className="bg-black text-white px-4 py-2 rounded-md shadow-md cursor-pointer hover:bg-gray-800"
-            />
-          </div>
-
-          <div>
-            <input
-              type="button"
-              value="Add Student"
-              className="bg-black text-white px-4 py-2 rounded-md shadow-md cursor-pointer hover:bg-gray-800"
-              onClick={handleAddStudent}
-            />
-          </div>
+          <input
+            type="text"
+            name="search"
+            id="search"
+            placeholder="Search Student..."
+            value={searchQuery}
+            onChange={handleSearch}
+            className="bg-gray-100 border rounded-md p-2 shadow-sm w-64"
+          />
+          <input
+            type="button"
+            value="Add Student"
+            className="bg-black text-white px-4 py-2 rounded-md shadow-md cursor-pointer hover:bg-gray-800"
+            onClick={handleAddStudent}
+          />
         </div>
       </div>
 
@@ -124,48 +173,47 @@ const Student = () => {
               <th className="border border-gray-300 px-4 py-2">Class</th>
               <th className="border border-gray-300 px-4 py-2">Division</th>
               <th className="border border-gray-300 px-4 py-2">Mobile No</th>
-              <th className="border border-gray-300 px-4 py-2">
-                Student Email
-              </th>
+              <th className="border border-gray-300 px-4 py-2">Student Email</th>
               <th className="border border-gray-300 px-4 py-2">Parent Name</th>
               <th className="border border-gray-300 px-4 py-2">Parent No</th>
-              <th className="border border-gray-300 px-4 py-2">Parent Email</th>
               <th className="border border-gray-300 px-4 py-2">Actions</th>
             </tr>
           </thead>
           <tbody>
-            {/* Sample Rows */}
-            <tr className="hover:bg-gray-100">
-              <td className="border border-gray-300 px-4 py-2">201</td>
-              <td className="border border-gray-300 px-4 py-2">PRN12345</td>
-              <td className="border border-gray-300 px-4 py-2">John Doe</td>
-              <td className="border border-gray-300 px-4 py-2">B.Tech</td>
-              <td className="border border-gray-300 px-4 py-2">A</td>
-              <td className="border border-gray-300 px-4 py-2">9876543210</td>
-              <td className="border border-gray-300 px-4 py-2">
-                john@example.com
-              </td>
-              <td className="border border-gray-300 px-4 py-2">Jane Doe</td>
-              <td className="border border-gray-300 px-4 py-2">9876543211</td>
-              <td className="border border-gray-300 px-4 py-2">
-                jane@example.com
-              </td>
-              <td className="flex border border-gray-300 px-4 py-2 text-center">
-                <button className="bg-blue-500 text-white px-3 py-2 rounded-md mr-2 hover:bg-blue-600 flex items-center gap-2">
-                  <FaEdit />
-                </button>
-                <button className="bg-red-500 text-white px-3 py-2 rounded-md hover:bg-red-600 flex items-center gap-2">
-                  <FaTrash />
-                </button>
-              </td>
-            </tr>
+            {filteredStudents.length > 0 ? (
+              filteredStudents.map((student, index) => (
+                <tr key={index} className="hover:bg-gray-100">
+                  <td className="border border-gray-300 px-4 py-2">{student.rollno}</td>
+                  <td className="border border-gray-300 px-4 py-2">{student.prnno}</td>
+                  <td className="border border-gray-300 px-4 py-2">{student.name}</td>
+                  <td className="border border-gray-300 px-4 py-2">{student.year}</td>
+                  <td className="border border-gray-300 px-4 py-2">{student.division}</td>
+                  <td className="border border-gray-300 px-4 py-2">{student.mobileno}</td>
+                  <td className="border border-gray-300 px-4 py-2">{student.email}</td>
+                  <td className="border border-gray-300 px-4 py-2">{student.parent}</td>
+                  <td className="border border-gray-300 px-4 py-2">{student.parentmobileno}</td>
+                  <td className="flex border border-gray-300 px-4 py-2 text-center">
+                    <button className="bg-blue-500 text-white px-3 py-2 rounded-md mr-2 hover:bg-blue-600 flex items-center gap-2">
+                      <FaEdit />
+                    </button>
+                    <button
+                      className="bg-red-500 text-white px-3 py-2 rounded-md hover:bg-red-600 flex items-center gap-2"
+                      onClick={() => handleDelete(student.id)}
+                    >
+                      <FaTrash />
+                    </button>
+                  </td>
+                </tr>
+              ))
+            ) : (
+              <tr>
+                <td colSpan="10" className="text-center py-4">
+                  No students found.
+                </td>
+              </tr>
+            )}
           </tbody>
         </table>
-      </div>
-
-      {/* Footer Section */}
-      <div className="mt-6 text-center">
-        <p className="text-gray-600">Showing 2 out of 100 entries</p>
       </div>
 
       {/* Popup Form */}
@@ -174,7 +222,7 @@ const Student = () => {
           <div className="bg-white p-6 rounded-md shadow-md w-1/3">
             <h2 className="text-xl font-bold mb-4">Add New Student</h2>
             <form onSubmit={handleSubmit}>
-              <div className="flex gap-2 mb-2">
+            <div className="flex gap-2 mb-2">
                 <input
                   type="text"
                   id="studentFName"
@@ -200,7 +248,6 @@ const Student = () => {
                   className="w-full border rounded-md p-2 bg-gray-100"
                 />
               </div>
-
               <input
                 type="email"
                 id="stuEmail"
@@ -209,16 +256,14 @@ const Student = () => {
                 required
                 className="w-full border rounded-md p-2 mb-2 bg-gray-100"
               />
-
               <input
                 type="text"
-                id="monileNo"
+                id="mobileNo"
                 name="mobileNo"
                 placeholder="Student Mobile No"
                 required
                 className="w-full border rounded-md p-2 mb-2 bg-gray-100"
               />
-
               <div className="flex gap-2 mb-2">
                 <input
                   type="text"
@@ -237,20 +282,20 @@ const Student = () => {
                   className="w-full border rounded-md p-2 bg-gray-100"
                 />
               </div>
-
               <div className="flex gap-2 mb-2">
-                {/* Class Dropdown */}
                 <select
-                  id="class"
+                  id="department"
                   value={selectedDepartment}
                   onChange={handleDeptSelect}
                   className="w-full bg-gray-100 border rounded-md p-2"
                 >
                   <option value="" disabled>
-                   Department
+                    Department
                   </option>
                   <option value="Computer Science">Computer Science</option>
-                  <option value="Computer Science(Data Science)">Computer Science(Data Science)</option>
+                  <option value="Computer Science(Data Science)">
+                    Computer Science(Data Science)
+                  </option>
                   <option value="Civil Engineering">Civil Engineering</option>
                   <option value="Electrical Engineering">Electrical Engineering</option>
                 </select>
@@ -268,8 +313,6 @@ const Student = () => {
                   <option value="TY">TY</option>
                   <option value="B.Tech">B.Tech</option>
                 </select>
-
-                {/* Division Dropdown */}
                 <select
                   id="division"
                   value={selectedDivision}
@@ -287,35 +330,32 @@ const Student = () => {
                   <option value="F">F</option>
                 </select>
               </div>
-
               <div className="flex gap-2 mb-2">
                 <input
                   type="text"
-                  id="parentFNmame"
-                  name="parentFNmame"
+                  id="parentFName"
+                  name="parentFName"
                   placeholder="Parent First Name"
                   required
                   className="w-full border rounded-md p-2 bg-gray-100"
                 />
                 <input
                   type="text"
-                  id="parentLNmame"
-                  name="parentLNmame"
+                  id="parentLName"
+                  name="parentLName"
                   placeholder="Parent Last Name"
                   required
                   className="w-full border rounded-md p-2 bg-gray-100"
                 />
               </div>
-
               <input
                 type="email"
                 id="parEmail"
-                name="praEmail"
+                name="parEmail"
                 placeholder="Parent Email"
                 required
                 className="w-full border rounded-md p-2 mb-2 bg-gray-100"
               />
-
               <input
                 type="text"
                 id="pmobileNo"
@@ -324,7 +364,6 @@ const Student = () => {
                 required
                 className="w-full border rounded-md p-2 mb-2 bg-gray-100"
               />
-
               <div className="flex justify-end gap-3">
                 <button
                   type="reset"
@@ -349,3 +388,4 @@ const Student = () => {
 };
 
 export default Student;
+
