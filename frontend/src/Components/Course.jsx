@@ -183,8 +183,7 @@ const Course = () => {
           <div className="bg-white p-6 rounded-md shadow-md w-1/3">
             <h2 className="text-xl font-bold mb-4">Add New Course</h2>
             <form onSubmit={handleSubmit}>
-              <div className="mb-4">
-               
+              <div className="mb-2">
                 <input
                   type="text"
                   id="courseName"
@@ -193,10 +192,10 @@ const Course = () => {
                   onChange={handleInputChange}
                   placeholder="Course Name"
                   required
-                  className="w-full border rounded-md p-2 mt-1"
+                  className="w-full border rounded-md p-2 bg-gray-100"
                 />
               </div>
-              <div className="mb-4">
+              <div className="mb-2">
                 
                 <input
                   type="text"
@@ -206,7 +205,7 @@ const Course = () => {
                   onChange={handleInputChange}
                   placeholder="Faculty ID"
                   required
-                  className="w-full border rounded-md p-2 mt-1"
+                  className="w-full border rounded-md p-2 bg-gray-100"
                 />
               </div>
               <div className="flex justify-end gap-3">
@@ -235,7 +234,7 @@ const Course = () => {
           <div className="bg-white p-6 rounded-md shadow-md w-1/3">
             <h2 className="text-xl font-bold mb-4">Edit Course</h2>
             <form onSubmit={handleEditSubmit}>
-              <div className="mb-4">
+              <div className="mb-2">
                 <input
                   type="text"
                   id="courseName"
@@ -244,10 +243,10 @@ const Course = () => {
                   onChange={handleInputChange}
                   placeholder="Course Name"
                   required
-                  className="w-full border rounded-md p-2 mt-1"
+                  className="w-full border rounded-md p-2 bg-gray-100"
                 />
               </div>
-              <div className="mb-4">
+              <div className="mb-2">
                 <input
                   type="text"
                   id="facultyId"
@@ -256,7 +255,7 @@ const Course = () => {
                   onChange={handleInputChange}
                   placeholder="Faculty ID"
                   required
-                  className="w-full border rounded-md p-2 mt-1"
+                  className="w-full border rounded-md p-2 mt-1 bg-gray-100"
                 />
               </div>
               <div className="flex justify-end gap-3">

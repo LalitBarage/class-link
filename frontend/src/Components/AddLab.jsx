@@ -162,30 +162,33 @@ const AddLab = () => {
       {showAddModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
           <div className="bg-white p-6 rounded-lg shadow-lg w-96">
-            <h2 className="text-2xl font-semibold text-center mb-6">
+            <h2 className="text-xl font-bold mb-4">
               {currentLab !== null ? 'Edit Lab' : 'Add Lab'}
             </h2>
-            <div className="space-y-4">
+            <div className="mb-2">
               <input
                 type="text"
-                className="w-full p-3 border rounded-md bg-gray-200"
+                className="w-full p-3 border rounded-md bg-gray-100"
                 name="id"
                 placeholder="Lab Id"
                 value={formData.id}
                 onChange={handleInputChange}
               />
+              </div>
+              <div className='mb-2'>
               <input
                 type="text"
-                className="w-full p-3 border rounded-md bg-gray-200"
+                className="w-full p-3 border rounded-md bg-gray-100"
                 name="faculty"
                 placeholder="Faculty Id"
                 value={formData.faculty}
                 onChange={handleInputChange}
               />
-              <div className="flex gap-4">
+              </div>
+              <div className="flex gap-4 mb-2">
                 <input
                   type="text"
-                  className="w-full p-3 border rounded-md bg-gray-200"
+                  className="w-full p-3 border rounded-md bg-gray-100"
                   name="startRollNo"
                   placeholder="Start Roll No"
                   value={formData.startRollNo}
@@ -193,15 +196,14 @@ const AddLab = () => {
                 />
                 <input
                   type="text"
-                  className="w-full p-3 border rounded-md bg-gray-200"
+                  className="w-full p-3 border rounded-md bg-gray-100"
                   name="endRollNo"
                   placeholder="End Roll No"
                   value={formData.endRollNo}
                   onChange={handleInputChange}
                 />
               </div>
-            </div>
-            <div className="flex justify-between mt-6">
+            <div className="flex justify-end gap-3">
               <button
                 className="bg-gray-500 text-white px-4 py-2 rounded-md hover:bg-gray-600"
                 onClick={() => setShowAddModal(false)}
