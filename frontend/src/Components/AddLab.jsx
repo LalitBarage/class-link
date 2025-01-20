@@ -59,10 +59,13 @@ const AddLab = () => {
       division: selectedDivision,
       class: selectedClass,
     };
-
-    const url = currentLab === null ? "http://localhost:4000/lab/create" : `http://localhost:4000/lab/update/${formData.labid}`;
+  
+    const url =
+      currentLab === null
+        ? "http://localhost:4000/lab/create"
+        : `http://localhost:4000/lab/update/${formData.labid}`;
     const method = currentLab === null ? "POST" : "PUT";
-
+  
     try {
       const response = await fetch(url, {
         method: method,
@@ -71,19 +74,57 @@ const AddLab = () => {
         },
         body: JSON.stringify(updatedFormData),
       });
-
+  
       if (response.ok) {
         const newLab = await response.json();
         if (currentLab !== null) {
-          const updatedLabs = labs.map((lab, index) =>
-            index === currentLab ? newLab.lab : lab
+          // Update the edited lab in the state
+          setLabs((prevLabs) =>
+            prevLabs.map((lab) =>
+              lab.labid === formData.labid ? newLab.lab : lab
+            )
           );
-          setLabs(updatedLabs);
         } else {
-          setLabs([...labs, newLab.lab]);
+          // Add the new lab to the state
+          setLabs((prevLabs) => [...prevLabs, newLab.lab]);
         }
-
+  
         setShowAddModal(false);
+      } else {
+        console.error("Failed to add/update lab:", await response.text());
+      }
+    } catch (error) {
+      console.error("Error adding/updating lab:", error);
+    } finally {
+      setFormData({
+        labid: "",
+        facultyid: "",
+        strollno: "",
+        endrollno: "",
+        department: "",
+        division: "",
+        class: "",
+        labname: "",
+        batch: "",
+      });
+      setSelectedDepartment("");
+      setSelectedClass("");
+      setSelectedDivision("");
+      setCurrentLab(null);
+      setShowAddModal(false);
+    }
+  };
+  
+
+  // Handle Delete Lab
+  const handleDeleteLab = async () => {
+    try {
+      const response = await fetch(`http://localhost:4000/lab/delete/${formData.labid}`, {
+        method: "DELETE",
+      });
+  
+      if (response.ok) {
+        setLabs(labs.filter((lab) => lab.labid !== formData.labid)); // Remove the deleted lab
         setFormData({
           labid: "",
           facultyid: "",
@@ -94,28 +135,7 @@ const AddLab = () => {
           class: "",
           labname: "",
           batch: "",
-        });
-        setSelectedDepartment("");
-        setSelectedClass("");
-        setSelectedDivision("");
-        setCurrentLab(null);
-      } else {
-        console.error("Failed to add/update lab:", await response.text());
-      }
-    } catch (error) {
-      console.error("Error adding/updating lab:", error);
-    }
-  };
-
-  // Handle Delete Lab
-  const handleDeleteLab = async () => {
-    try {
-      const response = await fetch(`http://localhost:4000/lab/delete/${formData.labid}`, {
-        method: "DELETE",
-      });
-  
-      if (response.ok) {
-        setLabs(labs.filter((lab) => lab.labid !== formData.labid)); // Remove the deleted lab from the state
+        }); // Reset the form
         setShowDeleteModal(false);
         setCurrentLab(null);
       } else {
@@ -125,6 +145,7 @@ const AddLab = () => {
       console.error("Error deleting lab:", error);
     }
   };
+  
   
 
   // Handle Search
@@ -173,6 +194,7 @@ const AddLab = () => {
             <tr className="bg-gray-100 text-sm font-semibold">
               <th className="px-4 py-3 border border-gray-300">ID</th>
               <th className="px-4 py-3 border border-gray-300">Lab Name</th>
+              <th className="px-4 py-3 border border-gray-300">Department</th>
               <th className="px-4 py-3 border border-gray-300">Class</th>
               <th className="px-4 py-3 border border-gray-300">Division</th>
               <th className="px-4 py-3 border border-gray-300">Batch</th>
@@ -191,6 +213,7 @@ const AddLab = () => {
     >
       <td className="px-4 py-3 border border-gray-300">{lab.labid}</td>
       <td className="px-4 py-3 border border-gray-300">{lab.labname}</td>
+      <td className="px-4 py-3 border border-gray-300">{lab.department}</td>
       <td className="px-4 py-3 border border-gray-300">{lab.class}</td>
       <td className="px-4 py-3 border border-gray-300">{lab.division}</td>
       <td className="px-4 py-3 border border-gray-300">{lab.batch}</td>
@@ -350,7 +373,7 @@ const AddLab = () => {
                 onChange={handleInputChange}
               />
             </div>
-            <div className="flex gap-4">
+            <div className="flex gap-4 justify-end">
               <button
                 className="bg-gray-500 text-white px-4 py-2 rounded-md"
                 onClick={() => setShowAddModal(false)}
@@ -358,7 +381,7 @@ const AddLab = () => {
                 Cancel
               </button>
               <button
-                className="bg-black text-white px-4 py-2 rounded-md"
+                className="bg-blue-500 text-white px-4 py-2 rounded-md"
                 onClick={handleAddOrEditLab}
               >
                 {currentLab !== null ? "Update" : "Add"}
@@ -373,7 +396,7 @@ const AddLab = () => {
         <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
           <div className="bg-white p-6 rounded-lg shadow-lg w-96">
             <h2 className="text-lg font-semibold">Are you sure you want to delete this lab?</h2>
-            <div className="mt-4 flex gap-4">
+            <div className="mt-4 flex gap-4 justify-end">
               <button
                 className="bg-gray-500 text-white px-4 py-2 rounded-md"
                 onClick={() => setShowDeleteModal(false)}
@@ -381,7 +404,7 @@ const AddLab = () => {
                 Cancel
               </button>
               <button
-                className="bg-red-500 text-white px-4 py-2 rounded-md"
+                className="bg-blue-500 text-white px-4 py-2 rounded-md"
                 onClick={handleDeleteLab}
               >
                 Delete
