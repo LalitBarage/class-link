@@ -110,12 +110,12 @@ const AddLab = () => {
   // Handle Delete Lab
   const handleDeleteLab = async () => {
     try {
-      const response = await fetch(`http://localhost:4000/lab/delete/${labs[currentLab].labid}`, {
+      const response = await fetch(`http://localhost:4000/lab/delete/${formData.labid}`, {
         method: "DELETE",
       });
-
+  
       if (response.ok) {
-        setLabs(labs.filter((_, index) => index !== currentLab));
+        setLabs(labs.filter((lab) => lab.labid !== formData.labid)); // Remove the deleted lab from the state
         setShowDeleteModal(false);
         setCurrentLab(null);
       } else {
@@ -125,6 +125,7 @@ const AddLab = () => {
       console.error("Error deleting lab:", error);
     }
   };
+  
 
   // Handle Search
   
@@ -199,9 +200,12 @@ const AddLab = () => {
           <button
             className="bg-blue-500 text-white px-3 py-2 rounded-md hover:bg-blue-600 flex items-center gap-2"
             onClick={() => {
-              setCurrentLab(lab._id); // Use lab._id for currentLab
-              setFormData(lab);
-              setShowAddModal(true);
+              setCurrentLab(lab._id); // Set the current lab ID
+              setFormData(lab); // Populate the form with the lab data
+              setSelectedDepartment(lab.department || ""); // Set the selected department
+              setSelectedClass(lab.class || ""); // Set the selected class
+              setSelectedDivision(lab.division || ""); // Set the selected division
+              setShowAddModal(true); // Show the modal
             }}
           >
             <FaEdit />
@@ -210,6 +214,7 @@ const AddLab = () => {
             className="bg-red-500 text-white px-3 py-2 rounded-md hover:bg-red-600 flex items-center gap-2"
             onClick={() => {
               setCurrentLab(lab._id); // Use lab._id for currentLab
+              setFormData({ ...formData, labid: lab.labid }); // Ensure labid is set
               setShowDeleteModal(true);
             }}
           >
