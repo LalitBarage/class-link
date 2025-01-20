@@ -1,6 +1,7 @@
 const studentModel = require("../models/student.model");
 const studentService = require("../services/student.service");
 const { validationResult } = require("express-validator");
+const bcrypt = require("bcrypt");
 
 module.exports.registerStudent = async (req, res, next) => {
   const errors = validationResult(req);
@@ -73,27 +74,32 @@ module.exports.deleteStudent = async (req, res, next) => {
     next(error);
   }
 };
-
 module.exports.updateStudentInfo = async (req, res, next) => {
   const { id } = req.params;
 
   // Find the student by ID
   let student = await studentModel.findById(id);
   if (!student) {
-      return next(new ErrorHandler("Student Not Found", 404));
+    return next(new ErrorHandler("Student Not Found", 404));
+  }
+
+  // If the password is being updated, hash it before applying the update
+  if (req.body.password) {
+    const salt = await bcrypt.genSalt(10);
+    req.body.password = await bcrypt.hash(req.body.password, salt);
   }
 
   // Update the student with the new data from req.body
   student = await studentModel.findByIdAndUpdate(id, req.body, {
-      new: true, // Return the updated document
-      runValidators: true, // Validate the new data against the schema
-      useFindAndModify: false, // Ensure MongoDB native `findOneAndUpdate` is used
+    new: true, // Return the updated document
+    runValidators: true, // Validate the new data against the schema
+    useFindAndModify: false, // Ensure MongoDB native findOneAndUpdate is used
   });
 
   // Send the response
   res.status(200).json({
-      success: true,
-      message: "Student information updated successfully",
-      student,
+    success: true,
+    message: "Student information updated successfully",
+    student,
   });
 };

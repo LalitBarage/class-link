@@ -1,5 +1,8 @@
 import { useState, useEffect } from "react";
 import { FaEdit, FaTrash } from "react-icons/fa";
+import { ToastContainer, toast } from "react-toastify"; // Import ToastContainer and toast
+import "react-toastify/dist/ReactToastify.css"
+
 
 const Student = () => {
   const [students, setStudents] = useState([]);
@@ -8,6 +11,7 @@ const Student = () => {
   const [selectedClass, setSelectedClass] = useState("");
   const [selectedDivision, setSelectedDivision] = useState("");
   const [selectedDepartment, setSelectedDepartment] = useState("");
+  const [editingStudent, setEditingStudent] = useState(null); // State for editing student
 
   // Fetch student data
   useEffect(() => {
@@ -17,18 +21,18 @@ const Student = () => {
         if (response.ok) {
           const result = await response.json();
           const formattedData = result.students.map((student) => ({
-            id: student._id, // Assuming each student has a unique _id field
-            rollno: student.rollno,
-            prnno: student.prnno,
-            name: `${student.fullname.firstname} ${student.fullname.middlename} ${student.fullname.lastname}`,
-            year: student.year,
-            division: student.division,
-            mobileno: student.mobileno,
-            email: student.email,
-            parent: `${student.parentfullname.firstname} ${student.parentfullname.lastname}`,
-            parentmobileno: student.parentmobileno,
-            parentemail: student.parentemail,
-            department: student.department,
+            id: student._id,
+            rollno: student.rollno || "",
+            prnno: student.prnno || "",
+            name: `${student.fullname?.firstname || ""} ${student.fullname?.middlename || ""} ${student.fullname?.lastname || ""}`.trim(),
+            year: student.year || "",
+            division: student.division || "",
+            mobileno: student.mobileno || "",
+            email: student.email || "",
+            parent: `${student.parentfullname?.firstname || ""} ${student.parentfullname?.lastname || ""}`.trim(),
+            parentmobileno: student.parentmobileno || "",
+            parentemail: student.parentemail || "",
+            department: student.department || "",
           }));
           setStudents(formattedData);
         } else {
@@ -36,6 +40,7 @@ const Student = () => {
         }
       } catch (error) {
         console.error("Error fetching students:", error);
+        toast.error("Error fetching student data");
       }
     };
 
@@ -49,18 +54,31 @@ const Student = () => {
   const filteredStudents = students.filter((student) => {
     const query = searchQuery.toLowerCase();
     return (
-      student.name.toLowerCase().includes(query) ||
-      student.email.toLowerCase().includes(query) ||
-      student.department.toLowerCase().includes(query)
+      (student.name?.toLowerCase().includes(query) || "") ||
+      (student.email?.toLowerCase().includes(query) || "") ||
+      (student.department?.toLowerCase().includes(query) || "")
     );
   });
 
   const handleAddStudent = () => {
     setShowForm(true);
+    setEditingStudent(null);
+    setSelectedClass("");
+    setSelectedDivision("");
+    setSelectedDepartment("");
+  };
+
+  const handleEdit = (student) => {
+    setEditingStudent(student);
+    setShowForm(true);
+    setSelectedClass(student.year);
+    setSelectedDivision(student.division);
+    setSelectedDepartment(student.department);
   };
 
   const handleCloseForm = () => {
     setShowForm(false);
+    setEditingStudent(null);
   };
 
   const handleDeptSelect = (e) => setSelectedDepartment(e.target.value);
@@ -78,21 +96,24 @@ const Student = () => {
 
       if (response.ok) {
         alert("Student deleted successfully!");
-        setStudents((prev) => prev.filter((student) => student.id !== id)); // Remove deleted student from the list
+        setStudents((prev) => prev.filter((student) => student.id !== id));
+        toast.success("Student deleted successfully!");
       } else {
         const errorData = await response.json();
         console.error("Error deleting student:", errorData);
         alert("Failed to delete student. Please try again.");
+        toast.error("Error deleting faculty.");
       }
     } catch (error) {
       console.error("Network error:", error);
       alert("Network error. Please try again later.");
+      toast.error("Error deleting faculty.");
     }
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
+  
     const formData = {
       fullname: {
         firstname: e.target.studentFName.value.trim(),
@@ -114,55 +135,73 @@ const Student = () => {
       parentmobileno: e.target.pmobileNo.value.trim(),
       password: "pass@123",
     };
-
+  
+    // Add password field if editing
+    if (editingStudent) {
+      const password = e.target.password.value.trim();
+      if (password) {
+        formData.password = password;
+      }
+    }
+  
     try {
-      const response = await fetch("http://localhost:4000/student/register", {
-        method: "POST",
+      const url = editingStudent
+        ? `http://localhost:4000/student/update/${editingStudent.id}`
+        : "http://localhost:4000/student/register";
+  
+      const method = editingStudent ? "PUT" : "POST";
+  
+      const response = await fetch(url, {
+        method,
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify(formData),
       });
-
+  
       if (response.ok) {
         const data = await response.json();
-        console.log("Student registered successfully:", data);
-        setStudents((prev) => [...prev, { ...formData, id: data.student.id }]); // Add the new student to the list
+        toast.success(editingStudent ? "Student updated successfully!" : "Student registered successfully");
+        setStudents((prev) =>
+          editingStudent
+            ? prev.map((stu) => (stu.id === editingStudent.id ? { ...stu, ...formData } : stu))
+            : [...prev, { ...formData, id: data.student.id }]
+        );
+       
         setShowForm(false);
+        setEditingStudent(null);
       } else {
-        const errorData = await response.json();
-        console.error("Error registering student:", errorData);
-        alert("Failed to register student. Please try again.");
+        
+        toast.error("Failed to register student. Please try again.")
       }
     } catch (error) {
       console.error("Network error:", error);
       alert("Network error. Please try again later.");
+      toast.error("Network error. Please try again later.")
+
     }
   };
+  
 
   return (
     <div className="p-5">
-      <div className="flex flex-col gap-4">
-        <div className="flex justify-between items-center">
-          <input
-            type="text"
-            name="search"
-            id="search"
-            placeholder="Search Student..."
-            value={searchQuery}
-            onChange={handleSearch}
-            className="bg-gray-100 border rounded-md p-2 shadow-sm w-64"
-          />
-          <input
-            type="button"
-            value="Add Student"
-            className="bg-black text-white px-4 py-2 rounded-md shadow-md cursor-pointer hover:bg-gray-800"
-            onClick={handleAddStudent}
-          />
-        </div>
+      <div className="flex justify-between items-center">
+        <input
+          type="text"
+          name="search"
+          placeholder="Search Student..."
+          value={searchQuery}
+          onChange={handleSearch}
+          className="bg-gray-100 border rounded-md p-2 shadow-sm w-64"
+        />
+        <button
+          className="bg-black text-white px-4 py-2 rounded-md shadow-md hover:bg-gray-800"
+          onClick={handleAddStudent}
+        >
+          Add Student
+        </button>
       </div>
 
-      {/* Table Section */}
       <div className="mt-8">
         <table className="w-full border-collapse border border-gray-300 text-left">
           <thead className="bg-gray-200">
@@ -181,8 +220,8 @@ const Student = () => {
           </thead>
           <tbody>
             {filteredStudents.length > 0 ? (
-              filteredStudents.map((student, index) => (
-                <tr key={index} className="hover:bg-gray-100">
+              filteredStudents.map((student) => (
+                <tr key={student.id} className="hover:bg-gray-100">
                   <td className="border border-gray-300 px-4 py-2">{student.rollno}</td>
                   <td className="border border-gray-300 px-4 py-2">{student.prnno}</td>
                   <td className="border border-gray-300 px-4 py-2">{student.name}</td>
@@ -193,7 +232,10 @@ const Student = () => {
                   <td className="border border-gray-300 px-4 py-2">{student.parent}</td>
                   <td className="border border-gray-300 px-4 py-2">{student.parentmobileno}</td>
                   <td className="flex border border-gray-300 px-4 py-2 text-center">
-                    <button className="bg-blue-500 text-white px-3 py-2 rounded-md mr-2 hover:bg-blue-600 flex items-center gap-2">
+                    <button
+                      className="bg-blue-500 text-white px-3 py-2 rounded-md mr-2 hover:bg-blue-600 flex items-center gap-2"
+                      onClick={() => handleEdit(student)}
+                    >
                       <FaEdit />
                     </button>
                     <button
@@ -216,18 +258,20 @@ const Student = () => {
         </table>
       </div>
 
-      {/* Popup Form */}
       {showForm && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
           <div className="bg-white p-6 rounded-md shadow-md w-1/3">
-            <h2 className="text-xl font-bold mb-4">Add New Student</h2>
+            <h2 className="text-xl font-bold mb-4">
+              {editingStudent ? "Edit Student" : "Add New Student"}
+            </h2>
             <form onSubmit={handleSubmit}>
-            <div className="flex gap-2 mb-2">
+              <div className="flex gap-2 mb-2">
                 <input
                   type="text"
                   id="studentFName"
                   name="studentFName"
                   placeholder="First Name"
+                  defaultValue={editingStudent?.name.split(" ")[0] || ""}
                   required
                   className="w-full border rounded-md p-2 bg-gray-100"
                 />
@@ -236,6 +280,7 @@ const Student = () => {
                   id="studentMName"
                   name="studentMName"
                   placeholder="Middle Name"
+                  defaultValue={editingStudent?.name.split(" ")[1] || ""}
                   required
                   className="w-full border rounded-md p-2 bg-gray-100"
                 />
@@ -244,6 +289,7 @@ const Student = () => {
                   id="studentName"
                   name="studentName"
                   placeholder="Last Name"
+                  defaultValue={editingStudent?.name.split(" ")[2] || ""}
                   required
                   className="w-full border rounded-md p-2 bg-gray-100"
                 />
@@ -253,6 +299,7 @@ const Student = () => {
                 id="stuEmail"
                 name="stuEmail"
                 placeholder="Student Email"
+                defaultValue={editingStudent?.email|| ""}
                 required
                 className="w-full border rounded-md p-2 mb-2 bg-gray-100"
               />
@@ -261,6 +308,7 @@ const Student = () => {
                 id="mobileNo"
                 name="mobileNo"
                 placeholder="Student Mobile No"
+                defaultValue={editingStudent?.mobileno || ""}
                 required
                 className="w-full border rounded-md p-2 mb-2 bg-gray-100"
               />
@@ -270,6 +318,7 @@ const Student = () => {
                   id="rollNo"
                   name="rollNo"
                   placeholder="Roll No"
+                  defaultValue={editingStudent?.rollno || ""}
                   required
                   className="w-full border rounded-md p-2 bg-gray-100"
                 />
@@ -278,6 +327,7 @@ const Student = () => {
                   id="prnNo"
                   name="prnNo"
                   placeholder="PRN No"
+                  defaultValue={editingStudent?.prnno || ""}
                   required
                   className="w-full border rounded-md p-2 bg-gray-100"
                 />
@@ -288,6 +338,7 @@ const Student = () => {
                   value={selectedDepartment}
                   onChange={handleDeptSelect}
                   className="w-full bg-gray-100 border rounded-md p-2"
+                  defaultValue={editingStudent?.department || ""}
                 >
                   <option value="" disabled>
                     Department
@@ -304,6 +355,7 @@ const Student = () => {
                   value={selectedClass}
                   onChange={handleClassSelect}
                   className="w-full bg-gray-100 border rounded-md p-2"
+                  defaultValue={editingStudent?.class || ""}
                 >
                   <option value="" disabled>
                     Select Class
@@ -318,6 +370,7 @@ const Student = () => {
                   value={selectedDivision}
                   onChange={handleDivisionSelect}
                   className="w-full bg-gray-100 border rounded-md p-2"
+                  defaultValue={editingStudent?.division || ""}
                 >
                   <option value="" disabled>
                     Select Division
@@ -336,6 +389,7 @@ const Student = () => {
                   id="parentFName"
                   name="parentFName"
                   placeholder="Parent First Name"
+                  defaultValue={editingStudent?.parent.split(" ")[0] || ""}
                   required
                   className="w-full border rounded-md p-2 bg-gray-100"
                 />
@@ -344,6 +398,7 @@ const Student = () => {
                   id="parentLName"
                   name="parentLName"
                   placeholder="Parent Last Name"
+                  defaultValue={editingStudent?.parent.split(" ")[1] || ""}
                   required
                   className="w-full border rounded-md p-2 bg-gray-100"
                 />
@@ -353,6 +408,7 @@ const Student = () => {
                 id="parEmail"
                 name="parEmail"
                 placeholder="Parent Email"
+                defaultValue={editingStudent?.parentemail || ""}
                 required
                 className="w-full border rounded-md p-2 mb-2 bg-gray-100"
               />
@@ -361,9 +417,21 @@ const Student = () => {
                 id="pmobileNo"
                 name="pmobileNo"
                 placeholder="Parent Mobile No"
+                defaultValue={editingStudent?.parentmobileno || ""}
                 required
                 className="w-full border rounded-md p-2 mb-2 bg-gray-100"
               />
+
+            {editingStudent && (
+             <input
+               type="password"
+               id="password"
+               name="password"
+               placeholder="Enter Password"
+               className="w-full border rounded-md p-2 mb-2 bg-gray-100"
+               />
+               )}
+
               <div className="flex justify-end gap-3">
                 <button
                   type="reset"
@@ -372,17 +440,18 @@ const Student = () => {
                 >
                   Cancel
                 </button>
-                <button
-                  type="submit"
-                  className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600"
-                >
-                  Add
-                </button>
-              </div>
+              <button
+                type="submit"
+                className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600"
+              >
+                {editingStudent ? "Update" : "Add"}
+              </button>
+                </div>
             </form>
           </div>
         </div>
       )}
+       <ToastContainer />
     </div>
   );
 };
