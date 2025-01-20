@@ -344,11 +344,10 @@ const Student = () => {
                     Department
                   </option>
                   <option value="Computer Science">Computer Science</option>
-                  <option value="Computer Science(Data Science)">
-                    Computer Science(Data Science)
-                  </option>
-                  <option value="Civil Engineering">Civil Engineering</option>
-                  <option value="Electrical Engineering">Electrical Engineering</option>
+                  <option value="CSE">CSE</option>
+                <option value="DS">DATA SCIENCE</option>
+                <option value="ELECTRICAL">ELECTRICAL</option>
+                <option value="CIVIL">CIVIL</option>
                 </select>
                 <select
                   id="class"
