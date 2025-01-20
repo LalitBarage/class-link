@@ -9,7 +9,7 @@ const Navbar = () => {
   };
 
   const activeStyle = {
-    color: "#2F5F98",
+    color: "#3B82F6",
   };
 
   return (
