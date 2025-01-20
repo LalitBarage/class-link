@@ -82,4 +82,6 @@ router.get("/list", facultyController.getAllFaculties);
 
 router.delete("/remove/:facultyId", facultyController.deleteFaculty);
 
+router.put("/update/:facultyId", facultyController.updateFaculty);
+
 module.exports = router;

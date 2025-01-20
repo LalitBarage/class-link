@@ -60,3 +60,21 @@ module.exports.deleteFaculty = async (facultyId) => {
     throw new Error("Failed to delete faculty");
   }
 };
+
+module.exports.updateFaculty = async (facultyId, update) => {
+  try {
+    if (update.password) {
+      update.password = await facultyModel.hashPassword(update.password);
+    }
+
+    const faculty = await facultyModel.findOneAndUpdate({ facultyId }, update, {
+      new: true,
+      runValidators: true,
+    });
+
+    return faculty; // Return the updated faculty document
+  } catch (error) {
+    console.error("Error in facultyService.updateFaculty:", error);
+    throw error; // Propagate the error to the controller
+  }
+};
