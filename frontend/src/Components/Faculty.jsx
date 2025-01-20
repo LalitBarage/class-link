@@ -304,6 +304,15 @@ const Faculty = () => {
               />
               <input
                 type="text"
+                id="facultyId"
+                name="facultyId"
+                placeholder="faculty Id:"
+                defaultValue={editingFaculty?.id || ""}
+                required
+                className="w-full border rounded-md p-2 mb-2 bg-gray-100"
+              />
+              <input
+                type="text"
                 id="designation"
                 name="designation"
                 placeholder="Designation:"
