@@ -8,6 +8,10 @@ const Navbar = () => {
     setIsMenuOpen(!isMenuOpen);
   };
 
+  const activeStyle = {
+    color: "#2F5F98",
+  };
+
   return (
     <div className="bg-gray-200 shadow-lg">
       <div className="h-20 flex justify-between items-center px-5 md:px-10">
@@ -18,19 +22,49 @@ const Navbar = () => {
 
         {/* Desktop Navigation */}
         <div className="hidden md:flex gap-10">
-          <NavLink to="/" className="hover:text-blue-500">
+          <NavLink
+            to="/"
+            style={({ isActive }) => (isActive ? activeStyle : undefined)}
+            className={({ isActive }) =>
+              `hover:text-blue-500 ${isActive ? "bold" : ""}`
+            }
+          >
             DashBoard
           </NavLink>
-          <NavLink to="/course" className="hover:text-blue-500">
+          <NavLink
+            to="/course"
+            style={({ isActive }) => (isActive ? activeStyle : undefined)}
+            className={({ isActive }) =>
+              `hover:text-blue-500 ${isActive ? "bold" : ""}`
+            }
+          >
             Course
           </NavLink>
-          <NavLink to="/addlab" className="hover:text-blue-500">
+          <NavLink
+            to="/addlab"
+            style={({ isActive }) => (isActive ? activeStyle : undefined)}
+            className={({ isActive }) =>
+              `hover:text-blue-500 ${isActive ? "bold" : ""}`
+            }
+          >
             Lab
           </NavLink>
-          <NavLink to="/student" className="hover:text-blue-500">
+          <NavLink
+            to="/student"
+            style={({ isActive }) => (isActive ? activeStyle : undefined)}
+            className={({ isActive }) =>
+              `hover:text-blue-500 ${isActive ? "bold" : ""}`
+            }
+          >
             Student
           </NavLink>
-          <NavLink to="/faculty" className="hover:text-blue-500">
+          <NavLink
+            to="/faculty"
+            style={({ isActive }) => (isActive ? activeStyle : undefined)}
+            className={({ isActive }) =>
+              `hover:text-blue-500 ${isActive ? "bold" : ""}`
+            }
+          >
             Faculty
           </NavLink>
         </div>
@@ -46,33 +80,37 @@ const Navbar = () => {
       {/* Mobile Navigation */}
       {isMenuOpen && (
         <div className="flex flex-col items-center gap-4 py-4 bg-gray-100 shadow-md md:hidden">
-          <NavLink to="/" className="hover:text-blue-500" onClick={toggleMenu}>
+          <NavLink
+            to="/"
+            style={({ isActive }) => (isActive ? activeStyle : undefined)}
+            onClick={toggleMenu}
+          >
             DashBoard
           </NavLink>
           <NavLink
             to="/course"
-            className="hover:text-blue-500"
+            style={({ isActive }) => (isActive ? activeStyle : undefined)}
             onClick={toggleMenu}
           >
             Course
           </NavLink>
           <NavLink
-            to="/lab"
-            className="hover:text-blue-500"
+            to="/addlab"
+            style={({ isActive }) => (isActive ? activeStyle : undefined)}
             onClick={toggleMenu}
           >
             Lab
           </NavLink>
           <NavLink
             to="/student"
-            className="hover:text-blue-500"
+            style={({ isActive }) => (isActive ? activeStyle : undefined)}
             onClick={toggleMenu}
           >
             Student
           </NavLink>
           <NavLink
             to="/faculty"
-            className="hover:text-blue-500"
+            style={({ isActive }) => (isActive ? activeStyle : undefined)}
             onClick={toggleMenu}
           >
             Faculty
