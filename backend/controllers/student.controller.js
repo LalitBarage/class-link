@@ -73,3 +73,27 @@ module.exports.deleteStudent = async (req, res, next) => {
     next(error);
   }
 };
+
+module.exports.updateStudentInfo = async (req, res, next) => {
+  const { id } = req.params;
+
+  // Find the student by ID
+  let student = await studentModel.findById(id);
+  if (!student) {
+      return next(new ErrorHandler("Student Not Found", 404));
+  }
+
+  // Update the student with the new data from req.body
+  student = await studentModel.findByIdAndUpdate(id, req.body, {
+      new: true, // Return the updated document
+      runValidators: true, // Validate the new data against the schema
+      useFindAndModify: false, // Ensure MongoDB native `findOneAndUpdate` is used
+  });
+
+  // Send the response
+  res.status(200).json({
+      success: true,
+      message: "Student information updated successfully",
+      student,
+  });
+};

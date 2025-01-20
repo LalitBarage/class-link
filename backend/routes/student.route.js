@@ -115,21 +115,5 @@ router.post(
 router.get("/list", studentController.getAllStudents);
 router.delete("/student/:id", studentController.deleteStudent);
 
-router.put("/update/:id", async (req, res) => {
-  try {
-    const { id } = req.params;
-    const updatedData = req.body;
-
-    const updatedStudent = await updateStudent(id, updatedData);
-
-    res.status(200).json({
-      message: "Student updated successfully",
-      student: updatedStudent,
-    });
-  } catch (error) {
-    console.error("Error updating student:", error);
-    res.status(500).json({ error: error.message });
-  }
-});
-
+router.put("/update/:id", studentController.updateStudentInfo);
 module.exports = router;
