@@ -1,97 +1,201 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { FaEdit, FaTrash } from "react-icons/fa";
+import axios from "axios";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const Course = () => {
   const [showForm, setShowForm] = useState(false);
-  const [courses, setCourses] = useState([]); // State to store courses
-  const [newCourse, setNewCourse] = useState({
-    courseName: "",
-    facultyId: "",
-    class: "",
-    division: "",
-  });
-  const [selectedCourse, setSelectedCourse] = useState(null); // State for the course to delete
-  const [showDeletePopup, setShowDeletePopup] = useState(false); // State for showing delete popup
-  const [showEditForm, setShowEditForm] = useState(false); // State for showing edit popup
+  const [courseData, setCourseData] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [editingCourse, setEditingCourse] = useState(null);
+
+  const [showConfirmModal, setShowConfirmModal] = useState(false);
+  const [courseToDelete, setCourseToDelete] = useState(null);
+
+  const [selectedDepartment, setSelectedDepartment] = useState("");
+  const [selectedClass, setSelectedClass] = useState("");
+  const [selectedDivision, setSelectedDivision] = useState("");
+
+  const handleDeptSelect = (e) => {
+    setSelectedDepartment(e.target.value);
+  };
+
+  const handleClassSelect = (e) => {
+    setSelectedClass(e.target.value);
+  };
+
+  const handleDivisionSelect = (e) => {
+    setSelectedDivision(e.target.value);
+  };
+
+  const handleEditCourse = (course) => {
+    setEditingCourse(course);
+    setShowForm(true);
+  };
+
+  const handleUpdateSubmit = async (e) => {
+    e.preventDefault();
+
+    const updatedData = {
+      courseName: e.target.courseName.value,
+      courseId: e.target.courseId.value,
+      department: e.target.department.value,
+      year: e.target.class.value,
+      division: e.target.division.value,
+      facultyId: e.target.facultyId.value,
+    };
+
+    try {
+      const response = await axios.put(
+        `http://localhost:4000/course/update/${editingCourse.courseId}`,
+        updatedData
+      );
+
+      if (response.status === 200) {
+        toast.success("Course updated successfully!");
+        setCourseData((prevData) =>
+          prevData.map((course) =>
+            course.courseId === editingCourse.courseId
+              ? { ...course, ...updatedData }
+              : course
+          )
+        );
+        setShowForm(false);
+        setEditingCourse(null);
+      } else {
+        toast.error("Failed to update course.");
+      }
+    } catch (error) {
+      console.error("Error updating course:", error);
+      toast.error("Network error. Please try again.");
+    }
+  };
+
+  useEffect(() => {
+    const fetchCourseData = async () => {
+      try {
+        const response = await axios.get("http://localhost:4000/course/list");
+        const data = response.data.courses;
+
+        const formattedData = data.map((course) => ({
+          courseId: course.courseId,
+          courseName: course.courseName,
+          department: course.department,
+          year: course.year,
+          division: course.division,
+          facultyId: course.facultyId,
+        }));
+
+        setCourseData(formattedData);
+      } catch (err) {
+        console.error(err);
+        setError("Failed to fetch course data");
+        toast.error("Error fetching course data");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchCourseData();
+  }, []);
 
   const handleAddCourse = () => {
+    setEditingCourse(null);
     setShowForm(true);
   };
 
   const handleCloseForm = () => {
+    setEditingCourse(null); // Reset to null to ensure it's not in edit mode
     setShowForm(false);
-    setNewCourse({
-      courseName: "",
-      facultyId: "",
-      class: "",
-      division: "",
-    });
   };
 
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setNewCourse((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
+  const handleSearch = (e) => {
+    setSearchQuery(e.target.value);
   };
 
-  const handleSubmit = (e) => {
+  const filteredData = courseData.filter((course) => {
+    const query = searchQuery.toLowerCase();
+    return (
+      course.courseName.toLowerCase().includes(query) ||
+      course.department.toLowerCase().includes(query)
+    );
+  });
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    setCourses((prev) => [...prev, newCourse]); // Add the new course to the list
-    setShowForm(false);
-    setNewCourse({
-      courseName: "",
-      facultyId: "",
-      class: "",
-      division: "",
-    }); // Reset form fields
+
+    const formData = {
+      courseName: e.target.courseName.value,
+      courseId: e.target.courseId.value,
+      department: e.target.department.value,
+      year: e.target.class.value,
+      division: e.target.division.value,
+      facultyId: e.target.facultyId.value,
+    };
+
+    try {
+      const response = await fetch("http://localhost:4000/course/register", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formData),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        console.log("Course registered successfully:", data);
+        setShowForm(false);
+        toast.success("Course registered successfully!");
+      } else {
+        const errorData = await response.json();
+        console.error("Error registering course:", errorData);
+        toast.error("Failed to register course. Please try again.");
+      }
+    } catch (error) {
+      console.error("Network error:", error);
+      toast.error("Network error. Please try again later.");
+    }
   };
 
-  const handleDeleteClick = (course) => {
-    setSelectedCourse(course);
-    setShowDeletePopup(true);
+  const handleDelete = async () => {
+    if (!courseToDelete) return;
+    try {
+      const response = await axios.delete(
+        `http://localhost:4000/course/remove/${courseToDelete}`,
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      setCourseData(
+        courseData.filter((course) => course.courseId !== courseToDelete)
+      );
+      setShowConfirmModal(false);
+      toast.success("Course deleted successfully!");
+    } catch (error) {
+      console.error("Error deleting course:", error);
+      toast.error("Error deleting course.");
+      setShowConfirmModal(false);
+    }
   };
 
-  const handleDeleteConfirm = () => {
-    setCourses((prev) => prev.filter((c) => c !== selectedCourse));
-    setShowDeletePopup(false);
-    setSelectedCourse(null);
+  const openConfirmModal = (courseId) => {
+    setCourseToDelete(courseId);
+    setShowConfirmModal(true);
   };
 
-  const handleDeleteCancel = () => {
-    setShowDeletePopup(false);
-    setSelectedCourse(null);
-  };
+  if (loading) {
+    return <div>Loading...</div>;
+  }
 
-  const handleEditClick = (course) => {
-    setNewCourse(course);
-    setShowEditForm(true);
-  };
-
-  const handleEditSubmit = (e) => {
-    e.preventDefault();
-    setCourses((prev) =>
-      prev.map((c) => (c === newCourse ? newCourse : c))
-    ); // Update the course in the list
-    setShowEditForm(false);
-    setNewCourse({
-      courseName: "",
-      facultyId: "",
-      class: "",
-      division: "",
-    }); // Reset form fields
-  };
-
-  const handleEditCancel = () => {
-    setShowEditForm(false);
-    setNewCourse({
-      courseName: "",
-      facultyId: "",
-      class: "",
-      division: "",
-    });
-  };
+  if (error) {
+    return <div>{error}</div>;
+  }
 
   return (
     <div className="p-5">
@@ -102,13 +206,10 @@ const Course = () => {
               type="text"
               name="search"
               id="search"
-              placeholder="Search Course....."
+              placeholder="Search course....."
+              value={searchQuery}
+              onChange={handleSearch}
               className="bg-gray-100 border rounded-md p-2 shadow-sm w-64"
-            />
-            <input
-              type="button"
-              value="Search"
-              className="bg-black text-white px-4 py-2 rounded-md shadow-md cursor-pointer hover:bg-gray-800"
             />
           </div>
 
@@ -123,91 +224,90 @@ const Course = () => {
         </div>
       </div>
 
-      {/* Table Section */}
-      <div className="mt-8">
-        <table className="w-full border-collapse border border-gray-300 text-left">
-          <thead className="bg-gray-200">
-            <tr>
-              <th className="border border-gray-300 px-4 py-2">ID</th>
-              <th className="border border-gray-300 px-4 py-2">Course Name</th>
-              <th className="border border-gray-300 px-4 py-2">Class</th>
-              <th className="border border-gray-300 px-4 py-2">Division</th>
-              <th className="border border-gray-300 px-4 py-2">Faculty Name</th>
-              <th className="border border-gray-300 px-4 py-2">Action</th>
-            </tr>
-          </thead>
-          <tbody>
-            {courses.map((course, index) => (
-              <tr key={index} className="hover:bg-gray-100">
-                <td className="border border-gray-300 px-4 py-2">{index + 1}</td>
-                <td className="border border-gray-300 px-4 py-2">
-                  {course.courseName}
-                </td>
-                <td className="border border-gray-300 px-4 py-2">{course.class}</td>
-                <td className="border border-gray-300 px-4 py-2">
-                  {course.division}
-                </td>
-                <td className="border border-gray-300 px-4 py-2">
-                  {course.facultyId}
-                </td>
-                <td className="flex border border-gray-300 px-4 py-2 text-center">
-                  <button
-                    className="bg-blue-500 text-white px-3 py-2 rounded-md mr-2 hover:bg-blue-600 flex items-center gap-2"
-                    onClick={() => handleEditClick(course)}
-                  >
-                    <FaEdit />
-                  </button>
-                  <button
-                    className="bg-red-500 text-white px-3 py-2 rounded-md hover:bg-red-600 flex items-center gap-2"
-                    onClick={() => handleDeleteClick(course)}
-                  >
-                    <FaTrash />
-                  </button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-
-      {/* Footer Section */}
-      <div className="mt-6 text-center">
-        <p className="text-gray-600">
-          Showing {courses.length} out of {courses.length} entries
-        </p>
-      </div>
-
-      {/* Popup Form */}
       {showForm && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
           <div className="bg-white p-6 rounded-md shadow-md w-1/3">
-            <h2 className="text-xl font-bold mb-4">Add New Course</h2>
-            <form onSubmit={handleSubmit}>
-              <div className="mb-2">
+            <h2 className="text-xl font-bold mb-4">
+              {editingCourse ? "Edit Course" : "Add New Course"}
+            </h2>
+            <form onSubmit={editingCourse ? handleUpdateSubmit : handleSubmit}>
+              <div className="flex gap-2 mb-2">
+                <input
+                  type="text"
+                  id="courseId"
+                  name="courseId"
+                  placeholder="Course ID"
+                  defaultValue={editingCourse?.courseId || ""}
+                  required
+                  className="w-full border rounded-md p-2 bg-gray-100"
+                />
                 <input
                   type="text"
                   id="courseName"
                   name="courseName"
-                  value={newCourse.courseName}
-                  onChange={handleInputChange}
                   placeholder="Course Name"
+                  defaultValue={editingCourse?.courseName || ""}
                   required
                   className="w-full border rounded-md p-2 bg-gray-100"
                 />
               </div>
-              <div className="mb-2">
-                
-                <input
-                  type="text"
-                  id="facultyId"
-                  name="facultyId"
-                  value={newCourse.facultyId}
-                  onChange={handleInputChange}
-                  placeholder="Faculty ID"
+
+              <div className="flex gap-2 mb-2">
+                <select
+                  id="department"
+                  name="department"
+                  defaultValue={editingCourse?.department || ""}
                   required
                   className="w-full border rounded-md p-2 bg-gray-100"
-                />
+                >
+                  <option value="">Select Department</option>
+                  <option value="CSE">Computer Science</option>
+                  <option value="DS">Data Science</option>
+                  <option value="CIVIL">Civil Engineering</option>
+                  <option value="ELECTRICAL">Electrical Engineering</option>
+                </select>
+
+                <select
+                  id="class"
+                  name="class"
+                  defaultValue={editingCourse?.year || ""}
+                  required
+                  className="w-full border rounded-md p-2 bg-gray-100"
+                >
+                  <option value="">Select Class</option>
+                  <option value="FY">FY</option>
+                  <option value="SY">SY</option>
+                  <option value="TY">TY</option>
+                  <option value="B.Tech">B.Tech</option>
+                </select>
+
+                <select
+                  id="division"
+                  name="division"
+                  defaultValue={editingCourse?.division || ""}
+                  required
+                  className="w-full border rounded-md p-2 bg-gray-100"
+                >
+                  <option value="">Select Division</option>
+                  <option value="A">A</option>
+                  <option value="B">B</option>
+                  <option value="C">C</option>
+                  <option value="D">D</option>
+                  <option value="E">E</option>
+                  <option value="F">F</option>
+                </select>
               </div>
+
+              <input
+                type="text"
+                id="facultyId"
+                name="facultyId"
+                placeholder="Faculty ID"
+                defaultValue={editingCourse?.facultyId || ""}
+                required
+                className="w-full border rounded-md p-2 mb-2 bg-gray-100"
+              />
+
               <div className="flex justify-end gap-3">
                 <button
                   type="button"
@@ -220,7 +320,7 @@ const Course = () => {
                   type="submit"
                   className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600"
                 >
-                  Add
+                  {editingCourse ? "Update" : "Add"}
                 </button>
               </div>
             </form>
@@ -228,72 +328,87 @@ const Course = () => {
         </div>
       )}
 
-      {/* Edit Popup */}
-      {showEditForm && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
-          <div className="bg-white p-6 rounded-md shadow-md w-1/3">
-            <h2 className="text-xl font-bold mb-4">Edit Course</h2>
-            <form onSubmit={handleEditSubmit}>
-              <div className="mb-2">
-                <input
-                  type="text"
-                  id="courseName"
-                  name="courseName"
-                  value={newCourse.courseName}
-                  onChange={handleInputChange}
-                  placeholder="Course Name"
-                  required
-                  className="w-full border rounded-md p-2 bg-gray-100"
-                />
-              </div>
-              <div className="mb-2">
-                <input
-                  type="text"
-                  id="facultyId"
-                  name="facultyId"
-                  value={newCourse.facultyId}
-                  onChange={handleInputChange}
-                  placeholder="Faculty ID"
-                  required
-                  className="w-full border rounded-md p-2 mt-1 bg-gray-100"
-                />
-              </div>
-              <div className="flex justify-end gap-3">
-                <button
-                  type="button"
-                  className="bg-gray-500 text-white px-4 py-2 rounded-md hover:bg-gray-600"
-                  onClick={handleEditCancel}
+      <div className="mt-8">
+        <table className="w-full border-collapse border border-gray-300 text-left">
+          <thead className="bg-gray-200">
+            <tr>
+              <th className="border border-gray-300 px-4 py-2">Course ID</th>
+              <th className="border border-gray-300 px-4 py-2">Course Name</th>
+              <th className="border border-gray-300 px-4 py-2">Department</th>
+              <th className="border border-gray-300 px-4 py-2">Year</th>
+              <th className="border border-gray-300 px-4 py-2">Division</th>
+              <th className="border border-gray-300 px-4 py-2">Faculty ID</th>
+              <th className="border border-gray-300 px-4 py-2">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {filteredData.length > 0 ? (
+              filteredData.map((course) => (
+                <tr key={course.courseId} className="hover:bg-gray-100">
+                  <td className="border border-gray-300 px-4 py-2">
+                    {course.courseId}
+                  </td>
+                  <td className="border border-gray-300 px-4 py-2">
+                    {course.courseName}
+                  </td>
+                  <td className="border border-gray-300 px-4 py-2">
+                    {course.department}
+                  </td>
+                  <td className="border border-gray-300 px-4 py-2">
+                    {course.year}
+                  </td>
+                  <td className="border border-gray-300 px-4 py-2">
+                    {course.division}
+                  </td>
+                  <td className="border border-gray-300 px-4 py-2">
+                    {course.facultyId}
+                  </td>
+                  <td className="flex border border-gray-300 px-4 py-2 text-center">
+                    <button
+                      className="bg-blue-500 text-white px-3 py-2 rounded-md mr-2 hover:bg-blue-600 flex items-center gap-2"
+                      onClick={() => handleEditCourse(course)}
+                    >
+                      <FaEdit />
+                    </button>
+                    <button
+                      className="bg-red-500 text-white px-3 py-2 rounded-md hover:bg-red-600 flex items-center gap-2"
+                      onClick={() => openConfirmModal(course.courseId)}
+                    >
+                      <FaTrash />
+                    </button>
+                  </td>
+                </tr>
+              ))
+            ) : (
+              <tr>
+                <td
+                  colSpan="7"
+                  className="text-center border border-gray-300 py-4"
                 >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600"
-                >
-                  Save
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
+                  No course data available.
+                </td>
+              </tr>
+            )}
+          </tbody>
+        </table>
+      </div>
 
-      {/* Delete Confirmation Popup */}
-      {showDeletePopup && (
+      {showConfirmModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
           <div className="bg-white p-6 rounded-md shadow-md w-1/3">
-            <h2 className="text-xl font-bold mb-4">Confirm Deletion</h2>
-            <p>Are you sure you want to delete this course?</p>
-            <div className="flex justify-end gap-3 mt-4">
+            <h2 className="text-xl font-bold mb-4">
+              Are you sure you want to delete this course?
+            </h2>
+            <div className="flex justify-end gap-3">
               <button
-                className="bg-gray-500 text-white px-4 py-2 rounded-md hover:bg-gray-600"
-                onClick={handleDeleteCancel}
+                onClick={() => setShowConfirmModal(false)}
+                className="bg-gray-500 text-white px-4 py-2 rounded-md"
               >
                 Cancel
               </button>
               <button
-                className="bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-600"
-                onClick={handleDeleteConfirm}
+                onClick={handleDelete}
+                className="bg-red-500 text-white px-4 py-2 rounded-md"
               >
                 Delete
               </button>
@@ -301,6 +416,8 @@ const Course = () => {
           </div>
         </div>
       )}
+
+      <ToastContainer />
     </div>
   );
 };

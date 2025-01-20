@@ -6,6 +6,7 @@ const app = express();
 const connectToDb = require("./db/db");
 const studentRoute = require("./routes/student.route");
 const facultyRoute = require("./routes/faculty.route");
+const courseRoute = require("./routes/course.route");
 
 connectToDb();
 
@@ -19,5 +20,6 @@ app.get("/", (req, res) => {
 
 app.use("/student", studentRoute);
 app.use("/faculty", facultyRoute);
+app.use("/course", courseRoute);
 
 module.exports = app;
