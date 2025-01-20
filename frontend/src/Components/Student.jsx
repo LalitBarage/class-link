@@ -343,7 +343,7 @@ const Student = () => {
                   <option value="" disabled>
                     Department
                   </option>
-                  <option value="Computer Science">Computer Science</option>
+                 
                   <option value="CSE">CSE</option>
                 <option value="DS">DATA SCIENCE</option>
                 <option value="ELECTRICAL">ELECTRICAL</option>
