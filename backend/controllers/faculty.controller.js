@@ -61,3 +61,22 @@ module.exports.deleteFaculty = async (req, res, next) => {
     res.status(500).json({ message: "Internal Server Error", error });
   }
 };
+
+module.exports.updateFaculty = async (req, res) => {
+  const { facultyId } = req.params;
+  const update = req.body;
+
+  try {
+    const faculty = await facultyService.updateFaculty(facultyId, update);
+    if (!faculty) {
+      return res.status(404).json({ message: "Faculty not found" });
+    }
+    res.status(200).json({ message: "Faculty updated successfully", faculty });
+  } catch (error) {
+    console.error("Error updating faculty:", error);
+    res.status(500).json({
+      message: "Internal Server Error",
+      error: error.message || error,
+    });
+  }
+};

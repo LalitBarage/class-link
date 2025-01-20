@@ -10,10 +10,68 @@ const Faculty = () => {
   const [loading, setLoading] = useState(true); // Loading state for fetching data
   const [error, setError] = useState(null); // Error state for API errors
   const [searchQuery, setSearchQuery] = useState(""); // State for search query
+  const [editingFaculty, setEditingFaculty] = useState(null);
 
   // State for confirmation modal
   const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [facultyToDelete, setFacultyToDelete] = useState(null);
+
+  const handleEditFaculty = (faculty) => {
+    setEditingFaculty(faculty); // Set the faculty to be edited
+    setShowForm(true); // Show the form
+  };
+
+  // Handle Update Submission
+  const handleUpdateSubmit = async (e) => {
+    e.preventDefault();
+
+    const updatedData = {
+      fullname: {
+        firstname: e.target.facultyFName.value,
+        middlename: e.target.facultyMName.value,
+        lastname: e.target.facultyLName.value,
+      },
+      email: e.target.facultyEmail.value,
+      mobileno: e.target.facultyMobile.value,
+      qualification: e.target.qualification.value,
+      designation: e.target.designation.value,
+      department: e.target.department.value,
+      password: e.target.password.value,
+    };
+
+    try {
+      const response = await axios.put(
+        `http://localhost:4000/faculty/update/${editingFaculty.id}`, // Use facultyId here
+        updatedData
+      );
+
+      if (response.status === 200) {
+        toast.success("Faculty updated successfully!");
+
+        setFacultyData((prevData) =>
+          prevData.map((faculty) =>
+            faculty.facultyId === editingFaculty.id
+              ? {
+                  ...faculty,
+                  ...updatedData,
+                  name: `${updatedData.fullname?.firstname || ""} ${
+                    updatedData.fullname?.middlename || ""
+                  } ${updatedData.fullname?.lastname || ""}`,
+                }
+              : faculty
+          )
+        );
+
+        setShowForm(false); // Close the form
+        setEditingFaculty(null); // Reset editing state
+      } else {
+        toast.error("Failed to update faculty.");
+      }
+    } catch (error) {
+      console.error("Error updating faculty:", error);
+      toast.error("Network error. Please try again.");
+    }
+  };
 
   // Fetch data from the database when the component is mounted
   useEffect(() => {
@@ -49,7 +107,8 @@ const Faculty = () => {
   }, []); // Empty dependency array ensures this only runs once when the component mounts
 
   const handleAddFaculty = () => {
-    setShowForm(true); // Show form when Add Faculty button is clicked
+    setEditingFaculty(null); // Reset editingFaculty to null
+    setShowForm(true); // Show the form
   };
 
   const handleCloseForm = () => {
@@ -178,17 +237,21 @@ const Faculty = () => {
           </div>
         </div>
       </div>
+      {/* Form Section */}
       {showForm && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
           <div className="bg-white p-6 rounded-md shadow-md w-1/3">
-            <h2 className="text-xl font-bold mb-4">Add New Faculty</h2>
-            <form onSubmit={handleSubmit}>
+            <h2 className="text-xl font-bold mb-4">
+              {editingFaculty ? "Edit Faculty" : "Add New Faculty"}
+            </h2>
+            <form onSubmit={editingFaculty ? handleUpdateSubmit : handleSubmit}>
               <div className="flex gap-2 mb-2">
                 <input
                   type="text"
                   id="facultyFName"
                   name="facultyFName"
                   placeholder="First Name:"
+                  defaultValue={editingFaculty?.name.split(" ")[0] || ""}
                   required
                   className="w-full border rounded-md p-2 bg-gray-100"
                 />
@@ -197,6 +260,7 @@ const Faculty = () => {
                   id="facultyMName"
                   name="facultyMName"
                   placeholder="Middle Name:"
+                  defaultValue={editingFaculty?.name.split(" ")[1] || ""}
                   required
                   className="w-full border rounded-md p-2 bg-gray-100"
                 />
@@ -205,6 +269,7 @@ const Faculty = () => {
                   id="facultyLName"
                   name="facultyLName"
                   placeholder="Last Name:"
+                  defaultValue={editingFaculty?.name.split(" ")[2] || ""}
                   required
                   className="w-full border rounded-md p-2 bg-gray-100"
                 />
@@ -215,50 +280,41 @@ const Faculty = () => {
                 id="facultyEmail"
                 name="facultyEmail"
                 placeholder="Email:"
+                defaultValue={editingFaculty?.email || ""}
                 required
                 className="w-full border rounded-md p-2 mb-2 bg-gray-100"
               />
-
               <input
                 type="text"
                 id="facultyMobile"
                 name="facultyMobile"
                 placeholder="Mobile Number:"
+                defaultValue={editingFaculty?.mobile || ""}
                 required
                 className="w-full border rounded-md p-2 mb-2 bg-gray-100"
               />
-
-              <input
-                type="text"
-                id="facultyId"
-                name="facultyId"
-                placeholder="Faculty Id:"
-                required
-                className="w-full border rounded-md p-2 mb-2 bg-gray-100"
-              />
-
               <input
                 type="text"
                 id="qualification"
                 name="qualification"
                 placeholder="Qualification:"
+                defaultValue={editingFaculty?.qualification || ""}
                 required
                 className="w-full border rounded-md p-2 mb-2 bg-gray-100"
               />
-
               <input
                 type="text"
                 id="designation"
                 name="designation"
                 placeholder="Designation:"
+                defaultValue={editingFaculty?.designation || ""}
                 required
                 className="w-full border rounded-md p-2 mb-2 bg-gray-100"
               />
-
-              {/* Dropdown menu */}
               <select
                 id="department"
                 name="department"
+                defaultValue={editingFaculty?.department || ""}
                 required
                 className="w-full border rounded-md p-2 mb-2 bg-gray-100"
               >
@@ -268,6 +324,16 @@ const Faculty = () => {
                 <option value="ELECTRICAL">ELECTRICAL</option>
                 <option value="CIVIL">CIVIL</option>
               </select>
+
+              {editingFaculty && (
+                <input
+                  type="password"
+                  id="password"
+                  name="password"
+                  placeholder="Password:"
+                  className="w-full border rounded-md p-2 mb-2 bg-gray-100"
+                />
+              )}
 
               <div className="flex justify-end gap-3">
                 <button
@@ -281,7 +347,7 @@ const Faculty = () => {
                   type="submit"
                   className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600"
                 >
-                  Add
+                  {editingFaculty ? "Update" : "Add"}
                 </button>
               </div>
             </form>
@@ -331,7 +397,10 @@ const Faculty = () => {
                     {faculty.designation}
                   </td>
                   <td className="flex border border-gray-300 px-4 py-2 text-center">
-                    <button className="bg-blue-500 text-white px-3 py-2 rounded-md mr-2 hover:bg-blue-600 flex items-center gap-2">
+                    <button
+                      className="bg-blue-500 text-white px-3 py-2 rounded-md mr-2 hover:bg-blue-600 flex items-center gap-2"
+                      onClick={() => handleEditFaculty(faculty)}
+                    >
                       <FaEdit />
                     </button>
                     <button
