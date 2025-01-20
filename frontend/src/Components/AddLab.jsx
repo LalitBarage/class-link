@@ -1,5 +1,7 @@
 import { useState, useEffect } from "react";
 import { FaEdit, FaTrash } from "react-icons/fa";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css"
 
 const AddLab = () => {
   const [labs, setLabs] = useState([]);
@@ -36,6 +38,7 @@ const AddLab = () => {
         }
       } catch (error) {
         console.error("Error fetching labs:", error);
+        toast.error("Failed to fetch labs.");
       }
     };
 
@@ -77,6 +80,7 @@ const AddLab = () => {
   
       if (response.ok) {
         const newLab = await response.json();
+        toast.success( currentLab===null ?"Lab created successfully!" : "Lab updated successfully!");
         if (currentLab !== null) {
           // Update the edited lab in the state
           setLabs((prevLabs) =>
@@ -95,6 +99,7 @@ const AddLab = () => {
       }
     } catch (error) {
       console.error("Error adding/updating lab:", error);
+      toast.error("Failed to add/update lab.");
     } finally {
       setFormData({
         labid: "",
@@ -124,7 +129,8 @@ const AddLab = () => {
       });
   
       if (response.ok) {
-        setLabs(labs.filter((lab) => lab.labid !== formData.labid)); // Remove the deleted lab
+        setLabs(labs.filter((lab) => lab.labid !== formData.labid));
+        toast.success("Labs deleted successfully!"); // Remove the deleted lab
         setFormData({
           labid: "",
           facultyid: "",
@@ -143,6 +149,7 @@ const AddLab = () => {
       }
     } catch (error) {
       console.error("Error deleting lab:", error);
+      toast.error("Failed to delete lab.");
     }
   };
   
@@ -413,6 +420,7 @@ const AddLab = () => {
           </div>
         </div>
       )}
+       <ToastContainer />
     </div>
   );
 };
