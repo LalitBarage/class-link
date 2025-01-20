@@ -65,6 +65,9 @@ module.exports.updateFaculty = async (facultyId, update) => {
   try {
     if (update.password) {
       update.password = await facultyModel.hashPassword(update.password);
+    } else {
+      // Remove password from the update object if not provided
+      delete update.password;
     }
 
     const faculty = await facultyModel.findOneAndUpdate({ facultyId }, update, {
