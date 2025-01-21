@@ -2,6 +2,7 @@ const express = require("express");
 const router = express.Router();
 const { body } = require("express-validator");
 const studentController = require("../controllers/student.controller");
+const studentAuthMiddleware = require("../middlewears/studentauth.middlewares");
 
 router.post(
   "/register",
@@ -116,4 +117,12 @@ router.get("/list", studentController.getAllStudents);
 router.delete("/student/:id", studentController.deleteStudent);
 
 router.put("/update/:id", studentController.updateStudentInfo);
+
+router.post("/login", studentController.loginStudent);
+
+// Get student details by ID (protected route)
+router.get("/profile", studentAuthMiddleware, studentController.getStudentProfile);
+
+// Logout student
+router.get("/logout", studentAuthMiddleware, studentController.logoutStudent);
 module.exports = router;

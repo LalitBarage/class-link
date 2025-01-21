@@ -90,3 +90,4 @@ studentSchema.statics.hashPassword = async function (password) {
 const studentModel = mongoose.model("student", studentSchema);
 
 module.exports = studentModel;
+
