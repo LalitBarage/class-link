@@ -100,16 +100,3 @@ module.exports.findFacultyByEmail = async (email, password) => {
     throw error;
   }
 };
-
-module.exports.getFacultyById = async (facultyId) => {
-  try {
-    const faculty = await facultyModel.findOne(facultyId).lean();
-    if (!faculty) {
-      throw new Error("Faculty not found");
-    }
-    return faculty;
-  } catch (error) {
-    console.error("Error in facultyService.getFacultyById:", error);
-    throw error;
-  }
-};

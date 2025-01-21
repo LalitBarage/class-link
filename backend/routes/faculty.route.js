@@ -92,4 +92,6 @@ router.get(
   facultyController.getFacultyProfile
 );
 
+router.get("/logout", facultyauthMiddleware, facultyController.logoutFaculty);
+
 module.exports = router;

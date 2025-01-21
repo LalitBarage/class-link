@@ -1,6 +1,7 @@
 const facultyModel = require("../models/faculty.model");
 const facultyService = require("../services/faculty.service");
 const { validationResult } = require("express-validator");
+const blacklistTokenModel = require("../models/blacklistToken.model");
 
 module.exports.registerFaculty = async (req, res, next) => {
   const errors = validationResult(req);
@@ -111,16 +112,12 @@ module.exports.loginFaculty = async (req, res, next) => {
 };
 
 module.exports.getFacultyProfile = async (req, res, next) => {
-  const { facultyId } = req.params;
+  res.status(200).json(req.faculty);
+};
 
-  try {
-    const faculty = await facultyService.getFacultyById(facultyId);
-    if (!faculty) {
-      return res.status(404).json({ message: "Faculty not found" });
-    }
-    res.status(200).json(faculty);
-  } catch (error) {
-    console.error("Error fetching faculty profile:", error);
-    res.status(500).json({ message: "Internal Server Error", error });
-  }
+module.exports.logoutFaculty = async (req, res, next) => {
+  res.clearCookie("token");
+  const token = req.cookies.token || req.headers.authorization.split(" ")[1];
+  blacklistTokenModel.create({ token });
+  res.status(200).json({ message: "Logged out successfully" });
 };
