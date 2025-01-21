@@ -80,3 +80,47 @@ module.exports.updateFaculty = async (req, res) => {
     });
   }
 };
+
+module.exports.loginFaculty = async (req, res, next) => {
+  const { email, password } = req.body;
+
+  try {
+    // Call the service to authenticate the faculty
+    const faculty = await facultyService.findFacultyByEmail(email, password);
+
+    // Generate an authentication token
+    const token = faculty.generateAuthToken();
+
+    res.cookie("token", token);
+
+    // Return the response without the password field
+    const facultyWithoutPassword = faculty.toObject();
+    delete facultyWithoutPassword.password; // Remove the password before sending the response
+
+    res.status(200).json({ token, faculty: facultyWithoutPassword });
+  } catch (error) {
+    console.error("Error logging in faculty:", error.message);
+    if (
+      error.message === "Faculty not found" ||
+      error.message === "Invalid credentials"
+    ) {
+      return res.status(400).json({ message: "Invalid email or password" });
+    }
+    res.status(500).json({ message: "Internal Server Error", error });
+  }
+};
+
+module.exports.getFacultyProfile = async (req, res, next) => {
+  const { facultyId } = req.params;
+
+  try {
+    const faculty = await facultyService.getFacultyById(facultyId);
+    if (!faculty) {
+      return res.status(404).json({ message: "Faculty not found" });
+    }
+    res.status(200).json(faculty);
+  } catch (error) {
+    console.error("Error fetching faculty profile:", error);
+    res.status(500).json({ message: "Internal Server Error", error });
+  }
+};

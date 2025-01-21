@@ -2,7 +2,7 @@ const express = require("express");
 const router = express.Router();
 const { body } = require("express-validator");
 const facultyController = require("../controllers/faculty.controller");
-
+const facultyauthMiddleware = require("../middlewears/facultyauth.middlewares");
 // Faculty registration route
 router.post(
   "/register",
@@ -83,5 +83,13 @@ router.get("/list", facultyController.getAllFaculties);
 router.delete("/remove/:facultyId", facultyController.deleteFaculty);
 
 router.put("/update/:facultyId", facultyController.updateFaculty);
+
+router.post("/login", facultyController.loginFaculty);
+
+router.get(
+  "/profile",
+  facultyauthMiddleware,
+  facultyController.getFacultyProfile
+);
 
 module.exports = router;

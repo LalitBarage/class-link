@@ -81,3 +81,35 @@ module.exports.updateFaculty = async (facultyId, update) => {
     throw error; // Propagate the error to the controller
   }
 };
+
+module.exports.findFacultyByEmail = async (email, password) => {
+  try {
+    const faculty = await facultyModel.findOne({ email });
+    if (!faculty) {
+      throw new Error("Faculty not found");
+    }
+
+    const isMatch = await faculty.comparePassword(password);
+    if (!isMatch) {
+      throw new Error("Invalid credentials");
+    }
+
+    return faculty;
+  } catch (error) {
+    console.error("Error in facultyService.loginFaculty:", error);
+    throw error;
+  }
+};
+
+module.exports.getFacultyById = async (facultyId) => {
+  try {
+    const faculty = await facultyModel.findOne(facultyId).lean();
+    if (!faculty) {
+      throw new Error("Faculty not found");
+    }
+    return faculty;
+  } catch (error) {
+    console.error("Error in facultyService.getFacultyById:", error);
+    throw error;
+  }
+};
