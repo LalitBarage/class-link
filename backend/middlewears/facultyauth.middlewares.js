@@ -2,9 +2,15 @@ const jwt = require("jsonwebtoken");
 const facultyModel = require("../models/faculty.model");
 
 const facultyauthMiddleware = async (req, res, next) => {
-  const token = req.cookies.token || req.headers.authorization.split(" ")[1];
+  const token = req.cookies.token || req.headers.authorization?.split(" ")[1];
 
   if (!token) {
+    return res.status(401).send({ error: "Unauthorized" });
+  }
+
+  const isBlacklisted = await facultyModel.findOne({ token });
+
+  if (isBlacklisted) {
     return res.status(401).send({ error: "Unauthorized" });
   }
 
