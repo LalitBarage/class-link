@@ -84,7 +84,7 @@ module.exports.updateFaculty = async (facultyId, update) => {
 
 module.exports.findFacultyByEmail = async (email, password) => {
   try {
-    const faculty = await facultyModel.findOne({ email });
+    const faculty = await facultyModel.findOne({ email }).select("+password");
     if (!faculty) {
       throw new Error("Faculty not found");
     }
