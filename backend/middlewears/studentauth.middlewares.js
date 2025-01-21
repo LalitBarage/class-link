@@ -1,5 +1,6 @@
 const jwt = require("jsonwebtoken");
 const studentModel = require("../models/student.model"); // Import the Student model
+const blacklistTokenModel = require("../models/blacklistToken.model");
 
 const studentAuthMiddleware = async (req, res, next) => {
   // Extract the token from cookies or the Authorization header
@@ -8,6 +9,13 @@ const studentAuthMiddleware = async (req, res, next) => {
   if (!token) {
     return res.status(401).send({ error: "Unauthorized" }); // Return 401 if no token is provided
   }
+
+  const isBlacklisted = await blacklistTokenModel.findOne({ token });
+  
+    if (isBlacklisted) {
+      return res.status(401).send({ error: "Unauthorized" });
+    }
+  
 
   try {
     // Verify the token using the secret key
