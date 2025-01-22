@@ -17,16 +17,16 @@ const Login = () => {
     e.preventDefault();
     try {
       const response = await axios.post(
-        "http://localhost:4000/admin/login",
+        "http://localhost:4000/faculty/login",
         { email, password },
         { withCredentials: true }
       );
   
       console.log("Response from server:", response.data); // Log the entire response data
   
-      if (response.data && response.data.admin) {
+      if (response.data && response.data.faculty) {
         setIsAuthenticated(true);
-        setUser(response.data.admin);
+        setUser(response.data.faculty);
   
         console.log("User data:", response.data); // Log user-specific data
         navigate("/"); // Redirect after login
