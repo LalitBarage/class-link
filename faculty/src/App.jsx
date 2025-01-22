@@ -6,7 +6,8 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Login from "./Components/Login";
 import Home from "./Components/Home";
 import Navbar from "./Components/Navbar";
-import Faculty from "./Components/Faculty";
+import CourseReport from "./Components/CourseReport";
+
 
 function App() {
   const { isAuthenticated, setIsAuthenticated, user, setUser } =
@@ -38,7 +39,7 @@ function App() {
       {isAuthenticated && <Navbar />}
         <Routes>
           <Route path="/" element={isAuthenticated ? <Home/> : <Login />} />
-         
+          <Route path="/course" element={isAuthenticated ? <CourseReport /> : <Login />}/>         
         </Routes>
       </Router>
     </div>
