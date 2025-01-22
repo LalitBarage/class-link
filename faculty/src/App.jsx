@@ -1,13 +1,14 @@
-import { useContext, useEffect } from 'react';
-import './App.css'
+import { useContext, useEffect } from "react";
+import "./App.css";
 import axios from "axios";
 import { Context } from "./main";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import Faculty from "./Components/Faculty";
-import Login from "./Components/Login"
+import Login from "./Components/Login";
+import Home from "./Components/Home";
 
 function App() {
-  const { isAuthenticated, setIsAuthenticated,user, setUser } = useContext(Context);
+  const { isAuthenticated, setIsAuthenticated, user, setUser } =
+    useContext(Context);
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -23,21 +24,19 @@ function App() {
         setUser({});
       }
     };
-  
+
     fetchUser(); // Fetch user data on app mount
   }, []);
 
   return (
-    <>
+    <div>
       <Router>
         <Routes>
-          <Route path="/" element={isAuthenticated ? <Faculty /> : <Login />} />
-          <Route path="/login" element={<Login />} />
-          
+          <Route path="/" element={isAuthenticated ? <Home /> : <Login />} />
         </Routes>
-    </Router>
-    </>
-  )
+      </Router>
+    </div>
+  );
 }
 
-export default App
+export default App;
