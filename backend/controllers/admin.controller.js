@@ -1,5 +1,6 @@
 const adminService = require("../services/admin.service");
 const { validationResult } = require("express-validator");
+const blacklistTokenModel = require("../models/blacklistToken.model");
 
 module.exports.registerAdmin = async (req, res, next) => {
   const errors = validationResult(req);

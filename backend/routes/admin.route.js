@@ -2,7 +2,7 @@ const express = require("express");
 const router = express.Router();
 const { body } = require("express-validator");
 const adminController = require("../controllers/admin.controller");
-const adminAuthMiddleware = require("../middlewares/adminauth.middleware");
+const adminAuthMiddleware = require("../middlewears/adminauth.middlewares");
 
 router.post(
   "/register",
