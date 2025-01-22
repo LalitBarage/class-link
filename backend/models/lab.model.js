@@ -1,12 +1,12 @@
 const mongoose = require("mongoose");
 
 const labSchema = new mongoose.Schema({
-  labId: {
+  labid: {
     type: String,
     required: true,
     unique: true, // Ensures each labid is unique
   },
-  facultyId: {
+  facultyid: {
     type: String,
     required: true,
   },

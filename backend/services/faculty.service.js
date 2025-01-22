@@ -115,7 +115,8 @@ module.exports.getAssignedCourses = async (facultyId) => {
 
 module.exports.getAssignedLabs = async (facultyId) => {
   try {
-    const labs = await labModel.find({ facultyId }).lean();
+    const facultyid = facultyId;
+    const labs = await labModel.find({ facultyid }).lean();
     return labs;
   } catch (error) {
     console.error("Error in facultyService.getAssignedLabs:", error);
