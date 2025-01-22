@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { FaEdit, FaTrash } from "react-icons/fa";
 import { ToastContainer, toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css"
+import "react-toastify/dist/ReactToastify.css";
 
 const AddLab = () => {
   const [labs, setLabs] = useState([]);
@@ -14,8 +14,8 @@ const AddLab = () => {
   const [selectedDepartment, setSelectedDepartment] = useState("");
 
   const [formData, setFormData] = useState({
-    labid: "",
-    facultyid: "",
+    labId: "",
+    facultyId: "",
     strollno: "",
     endrollno: "",
     department: "",
@@ -62,13 +62,13 @@ const AddLab = () => {
       division: selectedDivision,
       class: selectedClass,
     };
-  
+
     const url =
       currentLab === null
         ? "http://localhost:4000/lab/create"
-        : `http://localhost:4000/lab/update/${formData.labid}`;
+        : `http://localhost:4000/lab/update/${formData.labId}`;
     const method = currentLab === null ? "POST" : "PUT";
-  
+
     try {
       const response = await fetch(url, {
         method: method,
@@ -77,22 +77,26 @@ const AddLab = () => {
         },
         body: JSON.stringify(updatedFormData),
       });
-  
+
       if (response.ok) {
         const newLab = await response.json();
-        toast.success( currentLab===null ?"Lab created successfully!" : "Lab updated successfully!");
+        toast.success(
+          currentLab === null
+            ? "Lab created successfully!"
+            : "Lab updated successfully!"
+        );
         if (currentLab !== null) {
           // Update the edited lab in the state
           setLabs((prevLabs) =>
             prevLabs.map((lab) =>
-              lab.labid === formData.labid ? newLab.lab : lab
+              lab.labId === formData.labId ? newLab.lab : lab
             )
           );
         } else {
           // Add the new lab to the state
           setLabs((prevLabs) => [...prevLabs, newLab.lab]);
         }
-  
+
         setShowAddModal(false);
       } else {
         console.error("Failed to add/update lab:", await response.text());
@@ -102,8 +106,8 @@ const AddLab = () => {
       toast.error("Failed to add/update lab.");
     } finally {
       setFormData({
-        labid: "",
-        facultyid: "",
+        labId: "",
+        facultyId: "",
         strollno: "",
         endrollno: "",
         department: "",
@@ -119,21 +123,23 @@ const AddLab = () => {
       setShowAddModal(false);
     }
   };
-  
 
   // Handle Delete Lab
   const handleDeleteLab = async () => {
     try {
-      const response = await fetch(`http://localhost:4000/lab/delete/${formData.labid}`, {
-        method: "DELETE",
-      });
-  
+      const response = await fetch(
+        `http://localhost:4000/lab/delete/${formData.labId}`,
+        {
+          method: "DELETE",
+        }
+      );
+
       if (response.ok) {
-        setLabs(labs.filter((lab) => lab.labid !== formData.labid));
+        setLabs(labs.filter((lab) => lab.labId !== formData.labId));
         toast.success("Labs deleted successfully!"); // Remove the deleted lab
         setFormData({
-          labid: "",
-          facultyid: "",
+          labId: "",
+          facultyId: "",
           strollno: "",
           endrollno: "",
           department: "",
@@ -152,11 +158,8 @@ const AddLab = () => {
       toast.error("Failed to delete lab.");
     }
   };
-  
-  
 
   // Handle Search
-  
 
   // Search logic
   const handleSearch = (e) => {
@@ -168,7 +171,7 @@ const AddLab = () => {
     const query = searchQuery.toLowerCase();
     return (
       lab.labname?.toLowerCase().includes(query) ||
-      lab.labid?.toLowerCase().includes(query) ||
+      lab.labId?.toLowerCase().includes(query) ||
       lab.department?.toLowerCase().includes(query)
     );
   });
@@ -182,7 +185,6 @@ const AddLab = () => {
               type="text"
               placeholder="Search lab..."
               className="bg-gray-100 border rounded-md p-2 shadow-sm w-64"
-              
               onChange={handleSearch}
             />
           </div>
@@ -212,54 +214,69 @@ const AddLab = () => {
             </tr>
           </thead>
           <tbody>
-          {filteredLabs.length > 0 ? (
-  filteredLabs.map((lab, index) => (
-    <tr
-      key={lab._id}
-      className="hover:bg-gray-100 border-b border-gray-300"
-    >
-      <td className="px-4 py-3 border border-gray-300">{lab.labid}</td>
-      <td className="px-4 py-3 border border-gray-300">{lab.labname}</td>
-      <td className="px-4 py-3 border border-gray-300">{lab.department}</td>
-      <td className="px-4 py-3 border border-gray-300">{lab.class}</td>
-      <td className="px-4 py-3 border border-gray-300">{lab.division}</td>
-      <td className="px-4 py-3 border border-gray-300">{lab.batch}</td>
-      <td className="px-4 py-3 border border-gray-300">{lab.facultyid}</td>
-      <td className="px-4 py-3 border border-gray-300 text-center">
-        <div className="flex justify-center items-center gap-2">
-          <button
-            className="bg-blue-500 text-white px-3 py-2 rounded-md hover:bg-blue-600 flex items-center gap-2"
-            onClick={() => {
-              setCurrentLab(lab._id); // Set the current lab ID
-              setFormData(lab); // Populate the form with the lab data
-              setSelectedDepartment(lab.department || ""); // Set the selected department
-              setSelectedClass(lab.class || ""); // Set the selected class
-              setSelectedDivision(lab.division || ""); // Set the selected division
-              setShowAddModal(true); // Show the modal
-            }}
-          >
-            <FaEdit />
-          </button>
-          <button
-            className="bg-red-500 text-white px-3 py-2 rounded-md hover:bg-red-600 flex items-center gap-2"
-            onClick={() => {
-              setCurrentLab(lab._id); // Use lab._id for currentLab
-              setFormData({ ...formData, labid: lab.labid }); // Ensure labid is set
-              setShowDeleteModal(true);
-            }}
-          >
-            <FaTrash />
-          </button>
-        </div>
-      </td>
-    </tr>
-  ))
-) : (
-  <tr>
-    <td colSpan="7" className="text-center px-4 py-3">No labs available</td>
-  </tr>
-)}
-
+            {filteredLabs.length > 0 ? (
+              filteredLabs.map((lab, index) => (
+                <tr
+                  key={lab._id}
+                  className="hover:bg-gray-100 border-b border-gray-300"
+                >
+                  <td className="px-4 py-3 border border-gray-300">
+                    {lab.labId}
+                  </td>
+                  <td className="px-4 py-3 border border-gray-300">
+                    {lab.labname}
+                  </td>
+                  <td className="px-4 py-3 border border-gray-300">
+                    {lab.department}
+                  </td>
+                  <td className="px-4 py-3 border border-gray-300">
+                    {lab.class}
+                  </td>
+                  <td className="px-4 py-3 border border-gray-300">
+                    {lab.division}
+                  </td>
+                  <td className="px-4 py-3 border border-gray-300">
+                    {lab.batch}
+                  </td>
+                  <td className="px-4 py-3 border border-gray-300">
+                    {lab.facultyId}
+                  </td>
+                  <td className="px-4 py-3 border border-gray-300 text-center">
+                    <div className="flex justify-center items-center gap-2">
+                      <button
+                        className="bg-blue-500 text-white px-3 py-2 rounded-md hover:bg-blue-600 flex items-center gap-2"
+                        onClick={() => {
+                          setCurrentLab(lab._id); // Set the current lab ID
+                          setFormData(lab); // Populate the form with the lab data
+                          setSelectedDepartment(lab.department || ""); // Set the selected department
+                          setSelectedClass(lab.class || ""); // Set the selected class
+                          setSelectedDivision(lab.division || ""); // Set the selected division
+                          setShowAddModal(true); // Show the modal
+                        }}
+                      >
+                        <FaEdit />
+                      </button>
+                      <button
+                        className="bg-red-500 text-white px-3 py-2 rounded-md hover:bg-red-600 flex items-center gap-2"
+                        onClick={() => {
+                          setCurrentLab(lab._id); // Use lab._id for currentLab
+                          setFormData({ ...formData, labId: lab.labId }); // Ensure labid is set
+                          setShowDeleteModal(true);
+                        }}
+                      >
+                        <FaTrash />
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              ))
+            ) : (
+              <tr>
+                <td colSpan="7" className="text-center px-4 py-3">
+                  No labs available
+                </td>
+              </tr>
+            )}
           </tbody>
         </table>
       </div>
@@ -282,7 +299,7 @@ const AddLab = () => {
                 className="w-full p-3 border rounded-md bg-gray-100"
                 name="labid"
                 placeholder="Lab ID"
-                value={formData.labid}
+                value={formData.labId}
                 onChange={handleInputChange}
               />
             </div>
@@ -292,7 +309,7 @@ const AddLab = () => {
                 className="w-full p-3 border rounded-md bg-gray-100"
                 name="facultyid"
                 placeholder="Faculty ID"
-                value={formData.facultyid}
+                value={formData.facultyId}
                 onChange={handleInputChange}
               />
             </div>
@@ -402,7 +419,9 @@ const AddLab = () => {
       {showDeleteModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
           <div className="bg-white p-6 rounded-lg shadow-lg w-96">
-            <h2 className="text-lg font-semibold">Are you sure you want to delete this lab?</h2>
+            <h2 className="text-lg font-semibold">
+              Are you sure you want to delete this lab?
+            </h2>
             <div className="mt-4 flex gap-4 justify-end">
               <button
                 className="bg-gray-500 text-white px-4 py-2 rounded-md"
@@ -420,7 +439,7 @@ const AddLab = () => {
           </div>
         </div>
       )}
-       <ToastContainer />
+      <ToastContainer />
     </div>
   );
 };
