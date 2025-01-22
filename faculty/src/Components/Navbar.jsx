@@ -24,7 +24,7 @@ const Navbar = () => {
       setIsAuthenticated(false); // Set authentication state to false
     } catch (error) {
       console.error("Failed to log out:", error);
-      toast.error("Logout failed");
+      
     }
   };
 
@@ -39,6 +39,15 @@ const Navbar = () => {
             {/* Logo Section */}
             <div>
               <h1 className="text-4xl md:text-5xl font-bold">DYP</h1>
+              
+            </div>
+            <div>
+            <NavLink
+                onClick={handleLogout}
+                className="flex items-center gap-2 hover:text-blue-500"
+              >
+                <FaSignOutAlt />
+              </NavLink>
             </div>
 
             {/* Hamburger Menu for Mobile */}

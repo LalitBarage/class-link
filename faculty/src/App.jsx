@@ -5,6 +5,8 @@ import { Context } from "./main";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Login from "./Components/Login";
 import Home from "./Components/Home";
+import Navbar from "./Components/Navbar";
+import Faculty from "./Components/Faculty";
 
 function App() {
   const { isAuthenticated, setIsAuthenticated, user, setUser } =
@@ -18,7 +20,8 @@ function App() {
           { withCredentials: true }
         );
         setIsAuthenticated(true);
-        setUser(response.data.faculty); // Store user data in Context
+        setUser(response.data); // Store user data in Context
+        
       } catch (error) {
         setIsAuthenticated(false);
         setUser({});
@@ -26,13 +29,16 @@ function App() {
     };
 
     fetchUser(); // Fetch user data on app mount
-  }, []);
+  }, [setIsAuthenticated, setUser]);
 
   return (
     <div>
+      
       <Router>
+      {isAuthenticated && <Navbar />}
         <Routes>
-          <Route path="/" element={isAuthenticated ? <Home /> : <Login />} />
+          <Route path="/" element={isAuthenticated ? <Home/> : <Login />} />
+         
         </Routes>
       </Router>
     </div>
