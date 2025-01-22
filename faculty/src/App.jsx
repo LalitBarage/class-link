@@ -6,7 +6,6 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Login from "./Components/Login";
 import Home from "./Components/Home";
 import Navbar from "./Components/Navbar";
-import Faculty from "./Components/Faculty";
 
 function App() {
   const { isAuthenticated, setIsAuthenticated, user, setUser } =
@@ -21,7 +20,6 @@ function App() {
         );
         setIsAuthenticated(true);
         setUser(response.data); // Store user data in Context
-        
       } catch (error) {
         setIsAuthenticated(false);
         setUser({});
@@ -33,12 +31,10 @@ function App() {
 
   return (
     <div>
-      
       <Router>
-      {isAuthenticated && <Navbar />}
+        {isAuthenticated && <Navbar />}
         <Routes>
-          <Route path="/" element={isAuthenticated ? <Home/> : <Login />} />
-         
+          <Route path="/" element={isAuthenticated ? <Home /> : <Login />} />
         </Routes>
       </Router>
     </div>
