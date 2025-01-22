@@ -6,8 +6,11 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Login from "./Components/Login";
 import Home from "./Components/Home";
 import Navbar from "./Components/Navbar";
+<<<<<<< HEAD
 import CourseReport from "./Components/CourseReport";
 
+=======
+>>>>>>> 4173c485faff7d9b587eba9f9a8117b6a59612ea
 
 function App() {
   const { isAuthenticated, setIsAuthenticated, user, setUser } =
@@ -22,7 +25,6 @@ function App() {
         );
         setIsAuthenticated(true);
         setUser(response.data); // Store user data in Context
-        
       } catch (error) {
         setIsAuthenticated(false);
         setUser({});
@@ -34,12 +36,15 @@ function App() {
 
   return (
     <div>
-      
       <Router>
-      {isAuthenticated && <Navbar />}
+        {isAuthenticated && <Navbar />}
         <Routes>
+<<<<<<< HEAD
           <Route path="/" element={isAuthenticated ? <Home/> : <Login />} />
           <Route path="/course" element={isAuthenticated ? <CourseReport /> : <Login />}/>         
+=======
+          <Route path="/" element={isAuthenticated ? <Home /> : <Login />} />
+>>>>>>> 4173c485faff7d9b587eba9f9a8117b6a59612ea
         </Routes>
       </Router>
     </div>

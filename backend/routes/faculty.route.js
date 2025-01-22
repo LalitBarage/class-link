@@ -94,4 +94,10 @@ router.get(
 
 router.get("/logout", facultyauthMiddleware, facultyController.logoutFaculty);
 
+router.get(
+  "/assignedcourses",
+  facultyauthMiddleware,
+  facultyController.getAssignedCourses
+);
+
 module.exports = router;
