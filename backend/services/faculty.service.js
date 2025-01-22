@@ -1,5 +1,6 @@
 const facultyModel = require("../models/faculty.model");
 const courseModel = require("../models/course.model");
+const labModel = require("../models/lab.model");
 
 module.exports.createFaculty = async ({
   firstname,
@@ -108,6 +109,16 @@ module.exports.getAssignedCourses = async (facultyId) => {
     return courses;
   } catch (error) {
     console.error("Error in facultyService.getAssignedCourse:", error);
+    throw error;
+  }
+};
+
+module.exports.getAssignedLabs = async (facultyId) => {
+  try {
+    const labs = await labModel.find({ facultyId }).lean();
+    return labs;
+  } catch (error) {
+    console.error("Error in facultyService.getAssignedLabs:", error);
     throw error;
   }
 };

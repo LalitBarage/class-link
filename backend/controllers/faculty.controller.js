@@ -132,3 +132,14 @@ module.exports.getAssignedCourses = async (req, res, next) => {
     res.status(500).json({ message: "Internal Server Error", error });
   }
 };
+
+module.exports.getAssignedLabs = async (req, res, next) => {
+  const faculty = req.faculty;
+  try {
+    const labs = await facultyService.getAssignedLabs(faculty.facultyId);
+    res.status(200).json({ labs });
+  } catch (error) {
+    console.error("Error getting assigned labs:", error);
+    res.status(500).json({ message: "Internal Server Error", error });
+  }
+};

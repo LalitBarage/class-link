@@ -100,4 +100,9 @@ router.get(
   facultyController.getAssignedCourses
 );
 
+router.get(
+  "/assignedLabs",
+  facultyauthMiddleware,
+  facultyController.getAssignedLabs
+);
 module.exports = router;

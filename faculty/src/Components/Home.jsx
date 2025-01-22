@@ -3,22 +3,27 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
 const Home = () => {
-  const [courses, setCourses] = useState([]); // State to hold courses
-  const [loading, setLoading] = useState(true); // State to show loading
-  const [error, setError] = useState(""); // State to handle errors
+  const [courses, setCourses] = useState([]); // State to store courses
+  const [loading, setLoading] = useState(true); // Loading state
+  const [error, setError] = useState(""); // Error state
   const navigate = useNavigate();
 
   useEffect(() => {
     const fetchCourses = async () => {
       try {
-        // Make a GET request to fetch courses
-        const response = await axios.get("http://localhost:4000/faculty/assignedcourses", 
-          { withCredentials: true } // Send cookies
+        const response = await axios.get(
+          "http://localhost:4000/faculty/assignedcourses",
+          { withCredentials: true }
         );
-        setCourses(response.data); // Update courses state with response data
-        setLoading(false); // Stop loading
+        // Access the "courses" property
+        if (response.data.courses && Array.isArray(response.data.courses)) {
+          setCourses(response.data.courses);
+        } else {
+          setCourses([]); // Default to an empty array if courses is missing
+        }
       } catch (err) {
-        setError("Failed to fetch courses. Please try again.");
+        setError(`Failed to fetch courses: ${err.message}`);
+      } finally {
         setLoading(false);
       }
     };
@@ -27,13 +32,13 @@ const Home = () => {
   }, []);
 
   const handleCardClick = (courseId) => {
-    navigate(`/course/${courseId}`); // Navigate to the course route with ID
+    navigate(`/course/${courseId}`); // Navigate to the course-specific page
   };
 
   return (
     <div className="min-h-screen bg-white">
       <div className="px-6 py-8">
-        <h1 className="text-2xl font-bold mb-6">Assigned Courses</h1>
+        <h1 className="text-2xl font-bold mb-6">Courses / Labs</h1>
         {loading ? (
           <p>Loading courses...</p>
         ) : error ? (
@@ -42,13 +47,13 @@ const Home = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {courses.map((course) => (
               <div
-                key={course.id}
+                key={course.courseId}
                 className="bg-gray-100 rounded-lg shadow-md p-4 hover:shadow-lg transition cursor-pointer"
-                onClick={() => handleCardClick(course.id)}
+                onClick={() => handleCardClick(course.courseId)}
               >
-                <p className="text-lg font-bold mb-2">{course.name}</p>
+                <p className="text-lg font-bold mb-2">{course.courseName}</p>
                 <p className="text-sm">
-                  Year: {course.year}, Section: {course.section}, Room: {course.room}
+                  Year: {course.year} <br /> Division: {course.division}
                 </p>
               </div>
             ))}
