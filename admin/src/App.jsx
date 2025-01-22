@@ -8,8 +8,7 @@ import AddLab from "./Components/AddLab";
 import { Context } from "./main";
 import Login from "./Components/Login";
 import axios from "axios";
-import { ToastContainer, toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
+
 
 const App = () => {
   const { isAuthenticated, setIsAuthenticated, user, setUser } = useContext(Context);
@@ -42,7 +41,7 @@ const App = () => {
           <Route path="/student" element={isAuthenticated ? <Student /> : <Login />} />
           <Route path="/faculty" element={isAuthenticated ? <Faculty /> : <Login />} />
         </Routes>
-        <ToastContainer position="top-center" />
+       
       </Router>
     </div>
   );

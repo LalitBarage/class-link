@@ -1,8 +1,7 @@
 import React, { useState, useContext } from "react";
 import { NavLink } from "react-router-dom";
 import { FaSignOutAlt } from "react-icons/fa";
-import { toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
+
 import { Context } from "../main";
 import axios from "axios";
 
@@ -24,10 +23,10 @@ const Navbar = () => {
         withCredentials: true,
       });
       setIsAuthenticated(false); // Set authentication state to false
-      toast.success("Logged out successfully");
+     
     } catch (error) {
       console.error("Failed to log out:", error);
-      toast.error("Logout failed");
+     
     }
   };
 
