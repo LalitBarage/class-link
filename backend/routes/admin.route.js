@@ -33,6 +33,8 @@ router.post(
 
 router.post("/login", adminController.loginAdmin);
 
+router.get("/profile", adminAuthMiddleware, adminController.getAdminProfile);
+
 router.get("/logout", adminAuthMiddleware, adminController.logoutAdmin);
 
 module.exports = router;

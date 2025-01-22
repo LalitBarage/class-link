@@ -59,3 +59,7 @@ module.exports.logoutAdmin = async (req, res, next) => {
   blacklistTokenModel.create({ token });
   res.status(200).json({ message: "Logged out successfully" });
 };
+
+module.exports.getAdminProfile = async (req, res, next) => {
+  res.status(200).json(req.admin);
+};
