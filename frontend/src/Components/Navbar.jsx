@@ -29,15 +29,6 @@ const Navbar = () => {
               `hover:text-blue-500 ${isActive ? "bold" : ""}`
             }
           >
-            DashBoard
-          </NavLink>
-          <NavLink
-            to="/course"
-            style={({ isActive }) => (isActive ? activeStyle : undefined)}
-            className={({ isActive }) =>
-              `hover:text-blue-500 ${isActive ? "bold" : ""}`
-            }
-          >
             Course
           </NavLink>
           <NavLink
