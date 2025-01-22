@@ -121,3 +121,14 @@ module.exports.logoutFaculty = async (req, res, next) => {
   blacklistTokenModel.create({ token });
   res.status(200).json({ message: "Logged out successfully" });
 };
+
+module.exports.getAssignedCourses = async (req, res, next) => {
+  const faculty = req.faculty;
+  try {
+    const courses = await facultyService.getAssignedCourses(faculty.facultyId);
+    res.status(200).json({ courses });
+  } catch (error) {
+    console.error("Error getting assigned courses:", error);
+    res.status(500).json({ message: "Internal Server Error", error });
+  }
+};
