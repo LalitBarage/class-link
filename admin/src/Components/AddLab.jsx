@@ -14,8 +14,8 @@ const AddLab = () => {
   const [selectedDepartment, setSelectedDepartment] = useState("");
 
   const [formData, setFormData] = useState({
-    labId: "",
-    facultyId: "",
+    LabId: "",
+    facultId: "",
     strollno: "",
     endrollno: "",
     department: "",
@@ -66,7 +66,7 @@ const AddLab = () => {
     const url =
       currentLab === null
         ? "http://localhost:4000/lab/create"
-        : `http://localhost:4000/lab/update/${formData.labId}`;
+        : `http://localhost:4000/lab/update/${formData.LabId}`;
     const method = currentLab === null ? "POST" : "PUT";
 
     try {
@@ -89,7 +89,7 @@ const AddLab = () => {
           // Update the edited lab in the state
           setLabs((prevLabs) =>
             prevLabs.map((lab) =>
-              lab.labId === formData.labId ? newLab.lab : lab
+              lab.LabId === formData.LabId ? newLab.lab : lab
             )
           );
         } else {
@@ -106,8 +106,8 @@ const AddLab = () => {
       toast.error("Failed to add/update lab.");
     } finally {
       setFormData({
-        labId: "",
-        facultyId: "",
+        LabId: "",
+        facultId: "",
         strollno: "",
         endrollno: "",
         department: "",
@@ -128,18 +128,18 @@ const AddLab = () => {
   const handleDeleteLab = async () => {
     try {
       const response = await fetch(
-        `http://localhost:4000/lab/delete/${formData.labId}`,
+        `http://localhost:4000/lab/delete/${formData.LabId}`,
         {
           method: "DELETE",
         }
       );
 
       if (response.ok) {
-        setLabs(labs.filter((lab) => lab.labId !== formData.labId));
-        toast.success("Labs deleted successfully!"); // Remove the deleted lab
+        setLabs(labs.filter((lab) => lab.LabId !== formData.LabId));
+        toast.success("Lab deleted successfully!"); // Remove the deleted lab
         setFormData({
-          labId: "",
-          facultyId: "",
+          LabId: "",
+          facultId: "",
           strollno: "",
           endrollno: "",
           department: "",
@@ -171,7 +171,7 @@ const AddLab = () => {
     const query = searchQuery.toLowerCase();
     return (
       lab.labname?.toLowerCase().includes(query) ||
-      lab.labId?.toLowerCase().includes(query) ||
+      lab.LabId?.toLowerCase().includes(query) ||
       lab.department?.toLowerCase().includes(query)
     );
   });
@@ -215,13 +215,13 @@ const AddLab = () => {
           </thead>
           <tbody>
             {filteredLabs.length > 0 ? (
-              filteredLabs.map((lab, index) => (
+              filteredLabs.map((lab) => (
                 <tr
                   key={lab._id}
                   className="hover:bg-gray-100 border-b border-gray-300"
                 >
                   <td className="px-4 py-3 border border-gray-300">
-                    {lab.labId}
+                    {lab.LabId}
                   </td>
                   <td className="px-4 py-3 border border-gray-300">
                     {lab.labname}
@@ -239,7 +239,7 @@ const AddLab = () => {
                     {lab.batch}
                   </td>
                   <td className="px-4 py-3 border border-gray-300">
-                    {lab.facultyId}
+                    {lab.facultId}
                   </td>
                   <td className="px-4 py-3 border border-gray-300 text-center">
                     <div className="flex justify-center items-center gap-2">
@@ -260,7 +260,7 @@ const AddLab = () => {
                         className="bg-red-500 text-white px-3 py-2 rounded-md hover:bg-red-600 flex items-center gap-2"
                         onClick={() => {
                           setCurrentLab(lab._id); // Use lab._id for currentLab
-                          setFormData({ ...formData, labId: lab.labId }); // Ensure labid is set
+                          setFormData({ ...formData, LabId: lab.LabId }); // Ensure LabId is set
                           setShowDeleteModal(true);
                         }}
                       >
