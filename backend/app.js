@@ -8,6 +8,7 @@ const studentRoute = require("./routes/student.route");
 const facultyRoute = require("./routes/faculty.route");
 const labRoute = require("./routes/lab.route");
 const courseRoute = require("./routes/course.route");
+const adminRoute = require("./routes/admin.route");
 const cookieParser = require("cookie-parser");
 
 connectToDb();
@@ -25,5 +26,6 @@ app.use("/student", studentRoute);
 app.use("/faculty", facultyRoute);
 app.use("/lab", labRoute);
 app.use("/course", courseRoute);
+app.use("/admin", adminRoute);
 
 module.exports = app;
