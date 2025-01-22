@@ -1,4 +1,4 @@
-import React, { useState, useContext } from "react";
+import React, { useState, useContext, useEffect } from "react";
 import { NavLink } from "react-router-dom";
 import { FaSignOutAlt } from "react-icons/fa";
 
@@ -6,8 +6,16 @@ import { Context } from "../main";
 import axios from "axios";
 
 const Navbar = () => {
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
   const { user, setIsAuthenticated } = useContext(Context); // Access authentication state
+
+  // Check if the menu state is saved in localStorage
+  const savedMenuState = localStorage.getItem("isMenuOpen");
+  const [isMenuOpen, setIsMenuOpen] = useState(savedMenuState === "true"); // Set initial state based on saved value
+
+  useEffect(() => {
+    // Save the menu state to localStorage whenever it changes
+    localStorage.setItem("isMenuOpen", isMenuOpen);
+  }, [isMenuOpen]);
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
@@ -23,10 +31,8 @@ const Navbar = () => {
         withCredentials: true,
       });
       setIsAuthenticated(false); // Set authentication state to false
-     
     } catch (error) {
       console.error("Failed to log out:", error);
-     
     }
   };
 
@@ -106,45 +112,35 @@ const Navbar = () => {
             <div className="flex flex-col items-center gap-4 py-4 bg-gray-100 shadow-md md:hidden">
               <NavLink
                 to="/"
-                style={({ isActive }) =>
-                  isActive ? activeStyle : undefined
-                }
+                style={({ isActive }) => (isActive ? activeStyle : undefined)}
                 onClick={toggleMenu}
               >
                 Dashboard
               </NavLink>
               <NavLink
                 to="/course"
-                style={({ isActive }) =>
-                  isActive ? activeStyle : undefined
-                }
+                style={({ isActive }) => (isActive ? activeStyle : undefined)}
                 onClick={toggleMenu}
               >
                 Course
               </NavLink>
               <NavLink
                 to="/addlab"
-                style={({ isActive }) =>
-                  isActive ? activeStyle : undefined
-                }
+                style={({ isActive }) => (isActive ? activeStyle : undefined)}
                 onClick={toggleMenu}
               >
                 Lab
               </NavLink>
               <NavLink
                 to="/student"
-                style={({ isActive }) =>
-                  isActive ? activeStyle : undefined
-                }
+                style={({ isActive }) => (isActive ? activeStyle : undefined)}
                 onClick={toggleMenu}
               >
                 Student
               </NavLink>
               <NavLink
                 to="/faculty"
-                style={({ isActive }) =>
-                  isActive ? activeStyle : undefined
-                }
+                style={({ isActive }) => (isActive ? activeStyle : undefined)}
                 onClick={toggleMenu}
               >
                 Faculty

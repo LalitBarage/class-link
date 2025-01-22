@@ -9,9 +9,9 @@ import { Context } from "./main";
 import Login from "./Components/Login";
 import axios from "axios";
 
-
 const App = () => {
-  const { isAuthenticated, setIsAuthenticated, user, setUser } = useContext(Context);
+  const { isAuthenticated, setIsAuthenticated, user, setUser } =
+    useContext(Context);
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -21,7 +21,7 @@ const App = () => {
           { withCredentials: true }
         );
         setIsAuthenticated(true);
-        setUser(response.data.admin);
+        setUser(response.data);
       } catch (error) {
         setIsAuthenticated(false);
         setUser({});
@@ -37,11 +37,19 @@ const App = () => {
         {isAuthenticated && <Navbar />} {/* Conditionally render Navbar */}
         <Routes>
           <Route path="/" element={isAuthenticated ? <Course /> : <Login />} />
-          <Route path="/addlab" element={isAuthenticated ? <AddLab /> : <Login />} />
-          <Route path="/student" element={isAuthenticated ? <Student /> : <Login />} />
-          <Route path="/faculty" element={isAuthenticated ? <Faculty /> : <Login />} />
+          <Route
+            path="/addlab"
+            element={isAuthenticated ? <AddLab /> : <Login />}
+          />
+          <Route
+            path="/student"
+            element={isAuthenticated ? <Student /> : <Login />}
+          />
+          <Route
+            path="/faculty"
+            element={isAuthenticated ? <Faculty /> : <Login />}
+          />
         </Routes>
-       
       </Router>
     </div>
   );
