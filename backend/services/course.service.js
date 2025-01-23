@@ -51,11 +51,11 @@ module.exports.deleteCourse = async (courseId) => {
 
 module.exports.getLectures = async (courseId) => {
   try {
-    const course = await lectureModel.findOne({ courseId });
-    if (!course) {
+    const lecture = await lectureModel.findOne({ courseId });
+    if (!lecture) {
       return null;
     }
-    return course.lectures;
+    return lecture;
   } catch (error) {
     console.error("Error fetching lectures:", error);
     throw error;
