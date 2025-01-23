@@ -128,7 +128,8 @@ module.exports.getStudentsByCourseId = async (req, res) => {
 // Create a new attendance record
 module.exports.createAttendance = async (req, res) => {
   try {
-    const { courseId, lectureId, students } = req.body;
+    const students = req.body;
+    const { courseId, lectureId } = req.params;
 
     // Validate input
     if (!courseId || !lectureId || !students || students.length === 0) {
