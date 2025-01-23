@@ -79,13 +79,19 @@ const CoursePage = () => {
         ) : (
           <ul className="space-y-4">
             {(lectures || []).map((lecture) => (
-              <li
-                key={lecture._id}
-                className="bg-gray-100 p-4 rounded shadow cursor-pointer"
-                onClick={() => handleLectureClick(lecture._id)}
-              >
-                Lecture on {lecture.date}
-              </li>
+             <li
+             key={lecture._id}
+             className="bg-gray-100 p-4 rounded shadow cursor-pointer"
+             onClick={() => handleLectureClick(lecture._id)}
+           >
+             <div>
+               <p>Lecture on {new Date(lecture.date).toLocaleDateString()}</p>
+               {/* Display timeSlot below the date */}
+               {lecture.timeSlot && (
+                 <p className="text-gray-500">Time Slot: {lecture.timeSlot}</p>
+               )}
+             </div>
+           </li>
             ))}
           </ul>
         )}
