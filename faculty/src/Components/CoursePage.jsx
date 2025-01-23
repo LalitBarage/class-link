@@ -10,22 +10,37 @@ const CoursePage = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    // Fetch previous lectures for the course
     const fetchLectures = async () => {
       try {
         const response = await axios.get(
-          `http://localhost:4000/courses/${courseId}/lectures`,
+          `http://localhost:4000/course/${courseId}/lecture`,
           { withCredentials: true }
         );
-        setLectures(response.data);
+        console.log("API Response:", response.data);
+  
+        // Extract lectures array from the response object
+        const lectureData = Array.isArray(response.data.lectures)
+          ? response.data.lectures
+          : []; // Default to empty array if no lectures field or if it's not an array
+  
+        setLectures(lectureData); // Update state with the correct array
+        console.log("Lectures to be set:", lectureData); // Log the correct data to be set
       } catch (err) {
+        console.error("Error fetching lectures:", err);
         setError(`Failed to load lectures: ${err.message}`);
       } finally {
         setLoading(false);
       }
     };
+  
     fetchLectures();
   }, [courseId]);
+  
+  // Use useEffect to log updated lectures
+  useEffect(() => {
+    console.log("Updated Lectures State:", lectures); // This will log the updated state
+  }, [lectures]);
+  
 
   const handleAddLecture = async () => {
     try {
@@ -63,7 +78,7 @@ const CoursePage = () => {
           <p>No lectures available.</p>
         ) : (
           <ul className="space-y-4">
-            {lectures.map((lecture) => (
+            {(lectures || []).map((lecture) => (
               <li
                 key={lecture._id}
                 className="bg-gray-100 p-4 rounded shadow cursor-pointer"
