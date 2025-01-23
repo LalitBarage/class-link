@@ -25,8 +25,7 @@ const LectureDetails = () => {
         setStudents(studentsWithDefaultAttendance);
 
         const initialAttendanceData = studentsWithDefaultAttendance.map((student) => ({
-          rollno: student.rollno, // Assuming rollno exists in the student object
-          name: `${student.fullname.firstname} ${student.fullname.lastname}`,
+          studentId: student._id, // Use studentId for the required format
           status: "Present", // Default status
         }));
         setAttendanceData(initialAttendanceData);
@@ -51,7 +50,7 @@ const LectureDetails = () => {
     // Update the attendanceData array
     setAttendanceData((prev) =>
       prev.map((data) =>
-        data.rollno === studentId
+        data.studentId === studentId
           ? { ...data, status: data.status === "Present" ? "Absent" : "Present" }
           : data
       )
@@ -59,11 +58,11 @@ const LectureDetails = () => {
   };
 
   const handleSubmit = async () => {
-    console.log(attendanceData)
+    console.log(attendanceData); // For debugging
     try {
       await axios.post(
         `http://localhost:4000/course/${courseId}/lecture/${lectureId}/attendance`,
-        { attendance: attendanceData },
+        { students: attendanceData }, // Send data in the required format
         { withCredentials: true }
       );
       alert("Attendance submitted successfully!");
