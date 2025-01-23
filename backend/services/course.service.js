@@ -111,8 +111,7 @@ module.exports.getStudentsByCourseId = async (courseId) => {
   }
 };
 
-// Create a new attendance record
-module.exports.createAttendance = async (courseId, lectureId, students) => {
+module.exports.createAttendance = async (courseId, lectureId, { students }) => {
   try {
     const attendance = new attendanceModel({
       courseId,

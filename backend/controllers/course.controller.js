@@ -138,6 +138,22 @@ module.exports.createAttendance = async (req, res) => {
         .json({ message: "All fields are required, including students." });
     }
 
+    // Ensure each student has a status
+    for (let student of students) {
+      if (!student.studentId || !student.status) {
+        return res.status(400).json({
+          message: "Each student must have a studentId and status.",
+        });
+      }
+
+      if (!["Present", "Absent", "Late", "Excused"].includes(student.status)) {
+        return res.status(400).json({
+          message:
+            "Invalid status for student. Valid statuses are: Present, Absent, Late, Excused.",
+        });
+      }
+    }
+
     // Call service to create attendance
     const attendance = await courseService.createAttendance(
       courseId,

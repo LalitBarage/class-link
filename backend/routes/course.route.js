@@ -74,4 +74,14 @@ router.post(
   courseController.createAttendance
 );
 
+router.get(
+  "/:courseId/lecture/:lectureId/attendance",
+  courseController.getAttendanceByLecture
+);
+
+router.put(
+  "/:courseId/lecture/:lectureId/attendance",
+  courseController.updateAttendance
+);
+
 module.exports = router;
