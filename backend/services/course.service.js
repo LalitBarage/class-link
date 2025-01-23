@@ -112,7 +112,7 @@ module.exports.getStudentsByCourseId = async (courseId) => {
 };
 
 // Create a new attendance record
-const createAttendance = async (courseId, lectureId, students) => {
+module.exports.createAttendance = async (courseId, lectureId, students) => {
   try {
     const attendance = new attendanceModel({
       courseId,
@@ -128,7 +128,7 @@ const createAttendance = async (courseId, lectureId, students) => {
 };
 
 // Get attendance by lecture ID
-const getAttendanceByLecture = async (lectureId) => {
+module.exports.getAttendanceByLecture = async (lectureId) => {
   try {
     // Fetch attendance record
     const attendance = await attendanceModel
