@@ -109,3 +109,19 @@ module.exports.addLecture = async (req, res, next) => {
     next(error); // Pass the error to error handling middleware
   }
 };
+
+
+module.exports.getStudentsByCourseId = async (req, res) => {
+  const { courseId } = req.params; // Get courseId from URL parameter
+
+  try {
+    // Call the service function to get students by courseId
+    const students = await courseService.getStudentsByCourseId(courseId);
+
+    // Return the students as a response
+    res.status(200).json({ students });
+  } catch (err) {
+    // If an error occurs, return an error response
+    res.status(500).json({ message: err.message });
+  }
+};

@@ -1,3 +1,4 @@
+const studentModel = require("../models/student.model");
 const courseModel = require("../models/course.model");
 const lectureModel = require("../models/lecture.model");
 
@@ -80,5 +81,31 @@ module.exports.addLecture = async (courseId, lectureData) => {
   } catch (error) {
     console.error("Error adding lecture:", error);
     throw error;
+  }
+};
+
+module.exports.getStudentsByCourseId = async (courseId) => {
+  try {
+    // Find the course by courseId
+    const course = await courseModel.findOne({ courseId });
+
+    if (!course) {
+      throw new Error('Course not found');
+    }
+
+    // Find students matching the course's year, department, and division
+    const students = await studentModel.find({
+      year: course.year,
+      department: course.department,
+      division: course.division
+    });
+
+    if (students.length === 0) {
+      throw new Error('No students found for this course');
+    }
+
+    return students;
+  } catch (err) {
+    throw new Error(err.message);
   }
 };

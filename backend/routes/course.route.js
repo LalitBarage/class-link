@@ -2,6 +2,8 @@ const express = require("express");
 const router = express.Router();
 const { body } = require("express-validator");
 const courseController = require("../controllers/course.controller");
+const studentModel = require("../models/student.model");
+const courseModel = require("../models/course.model");
 
 // Course registration route
 router.post(
@@ -64,5 +66,7 @@ router.delete("/remove/:courseId", courseController.deleteCourse);
 router.get("/:courseId/lecture", courseController.getLectures);
 
 router.post("/:courseId/lecture", courseController.addLecture);
+
+router.get('/students/:courseId', courseController.getStudentsByCourseId);
 
 module.exports = router;

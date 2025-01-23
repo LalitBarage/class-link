@@ -16,6 +16,7 @@ const lectureSchema = new Schema({
     ref: "Course",
     required: true,
   },
+
 });
 
 module.exports = mongoose.model("lecture", lectureSchema);

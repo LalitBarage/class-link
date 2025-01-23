@@ -13,10 +13,12 @@ const LectureDetails = () => {
     const fetchStudents = async () => {
       try {
         const response = await axios.get(
-          `http://localhost:4000/courses/${courseId}/lectures/${lectureId}/students`,
+          `http://localhost:4000/course/students/${courseId}`,
           { withCredentials: true }
         );
-        setStudents(response.data);
+        // Ensure the response data is in the expected format (students array)
+        setStudents(response.data.students);  // Access 'students' array directly
+        console.log(response.data.students);  // Check the students array
       } catch (err) {
         setError(`Failed to load students: ${err.message}`);
       } finally {
@@ -24,7 +26,7 @@ const LectureDetails = () => {
       }
     };
     fetchStudents();
-  }, [courseId, lectureId]);
+  }, [courseId]);
 
   const handleAttendanceToggle = async (studentId) => {
     try {
@@ -48,7 +50,7 @@ const LectureDetails = () => {
   return (
     <div className="min-h-screen bg-white">
       <div className="px-6 py-8">
-        <h1 className="text-2xl font-bold mb-6">Lecture Details</h1>
+        <h1 className="text-2xl font-bold mb-6">Attendance</h1>
         {loading ? (
           <p>Loading students...</p>
         ) : error ? (
@@ -57,7 +59,7 @@ const LectureDetails = () => {
           <ul className="space-y-4">
             {students.map((student) => (
               <li key={student._id} className="flex items-center justify-between bg-gray-100 p-4 rounded shadow">
-                <p>{student.name}</p>
+                <p>{student.fullname.firstname} {student.fullname.lastname}</p>
                 <button
                   onClick={() => handleAttendanceToggle(student._id)}
                   className={`px-4 py-2 rounded ${
