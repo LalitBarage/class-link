@@ -70,7 +70,7 @@ router.post("/:courseId/lecture", courseController.addLecture);
 router.get("/students/:courseId", courseController.getStudentsByCourseId);
 
 router.post(
-  "/:courseId/lecture/:lectureId/attendace",
+  "/:courseId/lecture/:lectureId/attendance",
   courseController.createAttendance
 );
 

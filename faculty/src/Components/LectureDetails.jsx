@@ -62,7 +62,7 @@ const LectureDetails = () => {
     console.log(attendanceData)
     try {
       await axios.post(
-        `http://localhost:4000/courses/${courseId}/lectures/${lectureId}/attendance/submit`,
+        `http://localhost:4000/course/${courseId}/lecture/${lectureId}/attendance`,
         { attendance: attendanceData },
         { withCredentials: true }
       );
