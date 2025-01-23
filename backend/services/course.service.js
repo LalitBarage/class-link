@@ -51,7 +51,7 @@ module.exports.deleteCourse = async (courseId) => {
 
 module.exports.getLectures = async (courseId) => {
   try {
-    const lecture = await lectureModel.findOne({ courseId });
+    const lecture = await lectureModel.find({ courseId });
     if (!lecture) {
       return null;
     }
