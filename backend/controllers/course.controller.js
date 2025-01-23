@@ -76,3 +76,36 @@ module.exports.deleteCourse = async (req, res, next) => {
     res.status(500).json({ message: "Internal Server Error", error });
   }
 };
+
+module.exports.getLectures = async (req, res, next) => {
+  const { courseId } = req.params;
+
+  try {
+    const lectures = await courseService.getLectures(courseId);
+    res.status(200).json({ lectures });
+  } catch (error) {
+    next(error);
+  }
+};
+
+module.exports.addLecture = async (req, res, next) => {
+  const { courseId } = req.params; // Extract courseId from the request params
+  const lectureData = req.body; // Extract lecture data from the request body
+
+  try {
+    // Add the lecture using the custom courseId
+    const newLecture = await courseService.addLecture(courseId, lectureData);
+
+    if (!newLecture) {
+      // If no course is found, return a 404
+      return res.status(404).json({ message: "Course not found" });
+    }
+
+    // Respond with the added lecture
+    res
+      .status(201)
+      .json({ message: "Lecture added successfully", lecture: newLecture });
+  } catch (error) {
+    next(error); // Pass the error to error handling middleware
+  }
+};

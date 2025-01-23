@@ -61,4 +61,8 @@ router.put("/update/:courseId", courseController.updateCourse);
 // Delete course by courseId
 router.delete("/remove/:courseId", courseController.deleteCourse);
 
+router.get("/:courseId/lecture", courseController.getLectures);
+
+router.post("/:courseId/lecture", courseController.addLecture);
+
 module.exports = router;
