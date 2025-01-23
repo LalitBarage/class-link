@@ -110,7 +110,6 @@ module.exports.addLecture = async (req, res, next) => {
   }
 };
 
-
 module.exports.getStudentsByCourseId = async (req, res) => {
   const { courseId } = req.params; // Get courseId from URL parameter
 
@@ -123,5 +122,83 @@ module.exports.getStudentsByCourseId = async (req, res) => {
   } catch (err) {
     // If an error occurs, return an error response
     res.status(500).json({ message: err.message });
+  }
+};
+
+// Create a new attendance record
+module.exports.createAttendance = async (req, res) => {
+  try {
+    const { courseId, lectureId, students } = req.body;
+
+    // Validate input
+    if (!courseId || !lectureId || !students || students.length === 0) {
+      return res
+        .status(400)
+        .json({ message: "All fields are required, including students." });
+    }
+
+    // Call service to create attendance
+    const attendance = await courseService.createAttendance(
+      courseId,
+      lectureId,
+      students
+    );
+
+    return res.status(201).json({
+      message: "Attendance record created successfully",
+      data: attendance,
+    });
+  } catch (error) {
+    return res.status(500).json({ message: error.message });
+  }
+};
+
+// Retrieve attendance by lecture ID
+module.exports.getAttendanceByLecture = async (req, res) => {
+  try {
+    const { lectureId } = req.params;
+
+    // Validate input
+    if (!lectureId) {
+      return res.status(400).json({ message: "Lecture ID is required." });
+    }
+
+    // Call service to get attendance
+    const attendance = await courseService.getAttendanceByLecture(lectureId);
+
+    return res.status(200).json({
+      message: "Attendance record retrieved successfully",
+      data: attendance,
+    });
+  } catch (error) {
+    return res.status(500).json({ message: error.message });
+  }
+};
+
+// Update attendance for a specific lecture
+module.exports.updateAttendance = async (req, res) => {
+  try {
+    const { lectureId } = req.params;
+    const { students } = req.body;
+
+    // Validate input
+    if (!lectureId || !students || students.length === 0) {
+      return res
+        .status(400)
+        .json({ message: "Lecture ID and students are required." });
+    }
+
+    // Call service to update attendance
+    const updatedAttendance = await courseService.updateAttendance(
+      lectureId,
+      students
+    );
+
+    return res.status(200).json({
+      message: "Attendance record updated successfully",
+      data: updatedAttendance,
+    });
+  } catch (error) {
+    return res.status(500).json({ message: error.message });
   }
 };

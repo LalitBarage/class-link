@@ -67,6 +67,11 @@ router.get("/:courseId/lecture", courseController.getLectures);
 
 router.post("/:courseId/lecture", courseController.addLecture);
 
-router.get('/students/:courseId', courseController.getStudentsByCourseId);
+router.get("/students/:courseId", courseController.getStudentsByCourseId);
+
+router.post(
+  "/:courseId/lecture/:lectureId/attendace",
+  courseController.createAttendance
+);
 
 module.exports = router;
