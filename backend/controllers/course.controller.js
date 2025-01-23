@@ -128,7 +128,7 @@ module.exports.getStudentsByCourseId = async (req, res) => {
 // Create a new attendance record
 module.exports.createAttendance = async (req, res) => {
   try {
-    const students = req.body;
+    const { students } = req.body;
     const { courseId, lectureId } = req.params;
 
     // Validate input
@@ -142,7 +142,7 @@ module.exports.createAttendance = async (req, res) => {
     const attendance = await courseService.createAttendance(
       courseId,
       lectureId,
-      students
+      { students }
     );
 
     return res.status(201).json({
