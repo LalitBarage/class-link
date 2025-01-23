@@ -1,59 +1,88 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
 const Home = () => {
-  const [courses, setCourses] = useState([]); // State to store courses
+  const [data, setData] = useState([]); // State to store courses or labs
   const [loading, setLoading] = useState(true); // Loading state
   const [error, setError] = useState(""); // Error state
+  const [view, setView] = useState("courses"); // Default view set to "courses"
   const navigate = useNavigate();
 
   useEffect(() => {
-    const fetchCourses = async () => {
+    const fetchData = async () => {
+      setLoading(true);
+      setError(""); // Reset error state
       try {
-        const response = await axios.get(
-          "http://localhost:4000/faculty/assignedcourses",
-          { withCredentials: true }
-        );
-        // Access the "courses" property
-        if (response.data.courses && Array.isArray(response.data.courses)) {
-          setCourses(response.data.courses);
+        const endpoint =
+          view === "courses"
+            ? "http://localhost:4000/faculty/assignedcourses"
+            : "http://localhost:4000/faculty/assignedLabs";
+
+        const response = await axios.get(endpoint, { withCredentials: true });
+
+        // Access the appropriate data property
+        if (response.data[view] && Array.isArray(response.data[view])) {
+          setData(response.data[view]);
         } else {
-          setCourses([]); // Default to an empty array if courses is missing
+          setData([]); // Default to an empty array if no data
         }
       } catch (err) {
-        setError(`Failed to fetch courses: ${err.message}`);
+        setError(`Failed to fetch ${view}: ${err.message}`);
       } finally {
         setLoading(false);
       }
     };
 
-    fetchCourses();
-  }, []);
+    fetchData();
+  }, [view]); // Re-run fetch when view changes
 
-  const handleCardClick = (courseId) => {
-    navigate(`/course/${courseId}`); // Navigate to the course-specific page
+  const handleCardClick = (id) => {
+    navigate(`/${view === "courses" ? "course" : "lab"}/${id}`); // Navigate based on view
   };
 
   return (
     <div className="min-h-screen bg-white">
       <div className="px-6 py-8">
         <h1 className="text-2xl font-bold mb-6">Courses / Labs</h1>
+
+        {/* Toggle Buttons */}
+        <div className="flex gap-4 mb-6">
+          <button
+            onClick={() => setView("courses")}
+            className={`px-2 py-1 rounded-lg ${
+              view === "courses" ? "bg-white border-2 border-black text-black" : "bg-white"
+            }`}
+          >
+            Courses
+          </button>
+          <button
+            onClick={() => setView("labs")}
+            className={`px-2 py-1 rounded-lg ${
+              view === "labs" ? "bg-white border-2 border-black text-black" : "bg-white"
+            }`}
+          >
+            Labs
+          </button>
+        </div>
+
         {loading ? (
-          <p>Loading courses...</p>
+          <p>Loading {view}...</p>
         ) : error ? (
           <p className="text-red-500">{error}</p>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {courses.map((course) => (
+            {data.map((item) => (
               <div
-                key={course.courseId}
+                key={item.id || item.courseId || item.labid}
                 className="bg-gray-100 rounded-lg shadow-md p-4 hover:shadow-lg transition cursor-pointer"
-                onClick={() => handleCardClick(course.courseId)}
+                onClick={() => handleCardClick(item.courseId || item.labid)}
               >
-                <p className="text-lg font-bold mb-2">{course.courseName}</p>
+                <p className="text-lg font-bold mb-2">
+                  {item.courseName || item.labname}
+                </p>
                 <p className="text-sm">
-                  Year: {course.year} <br /> Division: {course.division}
+                  Year: {item.year} <br /> Division: {item.division}
                 </p>
               </div>
             ))}

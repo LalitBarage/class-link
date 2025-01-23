@@ -6,7 +6,8 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Login from "./Components/Login";
 import Home from "./Components/Home";
 import Navbar from "./Components/Navbar";
-import CourseReport from "./Components/CourseReport";
+import CoursePage from "./Components/CoursePage";
+import LectureDetails from "./Components/LectureDetails";
 
 
 function App() {
@@ -37,7 +38,8 @@ function App() {
         {isAuthenticated && <Navbar />}
         <Routes>
           <Route path="/" element={isAuthenticated ? <Home/> : <Login />} />
-          <Route path="/course" element={isAuthenticated ? <CourseReport /> : <Login />}/>         
+          <Route path="/course/:courseId" element={isAuthenticated ? <CoursePage /> : <Login/>} />
+          <Route path="/course/:courseId/lecture/:lectureId" element={isAuthenticated ? <LectureDetails /> : <Login/>} />        
         </Routes>
       </Router>
     </div>
