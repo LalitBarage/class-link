@@ -1,6 +1,7 @@
 const studentModel = require("../models/student.model");
 const courseModel = require("../models/course.model");
 const lectureModel = require("../models/lecture.model");
+const attendanceModel = require("../models/attendance.model");
 
 module.exports.createCourse = async (courseData) => {
   try {
@@ -90,22 +91,76 @@ module.exports.getStudentsByCourseId = async (courseId) => {
     const course = await courseModel.findOne({ courseId });
 
     if (!course) {
-      throw new Error('Course not found');
+      throw new Error("Course not found");
     }
 
     // Find students matching the course's year, department, and division
     const students = await studentModel.find({
       year: course.year,
       department: course.department,
-      division: course.division
+      division: course.division,
     });
 
     if (students.length === 0) {
-      throw new Error('No students found for this course');
+      throw new Error("No students found for this course");
     }
 
     return students;
   } catch (err) {
     throw new Error(err.message);
+  }
+};
+
+// Create a new attendance record
+const createAttendance = async (courseId, lectureId, students) => {
+  try {
+    const attendance = new attendanceModel({
+      courseId,
+      lectureId,
+      students,
+    });
+
+    // Save to the database
+    return await attendance.save();
+  } catch (error) {
+    throw new Error(`Error creating attendance: ${error.message}`);
+  }
+};
+
+// Get attendance by lecture ID
+const getAttendanceByLecture = async (lectureId) => {
+  try {
+    // Fetch attendance record
+    const attendance = await attendanceModel
+      .findOne({ lectureId })
+      .populate("students.studentId");
+
+    if (!attendance) {
+      throw new Error("Attendance record not found.");
+    }
+
+    return attendance;
+  } catch (error) {
+    throw new Error(`Error fetching attendance: ${error.message}`);
+  }
+};
+
+// Update attendance for a lecture
+module.exports.updateAttendance = async (lectureId, students) => {
+  try {
+    const updatedAttendance = await attendanceModel.findOneAndUpdate(
+      { courseId },
+      { lectureId },
+      { $set: { students } },
+      { new: true }
+    );
+
+    if (!updatedAttendance) {
+      throw new Error("Attendance record not found.");
+    }
+
+    return updatedAttendance;
+  } catch (error) {
+    throw new Error(`Error updating attendance: ${error.message}`);
   }
 };
