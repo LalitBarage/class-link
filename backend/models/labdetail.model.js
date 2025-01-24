@@ -16,7 +16,10 @@ const labdetailSchema = new Schema({
     ref: "Lab",
     required: true,
   },
-
+  status: {
+    type: String,
+    default: "false",
+  },
 });
 
 module.exports = mongoose.model("labdetail", labdetailSchema);

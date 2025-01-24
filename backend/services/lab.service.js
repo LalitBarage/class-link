@@ -24,19 +24,17 @@ exports.getAllLabs = async () => {
 };
 
 exports.updateLab = async (labid, labData) => {
-    try {
-      const updatedLab = await LabModel.findOneAndUpdate(
-        { labid }, // Search by labid
-        labData,   // Data to update
-        { new: true } // Return the updated document
-      );
-      return updatedLab;
-    } catch (error) {
-      throw new Error(error.message || "Failed to update lab");
-    }
-  };
-
-
+  try {
+    const updatedLab = await LabModel.findOneAndUpdate(
+      { labid }, // Search by labid
+      labData, // Data to update
+      { new: true } // Return the updated document
+    );
+    return updatedLab;
+  } catch (error) {
+    throw new Error(error.message || "Failed to update lab");
+  }
+};
 
 exports.deleteLab = async (labid) => {
   try {
@@ -48,50 +46,49 @@ exports.deleteLab = async (labid) => {
 };
 
 exports.searchLabs = async (query) => {
-    try {
-      const labs = await LabModel.find({
-        labname: { $regex: query, $options: "i" }, // Case-insensitive search by labname
-      });
-      return labs;
-    } catch (error) {
-      throw new Error(error.message || "Failed to search labs");
-    }
-  };
+  try {
+    const labs = await LabModel.find({
+      labname: { $regex: query, $options: "i" }, // Case-insensitive search by labname
+    });
+    return labs;
+  } catch (error) {
+    throw new Error(error.message || "Failed to search labs");
+  }
+};
 
-  module.exports.getLabs = async (labid) => {
-    try {
-      const lab = await labdetailModel.find({ labid });
-      if (!lab) {
-        return null;
-      }
-      return lab;
-    } catch (error) {
-      console.error("Error fetching labs:", error);
-      throw error;
+module.exports.getLabs = async (labid) => {
+  try {
+    const lab = await labdetailModel.find({ labid });
+    if (!lab) {
+      return null;
     }
-  };
-  
-  module.exports.addLab = async (labid, labData) => {
-    try {
-      // Find the course by the custom courseId
-      const lab = await labModel.findOne({ labid });
-      if (!lab) {
-        console.error("lab not found");
-        return null;
-      }
-  
-      // Create a new lecture document with the custom courseId
-      const newLab = new labdetailModel({ ...labData, labid });
-      await newLab.save();
-  
-      // Return the newly created lecture document
-      return newLab;
-    } catch (error) {
-      console.error("Error adding lab", error);
-      throw error;
-    }
-  };
+    return lab;
+  } catch (error) {
+    console.error("Error fetching labs:", error);
+    throw error;
+  }
+};
 
+module.exports.addLab = async (labid, labData) => {
+  try {
+    // Find the course by the custom courseId
+    const lab = await labModel.findOne({ labid });
+    if (!lab) {
+      console.error("lab not found");
+      return null;
+    }
+
+    // Create a new lecture document with the custom courseId
+    const newLab = new labdetailModel({ ...labData, labid });
+    await newLab.save();
+
+    // Return the newly created lecture document
+    return newLab;
+  } catch (error) {
+    console.error("Error adding lab", error);
+    throw error;
+  }
+};
 
 module.exports.getStudentsForLab = async (labid) => {
   // Fetch the lab details
@@ -99,15 +96,13 @@ module.exports.getStudentsForLab = async (labid) => {
   if (!lab) {
     throw new Error("Lab not found");
   }
-  console.log("Lab details:", lab);
 
   // Fetch students matching the lab criteria
   const students = await studentModel.find({
     rollno: { $gte: lab.strollno, $lte: lab.endrollno },
     department: lab.department,
     division: lab.division,
-    class: lab.class,
+    year: lab.class,
   });
-
   return students;
 };

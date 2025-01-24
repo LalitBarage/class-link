@@ -9,7 +9,7 @@ import Navbar from "./Components/Navbar";
 import CoursePage from "./Components/CoursePage";
 import LectureDetails from "./Components/LectureDetails";
 import LabPage from "./Components/LabPage";
-
+import LabDetails from "./Components/LabDetails";
 
 function App() {
   const { isAuthenticated, setIsAuthenticated, user, setUser } =
@@ -38,10 +38,23 @@ function App() {
       <Router>
         {isAuthenticated && <Navbar />}
         <Routes>
-          <Route path="/" element={isAuthenticated ? <Home/> : <Login />} />
-          <Route path="/course/:courseId" element={isAuthenticated ? <CoursePage /> : <Login/>} />
-          <Route path="/course/:courseId/lecture/:lectureId" element={isAuthenticated ? <LectureDetails /> : <Login/>} /> 
-          <Route path="/lab/:labid" element={isAuthenticated ? <LabPage /> : <Login/>} />
+          <Route path="/" element={isAuthenticated ? <Home /> : <Login />} />
+          <Route
+            path="/course/:courseId"
+            element={isAuthenticated ? <CoursePage /> : <Login />}
+          />
+          <Route
+            path="/course/:courseId/lecture/:lectureId"
+            element={isAuthenticated ? <LectureDetails /> : <Login />}
+          />
+          <Route
+            path="/lab/:labid"
+            element={isAuthenticated ? <LabPage /> : <Login />}
+          />
+          <Route
+            path="/labs/:labid"
+            element={isAuthenticated ? <LabDetails /> : <Login />}
+          />
         </Routes>
       </Router>
     </div>

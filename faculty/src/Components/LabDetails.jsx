@@ -17,18 +17,21 @@ const LabDetails = () => {
           `http://localhost:4000/lab/${labid}/students`,
           { withCredentials: true }
         );
-
         // Set default 'attended' to true for each student and prepare the attendanceData array
-        const studentsWithDefaultAttendance = response.data.students.map((student) => ({
-          ...student,
-          attended: true, // Default attendance
-        }));
+        const studentsWithDefaultAttendance = response.data.students.map(
+          (student) => ({
+            ...student,
+            attended: true, // Default attendance
+          })
+        );
         setStudents(studentsWithDefaultAttendance);
 
-        const initialAttendanceData = studentsWithDefaultAttendance.map((student) => ({
-          studentId: student._id, // Use studentId for the required format
-          status: "Present", // Default status
-        }));
+        const initialAttendanceData = studentsWithDefaultAttendance.map(
+          (student) => ({
+            studentId: student._id, // Use studentId for the required format
+            status: "Present", // Default status
+          })
+        );
         setAttendanceData(initialAttendanceData);
       } catch (err) {
         setError(`Failed to load students: ${err.message}`);
@@ -52,7 +55,10 @@ const LabDetails = () => {
     setAttendanceData((prev) =>
       prev.map((data) =>
         data.studentId === studentId
-          ? { ...data, status: data.status === "Present" ? "Absent" : "Present" }
+          ? {
+              ...data,
+              status: data.status === "Present" ? "Absent" : "Present",
+            }
           : data
       )
     );
