@@ -112,4 +112,48 @@ exports.searchLabs = async (req, res, next) => {
       });
     }
   };
+
+  module.exports.getLabs = async (req, res, next) => {
+    const { labid } = req.params;
   
+    try {
+      const labs = await labService.getLabs(labid);
+      res.status(200).json({ labs });
+    } catch (error) {
+      next(error);
+    }
+  };
+  
+
+module.exports.addLab = async (req, res, next) => {
+  const { labid } = req.params; // Extract courseId from the request params
+  const labData = req.body; // Extract lecture data from the request body
+
+  try {
+    // Add the lecture using the custom courseId
+    const newLab = await labService.addLab(labid, labData);
+
+    if (!newLab) {
+      // If no course is found, return a 404
+      return res.status(404).json({ message: "Course not found" });
+    }
+
+    // Respond with the added lecture
+    res
+      .status(201)
+      .json({ message: "Lecture added successfully", lab: newLab });
+  } catch (error) {
+    next(error); // Pass the error to error handling middleware
+  }
+};
+
+module.exports.getStudents = async (req, res) => {
+  try {
+    const { labid } = req.params; // Extract labid from URL params
+    const students = await labService.getStudentsForLab(labid);
+    res.status(200).json({ students });
+  } catch (error) {
+    console.error("Error in getStudents:", error.message);
+    res.status(500).json({ message: error.message });
+  }
+};
