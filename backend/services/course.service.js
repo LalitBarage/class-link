@@ -145,9 +145,6 @@ module.exports.getAttendanceByLecture = async (lectureId) => {
       courseId: attendance.courseId,
       students: attendance.students.map((student) => ({
         studentId: student.studentId._id,
-        fullname: `${student.studentId.fullname.firstname} ${student.studentId.fullname.middlename} ${student.studentId.fullname.lastname}`,
-        rollno: student.studentId.rollno,
-        prnno: student.studentId.prnno,
         status: student.status,
       })),
     };
