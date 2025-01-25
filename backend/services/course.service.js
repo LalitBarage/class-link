@@ -147,17 +147,17 @@ module.exports.getAttendanceByLecture = async (lectureId) => {
 };
 
 // Update attendance for a lecture
-module.exports.updateAttendance = async (lectureId, students) => {
+module.exports.updateAttendance = async (courseId, lectureId, students) => {
   try {
+    // Update attendance for specific course and lecture
     const updatedAttendance = await attendanceModel.findOneAndUpdate(
-      { courseId },
-      { lectureId },
-      { $set: { students } },
-      { new: true }
+      { courseId, lectureId }, // Query to find the document
+      { $set: { students } },  // Update the students array
+      { new: true }            // Return the updated document
     );
 
     if (!updatedAttendance) {
-      throw new Error("Attendance record not found.");
+      throw new Error("Attendance record not found for the given course and lecture.");
     }
 
     return updatedAttendance;
@@ -165,3 +165,4 @@ module.exports.updateAttendance = async (lectureId, students) => {
     throw new Error(`Error updating attendance: ${error.message}`);
   }
 };
+
