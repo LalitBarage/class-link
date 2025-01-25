@@ -133,7 +133,7 @@ module.exports.getAttendanceByLecture = async (lectureId) => {
     // Fetch attendance record
     const attendance = await attendanceModel
       .findOne({ lectureId })
-      .populate("attendance.students.studentId");
+      .populate("students.studentId");
 
     if (!attendance) {
       throw new Error("Attendance record not found.");
