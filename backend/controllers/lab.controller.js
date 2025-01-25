@@ -241,12 +241,29 @@ module.exports.getStudentsBylabId = async (req, res) => {
 
   try {
     // Call the service function to get students by courseId
-    const students = await labService.getStudentsByLabId(labid);
+    const students = await labService.fetchLabAttendance(labid);
 
     // Return the students as a response
     res.status(200).json({ students });
   } catch (err) {
     // If an error occurs, return an error response
     res.status(500).json({ message: err.message });
+  }
+};
+
+module.exports.getLabAttendance = async (req, res) => {
+  const { labid } = req.params;
+
+  try {
+    const attendanceData = await labService.fetchLabAttendance(labid);
+
+    if (!attendanceData) {
+      return res.status(404).json({ message: "Lab attendance not found." });
+    }
+
+    return res.status(200).json({ attendance: attendanceData });
+  } catch (error) {
+    console.error("Error fetching lab attendance:", error);
+    return res.status(500).json({ message: "Failed to fetch lab attendance." });
   }
 };

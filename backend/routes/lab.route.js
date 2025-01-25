@@ -32,4 +32,6 @@ router.put(
   labController.updateAttendance
 );
 
+router.get("/:labid/attendance", labController.getLabAttendance);
+
 module.exports = router;

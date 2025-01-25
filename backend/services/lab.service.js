@@ -148,3 +148,33 @@ exports.getStudentsByLabId = async (labid) => {
     throw new Error(error.message);
   }
 };
+
+module.exports.fetchLabAttendance = async (labid) => {
+  // Fetch attendance for a specific labId and populate the required fields
+  try {
+    console.log("Fetching lab attendance data for lab:", labid);
+    const attendance = await labattendanceModel.find({ labid });
+
+    if (!attendance || attendance.length === 0) {
+      return null;
+    }
+
+    // Format the attendance data as needed
+    const formattedAttendance = attendance.map((entry) => ({
+      _id: entry._id,
+      labId: entry.labId,
+      practicalId: entry.practicalId,
+      students: entry.students.map((student) => ({
+        studentId: student.studentId._id,
+        fullname: student.studentId.fullname,
+        rollno: student.studentId.rollno,
+        status: student.status,
+      })),
+    }));
+
+    return formattedAttendance;
+  } catch (error) {
+    console.error("Error fetching lab attendance data:", error);
+    throw new Error("Database error while fetching lab attendance.");
+  }
+};
