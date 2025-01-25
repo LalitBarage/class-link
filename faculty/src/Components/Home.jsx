@@ -41,6 +41,10 @@ const Home = () => {
     navigate(`/${view === "courses" ? "course" : "lab"}/${id}`); // Navigate based on view
   };
 
+  const handleReportClick = (id) => {
+    navigate(`/${view === "courses" ? "course" : "lab"}/${id}/report`); // Navigate to report page
+  };
+
   return (
     <div className="min-h-screen bg-white">
       <div className="px-6 py-8">
@@ -77,8 +81,7 @@ const Home = () => {
             {data.map((item) => (
               <div
                 key={item.id || item.courseId || item.labid}
-                className="bg-gray-100 rounded-lg shadow-md p-4 hover:shadow-lg transition cursor-pointer"
-                onClick={() => handleCardClick(item.courseId || item.labid)}
+                className="bg-gray-100 rounded-lg shadow-md p-4 hover:shadow-lg transition"
               >
                 <p className="text-lg font-bold mb-2">
                   {item.courseName || item.labname}
@@ -86,6 +89,24 @@ const Home = () => {
                 <p className="text-sm">
                   Year: {item.year} <br /> Division: {item.division}
                 </p>
+                <div className="flex gap-1 mt-4">
+                  {/* Add button */}
+                  <button
+                    onClick={() => handleCardClick(item.courseId || item.labid)}
+                    className="flex items-center gap-2 bg-black text-white px-4 py-2 rounded-md"
+                  >
+                    Lecture
+                  </button>
+                  {/* Document button */}
+                  <button
+                    onClick={() =>
+                      handleReportClick(item.courseId || item.labid)
+                    }
+                    className="flex items-center gap-2 bg-black text-white px-4 py-2 rounded-md"
+                  >
+                    Report
+                  </button>
+                </div>
               </div>
             ))}
           </div>
