@@ -1,4 +1,6 @@
 const studentModel = require("../models/student.model");
+const LabModel = require("../models/lab.model");
+const CourseModel = require("../models/course.model");
 const bcrypt = require("bcrypt");
 
 module.exports.createStudent = async ({
@@ -16,7 +18,7 @@ module.exports.createStudent = async ({
   parentemail,
   parentmobileno,
   password,
-  department
+  department,
 }) => {
   if (
     !firstname ||
@@ -58,12 +60,11 @@ module.exports.createStudent = async ({
     parentmobileno,
     role: "student",
     password,
-    department
+    department,
   });
 
   return student;
 };
-
 
 module.exports.getAllStudents = async () => {
   const students = await studentModel.find({}, "-password").lean();
@@ -77,7 +78,6 @@ module.exports.deleteStudent = async (id) => {
 
   return await studentModel.findByIdAndDelete(id); // Use studentModel instead of students
 };
-
 
 module.exports.authenticateStudent = async (email, password) => {
   // Find the student by email
@@ -100,7 +100,7 @@ module.exports.authenticateStudent = async (email, password) => {
 module.exports.getStudentById = async (_id) => {
   try {
     const student = await studentModel.findById(_id).lean();
-    console.log(_id);
+
     if (!student) {
       throw new Error("Student not found");
     }
@@ -118,5 +118,55 @@ module.exports.logLogoutActivity = async (_id) => {
   }
 
   // Example: Log to the console or a database
-  console.log(`Student with ID ${_id} logged out at ${new Date().toISOString()}`);
+  console.log(
+    `Student with ID ${_id} logged out at ${new Date().toISOString()}`
+  );
+};
+
+module.exports.getStudentCourse = async (_id) => {
+  try {
+    // Fetch user details
+    const student = await studentModel.findById(_id);
+
+    if (!student) {
+      throw new Error("student not found");
+    }
+
+    // Fetch courses based on eligibility criteria (example: department and year)
+    const eligibleCourses = await CourseModel.find({
+      department: student.department,
+      year: student.year,
+      division: student.division,
+    });
+
+    return eligibleCourses;
+  } catch (error) {
+    console.error("Error in service:", error.message);
+    throw error;
+  }
+};
+
+module.exports.getStudentLab = async (_id, rollNo) => {
+  try {
+    // Fetch user details
+    const student = await studentModel.findById(_id);
+
+    if (!student) {
+      throw new Error("Student not found");
+    }
+
+    // Fetch labs based on eligibility criteria (department, year, division)
+    const eligibleLabs = await LabModel.find({
+      department: student.department,
+      year: student.year,
+      division: student.division,
+      strollno: { $lte: student.rollno }, // Check if roll number is greater than or equal to strollno
+      endrollno: { $gte: student.rollno }, // Check if roll number is less than or equal to endrollno
+    });
+    // Return the eligible labs
+    return eligibleLabs;
+  } catch (error) {
+    console.error("Error in service:", error.message);
+    throw error;
+  }
 };

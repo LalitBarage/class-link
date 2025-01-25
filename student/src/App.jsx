@@ -5,11 +5,13 @@ import { Context } from "./main";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Navbar from "./Components/Navbar";
 import Login from "./Components/Login";
-import Home from "./Components/Home"
+import Home from "./Components/Home";
+import CourseReport from "./Components/CourseReport";
+import LabReport from "./Components/LabReport";
 
-function App() { 
+function App() {
   const { isAuthenticated, setIsAuthenticated, user, setUser } =
-  useContext(Context);
+    useContext(Context);
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -31,14 +33,22 @@ function App() {
 
   return (
     <>
-    <Router>
+      <Router>
         {isAuthenticated && <Navbar />}
         <Routes>
-        <Route path="/" element={isAuthenticated ? <Home /> : <Login />} />
+          <Route path="/" element={isAuthenticated ? <Home /> : <Login />} />
+          <Route
+            path="/course/:courseId/report"
+            element={isAuthenticated ? <CourseReport /> : <Login />}
+          />
+          <Route
+            path="/lab/:labid/report"
+            element={isAuthenticated ? <LabReport /> : <Login />}
+          />
         </Routes>
       </Router>
     </>
-  )
-};
+  );
+}
 
 export default App;

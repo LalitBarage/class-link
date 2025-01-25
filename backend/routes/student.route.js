@@ -69,7 +69,7 @@ router.post(
       .isString()
       .withMessage("Division must be a string"),
 
-      body("department")
+    body("department")
       .notEmpty()
       .withMessage("Department is required")
       .isString()
@@ -121,8 +121,20 @@ router.put("/update/:id", studentController.updateStudentInfo);
 router.post("/login", studentController.loginStudent);
 
 // Get student details by ID (protected route)
-router.get("/profile", studentAuthMiddleware, studentController.getStudentProfile);
+router.get(
+  "/profile",
+  studentAuthMiddleware,
+  studentController.getStudentProfile
+);
 
 // Logout student
 router.get("/logout", studentAuthMiddleware, studentController.logoutStudent);
+
+router.get(
+  "/course",
+  studentAuthMiddleware,
+  studentController.getStudentCourse
+);
+
+router.get("/lab", studentAuthMiddleware, studentController.getStudentLab);
 module.exports = router;

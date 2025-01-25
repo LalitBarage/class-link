@@ -55,10 +55,9 @@ module.exports.getAllStudents = async (req, res, next) => {
     const students = await studentService.getAllStudents();
     res.status(200).json({ students });
   } catch (error) {
-    next(error); 
+    next(error);
   }
 };
-
 
 module.exports.deleteStudent = async (req, res, next) => {
   const { id } = req.params;
@@ -105,7 +104,6 @@ module.exports.updateStudentInfo = async (req, res, next) => {
   });
 };
 
-
 module.exports.loginStudent = async (req, res, next) => {
   const { email, password } = req.body;
 
@@ -142,11 +140,35 @@ module.exports.logoutStudent = async (req, res, next) => {
     // Clear the authentication token cookie
     res.clearCookie("token");
     const token = req.cookies.token || req.headers.authorization.split(" ")[1];
-     blacklistTokenModel.create({ token });
+    blacklistTokenModel.create({ token });
 
     res.status(200).json({ message: "Student logged out successfully" });
   } catch (error) {
     console.error("Error logging out student:", error);
+    res.status(500).json({ message: "Internal Server Error", error });
+  }
+};
+
+module.exports.getStudentCourse = async (req, res, next) => {
+  try {
+    const student = req.student;
+    const course = await studentService.getStudentCourse(student._id);
+
+    res.status(200).json({ course });
+  } catch (error) {
+    console.error("Error getting student course:", error);
+    res.status(500).json({ message: "Internal Server Error", error });
+  }
+};
+
+module.exports.getStudentLab = async (req, res, next) => {
+  try {
+    const student = req.student;
+    const lab = await studentService.getStudentLab(student._id);
+
+    res.status(200).json({ lab });
+  } catch (error) {
+    console.error("Error getting student lab:", error);
     res.status(500).json({ message: "Internal Server Error", error });
   }
 };
