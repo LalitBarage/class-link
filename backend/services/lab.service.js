@@ -57,58 +57,33 @@ exports.searchLabs = async (query) => {
   }
 };
 
-module.exports.getPractcals = async (labid) => {
+exports.getPracticals = async (labid) => {
   try {
     const labs = await practicalModel.find({ labid });
-    if (!labs) {
-      return null;
-    }
-    return labs;
+    return labs || null;
   } catch (error) {
     console.error("Error fetching lectures:", error);
     throw error;
   }
 };
-module.exports.addPractical = async (labid, labData) => {
+
+exports.addPractical = async (labid, labData) => {
   try {
-    // Find the course by the custom courseId
-    const lab = await labModel.findOne({ labid });
+    const lab = await LabModel.findOne({ labid });
     if (!lab) {
-      console.error("lab not found");
+      console.error("Lab not found");
       return null;
     }
-
-    // Create a new lecture document with the custom courseId
-    const newLab = new practicalModel({ ...labData, labid });
-    await newLab.save();
-
-    // Return the newly created lecture document
-    return newLab;
+    const newPractical = new practicalModel({ ...labData, labid });
+    await newPractical.save();
+    return newPractical;
   } catch (error) {
     console.error("Error adding lab", error);
     throw error;
   }
 };
 
-module.exports.getStudentsForLab = async (labid) => {
-  // Fetch the lab details
-  const lab = await LabModel.findOne({ labid });
-  if (!lab) {
-    throw new Error("Lab not found");
-  }
-
-  // Fetch students matching the lab criteria
-  const students = await studentModel.find({
-    rollno: { $gte: lab.strollno, $lte: lab.endrollno },
-    department: lab.department,
-    division: lab.division,
-    year: lab.class,
-  });
-  return students;
-};
-
-
-module.exports.createAttendance = async (labid, practicalId, { students }) => {
+exports.createAttendance = async (labid, practicalId, { students }) => {
   try {
     const attendance = new labattendanceModel({
       labid,
@@ -116,47 +91,58 @@ module.exports.createAttendance = async (labid, practicalId, { students }) => {
       students,
     });
 
-    await practicalModel.findByIdAndUpdate(labid, { status: true });
-    // Save to the database
+    await practicalModel.findByIdAndUpdate(practicalId, { status: true });
     return await attendance.save();
   } catch (error) {
     throw new Error(`Error creating attendance: ${error.message}`);
   }
 };
 
-module.exports.getAttendanceByLab = async (practicalId) => {
+exports.getAttendanceByLab = async (practicalId) => {
   try {
-    // Fetch attendance record and populate student details
-    const attendance = await labattendanceModel.findOne({ practicalId })
-
+    const attendance = await labattendanceModel.findOne({ practicalId });
     if (!attendance) {
       throw new Error("Attendance record not found.");
     }
-
-    // Format the attendance data
-   
-
     return attendance;
   } catch (error) {
     throw new Error(`Error fetching attendance: ${error.message}`);
   }
 };
 
-module.exports.updateAttendance = async (labid, practicalId, students) => {
+exports.updateAttendance = async (labid, practicalId, students) => {
   try {
-    // Update attendance for specific course and lecture
     const updatedAttendance = await labattendanceModel.findOneAndUpdate(
-      { labid, practicalId }, // Query to find the document
-      { $set: { students } },  // Update the students array
-      { new: true }            // Return the updated document
+      { labid, practicalId },
+      { $set: { students } },
+      { new: true }
     );
-
     if (!updatedAttendance) {
-      throw new Error("Attendance record not found for the given course and lecture.");
+      throw new Error("Attendance record not found for the given lab and practical.");
     }
-
     return updatedAttendance;
   } catch (error) {
     throw new Error(`Error updating attendance: ${error.message}`);
+  }
+};
+
+exports.getStudentsByLabId = async (labid) => {
+  try {
+    const lab = await LabModel.findOne({ labid });
+    if (!lab) {
+      throw new Error("Lab not found");
+    }
+    const students = await studentModel.find({
+      rollno: { $gte: lab.strollno, $lte: lab.endrollno },
+      department: lab.department,
+      division: lab.division,
+      year: lab.year,
+    });
+    if (students.length === 0) {
+      throw new Error("No students found for this lab");
+    }
+    return students;
+  } catch (error) {
+    throw new Error(error.message);
   }
 };

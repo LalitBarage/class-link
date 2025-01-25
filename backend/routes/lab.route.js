@@ -16,7 +16,7 @@ router.get("/:labid/practical", labController.getPracticals); //done1
 
 router.post("/:labid/practical", labController.addPractical);
 
-router.get("/:labid/students", labController.getStudents);
+router.get("/:labid/students", labController.getStudentsBylabId);
 
 router.post(
   "/:labid/practical/:practicalId/attendance",

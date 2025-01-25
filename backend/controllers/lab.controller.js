@@ -115,7 +115,7 @@ module.exports.getPracticals = async (req, res, next) => {
   const { labid } = req.params;
 
   try {
-    const labs = await labService.getPractcals(labid);
+    const labs = await labService.getPracticals(labid);
     res.status(200).json({ labs });
   } catch (error) {
     next(error);
@@ -144,17 +144,7 @@ module.exports.addPractical = async (req, res, next) => {
   }
 };
 
-module.exports.getStudents = async (req, res) => {
-  try {
-    const { labid } = req.params; // Extract labid from URL params
-    const students = await labService.getStudentsForLab(labid);
 
-    res.status(200).json({ students });
-  } catch (error) {
-    console.error("Error in getStudents:", error.message);
-    res.status(500).json({ message: error.message });
-  }
-};
 
 module.exports.createAttendance = async (req, res) => {
   try {
@@ -247,5 +237,20 @@ module.exports.updateAttendance = async (req, res) => {
   } catch (error) {
     console.error("Error updating attendance:", error.message);
     return res.status(500).json({ message: error.message });
+  }
+};
+
+module.exports.getStudentsBylabId = async (req, res) => {
+  const { labid } = req.params; // Get courseId from URL parameter
+
+  try {
+    // Call the service function to get students by courseId
+    const students = await labService.getStudentsByLabId(labid);
+
+    // Return the students as a response
+    res.status(200).json({ students });
+  } catch (err) {
+    // If an error occurs, return an error response
+    res.status(500).json({ message: err.message });
   }
 };

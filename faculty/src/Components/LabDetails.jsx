@@ -18,9 +18,10 @@ const LabDetails = () => {
         let response;
         if (state?.action === "mark") {
           response = await axios.get(
-            `http://localhost:4000/lab/students/${labid}`,
+            `http://localhost:4000/lab/${labid}/students`,
             { withCredentials: true }
           );
+          console.log("Response from server:", response.data); 
 
           if (response.data?.students) {
             setStudents(
@@ -149,7 +150,7 @@ const LabDetails = () => {
       try {
         console.log("Payload for Marking Attendance:", payload);
         const response = await axios.post(
-          `http://localhost:4000/labid/${labid}/lecture/${practicalId}/attendance`,
+          `http://localhost:4000/labid/${labid}/practical/${practicalId}/attendance`,
           payload,
           { withCredentials: true }
         );

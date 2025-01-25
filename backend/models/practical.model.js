@@ -17,8 +17,8 @@ const practicalSchema = new Schema({
     required: true,
   },
   status: {
-    type: String,
-    default: "false",
+    type: Boolean,
+    default: false,
   },
 });
 

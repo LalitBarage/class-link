@@ -12,10 +12,11 @@ const LabPage = () => {
   const [addingLab, setAddingLab] = useState(false);
   const navigate = useNavigate();
   const { labid } = useParams();
-
+  const {practicalId } = useParams();
+  
   const fetchLabs = async () => {
     try {
-      const response = await axios.get(`http://localhost:4000/lab/${labid}`, {
+      const response = await axios.get(`http://localhost:4000/lab/${labid}/practical`, {
         withCredentials: true,
       });
 
@@ -39,7 +40,7 @@ const LabPage = () => {
     setAddingLab(true);
     try {
       const response = await axios.post(
-        `http://localhost:4000/lab/${labid}/lab`,
+        `http://localhost:4000/lab/${labid}/lab/practical`,
         { ...newLab, status: false },
         { withCredentials: true }
       );
