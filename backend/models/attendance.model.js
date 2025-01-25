@@ -19,6 +19,24 @@ const attendanceSchema = new Schema({
         ref: "Student",
         required: true,
       },
+      fullname: {
+        firstname: {
+          type: String,
+          required: true,
+        },
+        middlename: {
+          type: String,
+          required: true,
+        },
+        lastname: {
+          type: String,
+          required: true,
+        },
+      },
+      rollno: {
+        type: Number,
+        required: true,
+      },
       status: {
         type: String,
         enum: ["Present", "Absent", "Late", "Excused"],
