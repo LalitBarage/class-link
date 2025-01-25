@@ -167,16 +167,19 @@ module.exports.fetchLabAttendance = async (labid) => {
   }
 };
 
-module.exports.getPracticalDate = async (practicalId) => {
+module.exports.getPracticalDateById = async (practicalId) => {
   try {
+    // Query the database for the lecture with the given lectureId
     const practical = await practicalModel.findById(practicalId);
 
     if (!practical) {
-      return null;
+      return null; // If no lecture found, return null
     }
-    return practical.date;
-  } catch (error) {
-    console.error("Error Fetching practical date:", error);
-    throw new error("Internal server error");
+
+    // Return the date of the lecture
+    return practical.date; // Assuming the Lecture model has a 'date' field
+  } catch (err) {
+    console.error("Error fetching practical date:", err);
+    throw new Error("Service layer error");
   }
 };

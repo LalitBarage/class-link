@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import axios from "axios";
 import * as XLSX from "xlsx"; // Import XLSX library
@@ -6,7 +6,7 @@ import * as XLSX from "xlsx"; // Import XLSX library
 const LabReport = () => {
   const { labid } = useParams(); // Get labId from URL
   const [attendanceData, setAttendanceData] = useState([]);
-  const [labDates, setLabDates] = useState({});
+  const [practicalDates, setPracticalDates] = useState({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [searchQuery, setSearchQuery] = useState(""); // State for search query
@@ -22,20 +22,20 @@ const LabReport = () => {
           { withCredentials: true }
         );
 
-        const labs = response.data.attendance;
+        const practicals = response.data.attendance;
 
-        if (!Array.isArray(labs)) {
+        if (!Array.isArray(practicals)) {
           throw new Error(
             "Invalid response: Expected an array in 'attendance'"
           );
         }
 
-        const formattedData = formatAttendanceData(labs);
+        const formattedData = formatAttendanceData(practicals);
         setAttendanceData(formattedData);
 
         // Fetch dates for each labId
-        const fetchedDates = await fetchLabDates(labs);
-        setLabDates(fetchedDates);
+        const fetchedDates = await fetchPracticalDates(practicals);
+        setPracticalDates(fetchedDates);
       } catch (err) {
         console.error("Error fetching attendance:", err);
         setError(`Failed to fetch attendance: ${err.message}`);
@@ -49,11 +49,11 @@ const LabReport = () => {
     }
   }, [labid]);
 
-  const formatAttendanceData = (labs) => {
+  const formatAttendanceData = (practicals) => {
     const students = {};
 
-    labs.forEach((lab) => {
-      lab.students.forEach((student) => {
+    practicals.forEach((practical) => {
+      practical.students.forEach((student) => {
         if (!students[student.studentId]) {
           students[student.studentId] = {
             rollno: student.rollno,
@@ -61,37 +61,36 @@ const LabReport = () => {
             attendance: {},
           };
         }
-        students[student.studentId].attendance[lab.labId] = student.status;
+        students[student.studentId].attendance[practical.practicalId] = student.status;
       });
     });
 
     return Object.values(students);
   };
 
-  const fetchLabDates = async (labs) => {
+  const fetchPracticalDates = async (practicals) => {
     const dates = {}; // Object to store labId-date pairs
-    const labIds = labs.map((lab) => lab.labid);
+    const practicalIds = practicals.map((practical) => practical.practicalId);
+    console.log(practicalIds);
 
-    for (let labId of labIds) {
+    for (let practicalId of practicalIds) {
       try {
         const dateResponse = await axios.get(
-          `http://localhost:4000/lab/practical/${labId}/date`
+          `http://localhost:4000/lab/practical/${practicalId}/date`
         );
 
-        // Ensure the response contains the expected data structure
-        if (dateResponse.data && dateResponse.data.date) {
-          const formattedDate = dayjs(dateResponse.data.date).format("DD-MM");
-          const timeSlot = dateResponse.data.timeSlot || "Unknown Time";
-          dates[labId] = `${formattedDate} (${timeSlot})`; // Format date with time slot
-        } else {
-          dates[labId] = "Unknown Date";
-        }
-      } catch (error) {
-        console.error(`Error fetching date for labId ${labId}:`, error.message);
-        dates[labId] = "Unknown Date"; // Fallback for 404 or other errors
-      }
-    }
+        const practicalDate = new Date(dateResponse.data.date);
 
+        const formattedDate = `${practicalDate.getDate()}-${
+          practicalDate.getMonth() + 1
+        }`;
+
+        // Store the formatted date in the dates object
+        dates[practicalId] = formattedDate;
+      } catch (error) {
+        console.error("Error fetching date:", error);
+      }    
+    }
     return dates;
   };
 
@@ -106,7 +105,7 @@ const LabReport = () => {
     const headers = [
       "Roll No",
       "Name",
-      ...Object.values(labDates), // Add lab dates as columns
+      ...Object.values(practicalDates), // Add lab dates as columns
     ];
 
     // Prepare the table rows
@@ -170,9 +169,9 @@ const LabReport = () => {
                 <th className="px-4 py-2 border-b">Name</th>
                 {/* Render lab dates as table headers */}
                 {Object.keys(filteredAttendanceData[0]?.attendance || {}).map(
-                  (labId) => (
-                    <th key={labId} className="px-4 py-2 border-b">
-                      {labDates[labId] || "Unknown Date"}
+                  (practicalId) => (
+                    <th key={practicalId} className="px-4 py-2 border-b">
+                      {practicalDates[practicalId] || "Unknown Date"}
                     </th>
                   )
                 )}

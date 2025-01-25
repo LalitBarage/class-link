@@ -73,7 +73,7 @@ const CourseReport = () => {
   const fetchLectureDates = async (lectures) => {
     const dates = {};
     const lectureIds = lectures.map((lecture) => lecture.lectureId);
-
+    console.log(lectureIds);
     // Fetch date for each lectureId
     for (let lectureId of lectureIds) {
       try {
