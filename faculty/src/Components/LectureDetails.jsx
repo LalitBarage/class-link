@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useParams, useLocation } from "react-router-dom"; // Import useLocation
+import { useParams, useLocation } from "react-router-dom";
 import axios from "axios";
 
 const LectureDetails = () => {
@@ -14,46 +14,58 @@ const LectureDetails = () => {
     const fetchStudents = async () => {
       try {
         setLoading(true);
-        console.log("Fetching students...");
+
         let response;
         if (state?.action === "mark") {
           response = await axios.get(
             `http://localhost:4000/course/students/${courseId}`,
             { withCredentials: true }
           );
-          setStudents(
-            response.data.students.map((student) => ({
-              ...student,
-              attended: false, // Default status for marking attendance
-            }))
-          );
-          setAttendanceData(
-            response.data.students.map((student) => ({
-              studentId: student._id,
-              fullname: `${student.fullname.firstname} ${student.fullname.lastname}`,
-              rollno: student.rollno,
-              status: "Present", // Default status
-            }))
-          );
+
+          if (response.data?.students) {
+            setStudents(
+              response.data.students.map((student) => ({
+                ...student,
+                attended: true, // Default to Present for marking attendance
+                studentId: student.studentId || student._id, // Ensure studentId is correctly mapped
+              }))
+            );
+            setAttendanceData(
+              response.data.students.map((student) => ({
+                studentId: student.studentId || student._id, // Ensure studentId is correctly mapped
+                fullname: `${student.fullname.firstname} ${student.fullname.lastname}`,
+                rollno: student.rollno,
+                status: "Present", // Default status to Present
+              }))
+            );
+          } else {
+            setError("No students data found.");
+          }
         } else if (state?.action === "edit") {
           response = await axios.get(
             `http://localhost:4000/course/${courseId}/lecture/${lectureId}/attendance`,
             { withCredentials: true }
           );
-          const fetchedAttendance = response.data.attendance;
-          setStudents(
-            fetchedAttendance.map((record) => ({
-              ...record.student,
-              attended: record.status === "Present",
-            }))
-          );
-          setAttendanceData(
-            fetchedAttendance.map((record) => ({
-              studentId: record.student._id,
-              fullname: `${record.student.fullname.firstname} ${record.student.fullname.lastname}`,
-              status: record.status,
-            }))
-          );
+
+          const fetchedAttendance = response.data.data?.students;
+          if (fetchedAttendance) {
+            setStudents(
+              fetchedAttendance.map((record) => ({
+                ...record,
+                attended: record.status === "Present", // Correct status mapping
+                studentId: record.studentId || record._id, // Ensure studentId is correctly mapped
+              }))
+            );
+            setAttendanceData(
+              fetchedAttendance.map((record) => ({
+                studentId: record.studentId || record._id, // Ensure studentId is correctly mapped
+                fullname: `${record.fullname.firstname} ${record.fullname.lastname}`,
+                status: record.status,
+              }))
+            );
+          } else {
+            setError("No attendance data found.");
+          }
         }
       } catch (err) {
         console.error("Error fetching students:", err);
@@ -62,6 +74,7 @@ const LectureDetails = () => {
         setLoading(false);
       }
     };
+
     fetchStudents();
   }, [courseId, lectureId, state?.action]);
 
@@ -79,17 +92,18 @@ const LectureDetails = () => {
         data.studentId === studentId
           ? {
               ...data,
-              status: data.status === "Present" ? "Present" : "Absent",
+              status: data.status === "Present" ? "Absent" : "Present", // Toggle between Present and Absent
             }
           : data
       )
     );
   };
 
-  const handleSubmit = async () => {
+  // This method will be used for updating attendance
+  const updateAttendance = async () => {
     const payload = {
-      courseId, // Extracted from useParams
-      lectureId, // Extracted from useParams
+      courseId,
+      lectureId,
       students: attendanceData.map((data) => ({
         studentId: data.studentId,
         fullname: {
@@ -97,23 +111,56 @@ const LectureDetails = () => {
           lastname: data.fullname.split(" ")[1], // Extract lastname
         },
         rollno: data.rollno,
-        status: data.status,
+        status: data.status, // Ensure the correct status is being sent
       })),
     };
-  
+
     try {
-      await axios.post(
+      await axios.put(
         `http://localhost:4000/course/${courseId}/lecture/${lectureId}/attendance`,
         payload,
         { withCredentials: true }
       );
-      alert("Attendance submitted successfully!");
+      alert("Attendance updated successfully!");
     } catch (err) {
-      console.error("Error submitting attendance:", err);
-      alert(`Failed to submit attendance: ${err.message}`);
+      console.error("Error updating attendance:", err);
+      alert(`Failed to update attendance: ${err.message}`);
     }
   };
-  
+
+  const handleSubmit = async () => {
+    if (state?.action === "mark") {
+      // Mark attendance logic
+      const payload = {
+        courseId,
+        lectureId,
+        students: attendanceData.map((data) => ({
+          studentId: data.studentId,
+          fullname: {
+            firstname: data.fullname.split(" ")[0],
+            lastname: data.fullname.split(" ")[1],
+          },
+          rollno: data.rollno,
+          status: data.status,
+        })),
+      };
+
+      try {
+        await axios.post(
+          `http://localhost:4000/course/${courseId}/lecture/${lectureId}/attendance`,
+          payload,
+          { withCredentials: true }
+        );
+        alert("Attendance submitted successfully!");
+      } catch (err) {
+        console.error("Error submitting attendance:", err);
+        alert(`Failed to submit attendance: ${err.message}`);
+      }
+    } else if (state?.action === "edit") {
+      // Call updateAttendance when in edit mode
+      updateAttendance();
+    }
+  };
 
   return (
     <div className="min-h-screen bg-white">
@@ -153,7 +200,9 @@ const LectureDetails = () => {
               onClick={handleSubmit}
               className="mt-6 px-6 py-2 bg-black justify-end text-white rounded shadow"
             >
-              Submit Attendance
+              {state?.action === "mark"
+                ? "Submit Attendance"
+                : "Update Attendance"}
             </button>
           </>
         )}
