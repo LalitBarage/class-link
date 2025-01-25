@@ -267,3 +267,22 @@ module.exports.getLabAttendance = async (req, res) => {
     return res.status(500).json({ message: "Failed to fetch lab attendance." });
   }
 };
+
+module.exports.getPracticalDate = async (req, res) => {
+
+  const { practicalId } = req.params;
+  try{
+
+    const date = await labService.getPracticalDate(practicalId);
+
+    if(!date){
+      return res.status(404).json({ message: "Practical date not found." });
+    }
+
+    return res.status(200).json({ date });
+  }
+  catch(error){
+    console.error("Error fetching practical date:", error);
+    return res.status(500).json({ message: "Failed to fetch practical date." });
+  }
+};

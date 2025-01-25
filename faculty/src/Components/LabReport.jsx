@@ -4,7 +4,7 @@ import axios from "axios";
 import * as XLSX from "xlsx"; // Import XLSX library
 
 const LabReport = () => {
-  const { labId } = useParams(); // Get labId from URL
+  const { labid } = useParams(); // Get labId from URL
   const [attendanceData, setAttendanceData] = useState([]);
   const [labDates, setLabDates] = useState({});
   const [loading, setLoading] = useState(true);
@@ -18,11 +18,12 @@ const LabReport = () => {
       try {
         // Fetch attendance data
         const response = await axios.get(
-          `http://localhost:4000/lab/${labId}/attendance`,
+          `http://localhost:4000/lab/${labid}/attendance`,
           { withCredentials: true }
         );
 
         const labs = response.data.attendance;
+        console.log(labs);
 
         if (!Array.isArray(labs)) {
           throw new Error(
@@ -44,10 +45,10 @@ const LabReport = () => {
       }
     };
 
-    if (labId) {
+    if (labid) {
       fetchAttendanceAndDates();
     }
-  }, [labId]);
+  }, [labid]);
 
   const formatAttendanceData = (labs) => {
     const students = {};
@@ -77,7 +78,7 @@ const LabReport = () => {
     for (let labId of labIds) {
       try {
         const dateResponse = await axios.get(
-          `http://localhost:4000/lab/${labId}/date`
+          `http://localhost:4000/practical/${labId}/date`
         );
 
         // Extract the date from the response

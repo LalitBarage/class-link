@@ -34,4 +34,6 @@ router.put(
 
 router.get("/:labid/attendance", labController.getLabAttendance);
 
+router.get("/practical/:practicalId/date", labController.getPracticalDate);
+
 module.exports = router;

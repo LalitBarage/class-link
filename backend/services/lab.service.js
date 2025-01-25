@@ -160,21 +160,28 @@ module.exports.fetchLabAttendance = async (labid) => {
     }
 
     // Format the attendance data as needed
-    const formattedAttendance = attendance.map((entry) => ({
-      _id: entry._id,
-      labId: entry.labId,
-      practicalId: entry.practicalId,
-      students: entry.students.map((student) => ({
-        studentId: student.studentId._id,
-        fullname: student.studentId.fullname,
-        rollno: student.studentId.rollno,
-        status: student.status,
-      })),
-    }));
+    
 
-    return formattedAttendance;
+    return attendance;
   } catch (error) {
     console.error("Error fetching lab attendance data:", error);
     throw new Error("Database error while fetching lab attendance.");
   }
+};
+
+
+module.exports.getPracticalDate = async(practicalId) => {
+  try{
+    const practical = await practicalModel.findById(practicalId);
+
+    if(!practical) {
+      return null;
+    }
+    return practical.date;
+  }
+  catch(error) {
+    console.error("Error Fetching practical date:", error);
+    throw new error("Internal server error");
+  }
+  
 };
