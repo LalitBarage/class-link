@@ -218,3 +218,21 @@ module.exports.getStudentLectureCounts = async (labid, studentId) => {
   }
 };
 
+module.exports.getLabforStudent = async (studentId) => {
+  try {
+    const student = await studentModel.findById(studentId);
+    if (!student) {
+      throw new Error("Student not found");
+    }
+    const labs = await LabModel.find({
+      strollno: { $lte: student.rollno },
+      endrollno: { $gte: student.rollno },
+      department: student.department,
+      division: student.division,
+      year: student.year,
+    });
+    return labs;
+  } catch (error) {
+    throw new Error(error.message);
+  }
+};

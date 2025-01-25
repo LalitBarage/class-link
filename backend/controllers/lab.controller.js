@@ -306,3 +306,15 @@ module.exports.getStudentLectureCounts = async (req, res) => {
     res.status(500).json({ message: "Internal Server Error", error: error.message });
   }
 };
+
+module.exports.getLabforStudent = async (req, res) => {
+  const { studentId } = req.params;
+
+  try {
+    const labs = await labService.getLabforStudent(studentId);
+
+    res.status(200).json({ labs });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+}

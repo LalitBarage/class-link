@@ -18,6 +18,9 @@ router.post("/:labid/practical", labController.addPractical);
 
 router.get("/:labid/students", labController.getStudentsBylabId);
 
+
+
+
 router.post(
   "/:labid/practical/:practicalId/attendance",
   labController.createAttendance
@@ -37,5 +40,7 @@ router.get("/:labid/attendance", labController.getLabAttendance);
 router.get("/practical/:practicalId/date", labController.getPracticalDate);
 
 router.get("/:labid/students/:studentId/lecture-counts", labController.getStudentLectureCounts);
+
+router.get("/:studentId/lab", labController.getLabforStudent);
 
 module.exports = router;
