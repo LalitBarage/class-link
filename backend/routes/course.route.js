@@ -86,4 +86,6 @@ router.put(
   courseController.updateAttendance
 );
 
+router.get("/lecture/:lectureId/date", courseController.getLectureDate);
+
 module.exports = router;

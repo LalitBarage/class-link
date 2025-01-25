@@ -232,3 +232,22 @@ module.exports.getAttendanceByCourse = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
+
+module.exports.getLectureDate = async (req, res) => {
+  const { lectureId } = req.params;
+
+  try {
+    // Fetch the lecture date from the service layer
+    const date = await courseService.getLectureDateById(lectureId);
+
+    if (!date) {
+      return res.status(404).json({ message: "Lecture date not found" });
+    }
+
+    // Return the date as the response
+    res.json({ date });
+  } catch (err) {
+    console.error("Error fetching lecture date:", err);
+    res.status(500).json({ message: "Internal Server Error" });
+  }
+};

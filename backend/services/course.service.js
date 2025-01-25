@@ -181,3 +181,20 @@ module.exports.getAttendanceByCourse = async (courseId) => {
     throw new Error(`Error fetching attendance: ${error.message}`);
   }
 };
+
+module.exports.getLectureDateById = async (lectureId) => {
+  try {
+    // Query the database for the lecture with the given lectureId
+    const lecture = await lectureModel.findById(lectureId);
+
+    if (!lecture) {
+      return null; // If no lecture found, return null
+    }
+
+    // Return the date of the lecture
+    return lecture.date; // Assuming the Lecture model has a 'date' field
+  } catch (err) {
+    console.error("Error fetching lecture date:", err);
+    throw new Error("Service layer error");
+  }
+};
