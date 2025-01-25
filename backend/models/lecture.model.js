@@ -16,6 +16,10 @@ const lectureSchema = new Schema({
     ref: "Course",
     required: true,
   },
+  status: {
+    type: Boolean,
+    default:false
+  }
 
 });
 
