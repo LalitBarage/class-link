@@ -23,7 +23,6 @@ const LabReport = () => {
         );
 
         const labs = response.data.attendance;
-        console.log(labs);
 
         if (!Array.isArray(labs)) {
           throw new Error(
@@ -69,28 +68,27 @@ const LabReport = () => {
     return Object.values(students);
   };
 
-  // Fetch dates for each labId
   const fetchLabDates = async (labs) => {
-    const dates = {};
-    const labIds = labs.map((lab) => lab.labId);
+    const dates = {}; // Object to store labId-date pairs
+    const labIds = labs.map((lab) => lab.labid);
 
-    // Fetch date for each labId
     for (let labId of labIds) {
       try {
         const dateResponse = await axios.get(
-          `http://localhost:4000/practical/${labId}/date`
+          `http://localhost:4000/lab/practical/${labId}/date`
         );
 
-        // Extract the date from the response
-        const labDate = new Date(dateResponse.data.date);
-
-        // Format the date to show day and month (DD-MM)
-        const formattedDate = `${labDate.getDate()}-${labDate.getMonth() + 1}`;
-
-        // Store the formatted date in the dates object
-        dates[labId] = formattedDate;
+        // Ensure the response contains the expected data structure
+        if (dateResponse.data && dateResponse.data.date) {
+          const formattedDate = dayjs(dateResponse.data.date).format("DD-MM");
+          const timeSlot = dateResponse.data.timeSlot || "Unknown Time";
+          dates[labId] = `${formattedDate} (${timeSlot})`; // Format date with time slot
+        } else {
+          dates[labId] = "Unknown Date";
+        }
       } catch (error) {
-        console.error("Error fetching date:", error);
+        console.error(`Error fetching date for labId ${labId}:`, error.message);
+        dates[labId] = "Unknown Date"; // Fallback for 404 or other errors
       }
     }
 

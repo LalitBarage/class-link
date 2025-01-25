@@ -152,7 +152,6 @@ exports.getStudentsByLabId = async (labid) => {
 module.exports.fetchLabAttendance = async (labid) => {
   // Fetch attendance for a specific labId and populate the required fields
   try {
-    console.log("Fetching lab attendance data for lab:", labid);
     const attendance = await labattendanceModel.find({ labid });
 
     if (!attendance || attendance.length === 0) {
@@ -160,7 +159,6 @@ module.exports.fetchLabAttendance = async (labid) => {
     }
 
     // Format the attendance data as needed
-    
 
     return attendance;
   } catch (error) {
@@ -169,19 +167,16 @@ module.exports.fetchLabAttendance = async (labid) => {
   }
 };
 
-
-module.exports.getPracticalDate = async(practicalId) => {
-  try{
+module.exports.getPracticalDate = async (practicalId) => {
+  try {
     const practical = await practicalModel.findById(practicalId);
 
-    if(!practical) {
+    if (!practical) {
       return null;
     }
     return practical.date;
-  }
-  catch(error) {
+  } catch (error) {
     console.error("Error Fetching practical date:", error);
     throw new error("Internal server error");
   }
-  
 };
