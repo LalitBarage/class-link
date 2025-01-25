@@ -270,16 +270,19 @@ module.exports.getLabAttendance = async (req, res) => {
 
 module.exports.getPracticalDate = async (req, res) => {
   const { practicalId } = req.params;
+
   try {
-    const date = await labService.getPracticalDate(practicalId);
+    // Fetch the lecture date from the service layer
+    const date = await labService.getPracticalDateById(practicalId);
 
     if (!date) {
-      return res.status(404).json({ message: "Practical date not found." });
+      return res.status(404).json({ message: "Lecture date not found" });
     }
 
-    return res.status(200).json({ date });
-  } catch (error) {
-    console.error("Error fetching practical date:", error);
-    return res.status(500).json({ message: "Failed to fetch practical date." });
+    // Return the date as the response
+    res.json({ date });
+  } catch (err) {
+    console.error("Error fetching lecture date:", err);
+    res.status(500).json({ message: "Internal Server Error" });
   }
 };
