@@ -82,7 +82,7 @@ const LectureDetails = () => {
   const handleAttendanceToggle = (studentId) => {
     setStudents((prev) =>
       prev.map((student) =>
-        student._id === studentId
+        student.studentId === studentId
           ? { ...student, attended: !student.attended }
           : student
       )
@@ -100,7 +100,6 @@ const LectureDetails = () => {
     );
   };
 
-  // This method will be used for updating attendance
   const updateAttendance = async () => {
     const payload = {
       courseId,
@@ -117,21 +116,22 @@ const LectureDetails = () => {
     };
 
     try {
-      await axios.put(
+      console.log("Payload:", payload);
+      const response = await axios.put(
         `http://localhost:4000/course/${courseId}/lecture/${lectureId}/attendance`,
         payload,
         { withCredentials: true }
       );
+      console.log("Update Response:", response.data);
       alert("Attendance updated successfully!");
     } catch (err) {
-      console.error("Error updating attendance:", err);
+      console.error("Error updating attendance:", err.response?.data || err.message);
       alert(`Failed to update attendance: ${err.message}`);
     }
   };
 
   const handleSubmit = async () => {
     if (state?.action === "mark") {
-      // Mark attendance logic
       const payload = {
         courseId,
         lectureId,
@@ -147,18 +147,19 @@ const LectureDetails = () => {
       };
 
       try {
-        await axios.post(
+        console.log("Payload for Marking Attendance:", payload);
+        const response = await axios.post(
           `http://localhost:4000/course/${courseId}/lecture/${lectureId}/attendance`,
           payload,
           { withCredentials: true }
         );
+        console.log("Mark Response:", response.data);
         alert("Attendance submitted successfully!");
       } catch (err) {
-        console.error("Error submitting attendance:", err);
+        console.error("Error submitting attendance:", err.response?.data || err.message);
         alert(`Failed to submit attendance: ${err.message}`);
       }
     } else if (state?.action === "edit") {
-      // Call updateAttendance when in edit mode
       updateAttendance();
     }
   };
@@ -178,14 +179,14 @@ const LectureDetails = () => {
             <ul className="space-y-4">
               {students.map((student) => (
                 <li
-                  key={student._id}
+                  key={student.studentId}
                   className="flex items-center justify-between bg-gray-100 p-4 rounded shadow"
                 >
                   <p>
                     {student.fullname.firstname} {student.fullname.lastname}
                   </p>
                   <button
-                    onClick={() => handleAttendanceToggle(student._id)}
+                    onClick={() => handleAttendanceToggle(student.studentId)}
                     className={`px-4 py-2 rounded ${
                       student.attended
                         ? "bg-green-500 text-white"
