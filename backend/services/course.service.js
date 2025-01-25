@@ -119,6 +119,7 @@ module.exports.createAttendance = async (courseId, lectureId, { students }) => {
       students,
     });
 
+    await lectureModel.findByIdAndUpdate(lectureId, { status: true });
     // Save to the database
     return await attendance.save();
   } catch (error) {
