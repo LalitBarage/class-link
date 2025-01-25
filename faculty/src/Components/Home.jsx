@@ -44,14 +44,14 @@ const Home = () => {
   return (
     <div className="min-h-screen bg-white">
       <div className="px-6 py-8">
-        <h1 className="text-2xl font-bold mb-6">Courses / Labs</h1>
-
         {/* Toggle Buttons */}
         <div className="flex gap-4 mb-6">
           <button
             onClick={() => setView("courses")}
             className={`px-2 py-1 rounded-lg ${
-              view === "courses" ? "bg-white border-2 border-black text-black" : "bg-white"
+              view === "courses"
+                ? "bg-white border-2 border-black text-black"
+                : "bg-white"
             }`}
           >
             Courses
@@ -59,7 +59,9 @@ const Home = () => {
           <button
             onClick={() => setView("labs")}
             className={`px-2 py-1 rounded-lg ${
-              view === "labs" ? "bg-white border-2 border-black text-black" : "bg-white"
+              view === "labs"
+                ? "bg-white border-2 border-black text-black"
+                : "bg-white"
             }`}
           >
             Labs
