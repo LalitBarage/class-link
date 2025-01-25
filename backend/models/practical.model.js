@@ -2,7 +2,7 @@ const mongoose = require("mongoose");
 
 const Schema = mongoose.Schema;
 
-const labdetailSchema = new Schema({
+const practicalSchema = new Schema({
   date: {
     type: Date,
     required: true,
@@ -22,4 +22,4 @@ const labdetailSchema = new Schema({
   },
 });
 
-module.exports = mongoose.model("labdetail", labdetailSchema);
+module.exports = mongoose.model("practical", practicalSchema);

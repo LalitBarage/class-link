@@ -26,7 +26,7 @@ const labSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  class: {
+  year: {
     type: String,
     required: true,
   },

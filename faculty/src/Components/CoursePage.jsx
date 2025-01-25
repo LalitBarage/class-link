@@ -124,59 +124,67 @@ const CoursePage = () => {
       {/* Modal for adding a lecture */}
       {modalOpen && (
         <div className="fixed inset-0 bg-gray-500 bg-opacity-50 flex justify-center items-center">
-          <div className="bg-white p-6 rounded shadow-lg w-96">
-            <h2 className="text-xl font-semibold mb-4">Add New Lecture</h2>
-            <form onSubmit={(e) => e.preventDefault()}>
-              <div className="mb-4">
-                <label htmlFor="date" className="block text-sm font-medium">
-                  Date
-                </label>
-                <input
-                  type="date"
-                  id="date"
-                  value={newLecture.date}
-                  onChange={(e) =>
-                    setNewLecture({ ...newLecture, date: e.target.value })
-                  }
-                  className="w-full px-4 py-2 border border-gray-300 rounded-md"
-                />
-              </div>
-
-              <div className="mb-4">
-                <label htmlFor="timeSlot" className="block text-sm font-medium">
-                  Time Slot
-                </label>
-                <input
-                  type="text"
-                  id="timeSlot"
-                  value={newLecture.timeSlot}
-                  onChange={(e) =>
-                    setNewLecture({ ...newLecture, timeSlot: e.target.value })
-                  }
-                  className="w-full px-4 py-2 border border-gray-300 rounded-md"
-                />
-              </div>
-
-              <div className="flex justify-end">
-                <button
-                  type="button"
-                  onClick={() => setModalOpen(false)}
-                  className="bg-gray-300 px-4 py-2 rounded-md mr-5"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="button"
-                  onClick={handleAddLecture} // Explicitly handle click to add lecture
-                  className="bg-black text-white px-4 py-2 rounded-md"
-                  disabled={addingLecture} // Disable button while adding lecture
-                >
-                  {addingLecture ? "Adding..." : "Add Lecture"}
-                </button>
-              </div>
-            </form>
-          </div>
+        <div className="bg-white p-6 rounded shadow-lg w-96">
+          <h2 className="text-xl font-semibold mb-4">Add New Lecture</h2>
+          <form onSubmit={(e) => e.preventDefault()}>
+            <div className="mb-4">
+              <label htmlFor="date" className="block text-sm font-medium">
+                Date
+              </label>
+              <input
+                type="date"
+                id="date"
+                value={newLecture.date}
+                onChange={(e) =>
+                  setNewLecture({ ...newLecture, date: e.target.value })
+                }
+                className="w-full px-4 py-2 border border-gray-300 rounded-md"
+              />
+            </div>
+      
+            <div className="mb-4">
+              <label htmlFor="timeSlot" className="block text-sm font-medium">
+                Time Slot
+              </label>
+              <select
+                id="timeSlot"
+                value={newLecture.timeSlot}
+                onChange={(e) =>
+                  setNewLecture({ ...newLecture, timeSlot: e.target.value })
+                }
+                className="w-full px-4 py-2 border border-gray-300 rounded-md"
+              >
+                <option value="">Select a Time Slot</option>
+                <option value="9:15 am - 10:15 am">9:15 am - 10:15 am</option>
+                <option value="10:15 am - 11:15 am">10:15 am - 11:15 am</option>
+                <option value="11:30 am - 12:30 pm">11:30 am - 12:30 pm</option>
+                <option value="12:30 pm - 1:30 pm">12:30 pm - 1:30 pm</option>
+                <option value="2:15 pm - 3:15 pm">2:15 pm - 3:15 pm</option>
+                <option value="3:15 pm - 4:15 pm">3:15 pm - 4:15 pm</option>
+              </select>
+            </div>
+      
+            <div className="flex justify-end">
+              <button
+                type="button"
+                onClick={() => setModalOpen(false)}
+                className="bg-gray-300 px-4 py-2 rounded-md mr-5"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={handleAddLecture}
+                className="bg-black text-white px-4 py-2 rounded-md"
+                disabled={addingLecture}
+              >
+                {addingLecture ? "Adding..." : "Add Lecture"}
+              </button>
+            </div>
+          </form>
         </div>
+      </div>
+      
       )}
     </div>
   );

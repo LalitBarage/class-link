@@ -1,7 +1,8 @@
 const labModel = require("../models/lab.model");
 const LabModel = require("../models/lab.model");
-const labdetailModel = require("../models/labdetail.model");
+const practicalModel = require("../models/practical.model");
 const studentModel = require("../models/student.model");
+const labattendanceModel = require("../models/labattendance.model");
 
 // Create a new lab
 exports.createLab = async (labData) => {
@@ -56,20 +57,19 @@ exports.searchLabs = async (query) => {
   }
 };
 
-module.exports.getLabs = async (labid) => {
+module.exports.getPractcals = async (labid) => {
   try {
-    const lab = await labdetailModel.find({ labid });
-    if (!lab) {
+    const labs = await practicalModel.find({ labid });
+    if (!labs) {
       return null;
     }
-    return lab;
+    return labs;
   } catch (error) {
-    console.error("Error fetching labs:", error);
+    console.error("Error fetching lectures:", error);
     throw error;
   }
 };
-
-module.exports.addLab = async (labid, labData) => {
+module.exports.addPractical = async (labid, labData) => {
   try {
     // Find the course by the custom courseId
     const lab = await labModel.findOne({ labid });
@@ -79,7 +79,7 @@ module.exports.addLab = async (labid, labData) => {
     }
 
     // Create a new lecture document with the custom courseId
-    const newLab = new labdetailModel({ ...labData, labid });
+    const newLab = new practicalModel({ ...labData, labid });
     await newLab.save();
 
     // Return the newly created lecture document
@@ -105,4 +105,58 @@ module.exports.getStudentsForLab = async (labid) => {
     year: lab.class,
   });
   return students;
+};
+
+
+module.exports.createAttendance = async (labid, practicalId, { students }) => {
+  try {
+    const attendance = new labattendanceModel({
+      labid,
+      practicalId,
+      students,
+    });
+
+    await practicalModel.findByIdAndUpdate(labid, { status: true });
+    // Save to the database
+    return await attendance.save();
+  } catch (error) {
+    throw new Error(`Error creating attendance: ${error.message}`);
+  }
+};
+
+module.exports.getAttendanceByLab = async (practicalId) => {
+  try {
+    // Fetch attendance record and populate student details
+    const attendance = await labattendanceModel.findOne({ practicalId })
+
+    if (!attendance) {
+      throw new Error("Attendance record not found.");
+    }
+
+    // Format the attendance data
+   
+
+    return attendance;
+  } catch (error) {
+    throw new Error(`Error fetching attendance: ${error.message}`);
+  }
+};
+
+module.exports.updateAttendance = async (labid, practicalId, students) => {
+  try {
+    // Update attendance for specific course and lecture
+    const updatedAttendance = await labattendanceModel.findOneAndUpdate(
+      { labid, practicalId }, // Query to find the document
+      { $set: { students } },  // Update the students array
+      { new: true }            // Return the updated document
+    );
+
+    if (!updatedAttendance) {
+      throw new Error("Attendance record not found for the given course and lecture.");
+    }
+
+    return updatedAttendance;
+  } catch (error) {
+    throw new Error(`Error updating attendance: ${error.message}`);
+  }
 };

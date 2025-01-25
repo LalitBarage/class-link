@@ -111,24 +111,24 @@ exports.searchLabs = async (req, res, next) => {
   }
 };
 
-module.exports.getLabs = async (req, res, next) => {
+module.exports.getPracticals = async (req, res, next) => {
   const { labid } = req.params;
 
   try {
-    const labs = await labService.getLabs(labid);
+    const labs = await labService.getPractcals(labid);
     res.status(200).json({ labs });
   } catch (error) {
     next(error);
   }
 };
 
-module.exports.addLab = async (req, res, next) => {
+module.exports.addPractical = async (req, res, next) => {
   const { labid } = req.params; // Extract courseId from the request params
   const labData = req.body; // Extract lecture data from the request body
 
   try {
     // Add the lecture using the custom courseId
-    const newLab = await labService.addLab(labid, labData);
+    const newLab = await labService.addPractical(labid, labData);
 
     if (!newLab) {
       // If no course is found, return a 404
@@ -153,5 +153,99 @@ module.exports.getStudents = async (req, res) => {
   } catch (error) {
     console.error("Error in getStudents:", error.message);
     res.status(500).json({ message: error.message });
+  }
+};
+
+module.exports.createAttendance = async (req, res) => {
+  try {
+    const { students } = req.body;
+    const { labid, practicalId } = req.params;
+
+    // Validate input
+    if (!labid || !practicalId || !students || students.length === 0) {
+      return res
+        .status(400)
+        .json({ message: "All fields are required, including students." });
+    }
+
+    // Ensure each student has a status
+    for (let student of students) {
+      if (!student.studentId || !student.status) {
+        return res.status(400).json({
+          message: "Each student must have a studentId and status.",
+        });
+      }
+
+      if (!["Present", "Absent", "Late", "Excused"].includes(student.status)) {
+        return res.status(400).json({
+          message:
+            "Invalid status for student. Valid statuses are: Present, Absent, Late, Excused.",
+        });
+      }
+    }
+
+    // Call service to create attendance
+    const attendance = await labService.createAttendance(
+      labid,
+      practicalId,
+      { students }
+    );
+
+    return res.status(201).json({
+      message: "Attendance record created successfully",
+      data: attendance,
+    });
+  } catch (error) {
+    return res.status(500).json({ message: error.message });
+  }
+};
+
+module.exports.getAttendanceByLab = async (req, res) => {
+  try {
+    const { practicalId } = req.params;
+
+    // Validate input
+    if (!practicalId) {
+      return res.status(400).json({ message: "Practical ID is required." });
+    }
+
+    // Call service to get attendance
+    const attendance = await labService.getAttendanceByLab(practicalId);
+
+    return res.status(200).json({
+      message: "Attendance record retrieved successfully",
+      data: attendance,
+    });
+  } catch (error) {
+    return res.status(500).json({ message: error.message });
+  }
+};
+
+module.exports.updateAttendance = async (req, res) => {
+  try {
+    const { labid, practicalId } = req.params;
+    const { students } = req.body;
+
+    // Validate input
+    if (!labid || !practicalId || !students || students.length === 0) {
+      return res
+        .status(400)
+        .json({ message: "Course ID, Lecture ID, and students data are required." });
+    }
+
+    // Call service to update attendance
+    const updatedAttendance = await labService.updateAttendance(
+      courseId,
+      lectureId,
+      students
+    );
+
+    return res.status(200).json({
+      message: "Attendance updated successfully",
+      data: updatedAttendance,
+    });
+  } catch (error) {
+    console.error("Error updating attendance:", error.message);
+    return res.status(500).json({ message: error.message });
   }
 };

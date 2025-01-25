@@ -12,11 +12,28 @@ router.put("/update/:labid", labController.updateLab); // Route to update a lab
 router.delete("/delete/:labid", labController.deleteLab); // Route to delete a lab
 router.get("/search", labController.searchLabs);
 
-router.get("/:labid",labController.getLabs);
+router.get("/:labid/practical", labController.getPracticals); //done1
 
-router.post("/:labid/lab", labController.addLab);
+router.post("/:labid/practical", labController.addPractical);
 
 router.get("/:labid/students", labController.getStudents);
+
+router.post(
+  "/:labid/practical/:practicalId/attendance",
+  labController.createAttendance
+);
+
+router.get(
+  "/:courseId/practical/:practicalId/attendance",
+  labController.getAttendanceByLab
+);
+router.put(
+  "/:labid/practical/:practicalId/attendance",
+  labController.updateAttendance
+);
+
+
+
 
 module.exports = router;
 
