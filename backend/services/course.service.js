@@ -132,7 +132,7 @@ module.exports.getAttendanceByLecture = async (lectureId) => {
   try {
     // Fetch attendance record and populate student details
     const attendance = await attendanceModel.findOne({ lectureId }).populate({
-      path: "students.studentId", // Populate the studentId field
+      path: "student.studentId", // Populate the studentId field
       select: "fullname rollno", // Select only fullname and rollno
     });
 
