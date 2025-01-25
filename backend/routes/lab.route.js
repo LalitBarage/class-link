@@ -24,7 +24,7 @@ router.post(
 );
 
 router.get(
-  "/:courseId/practical/:practicalId/attendance",
+  "/:labid/practical/:practicalId/attendance",
   labController.getAttendanceByLab
 );
 router.put(
@@ -32,8 +32,4 @@ router.put(
   labController.updateAttendance
 );
 
-
-
-
 module.exports = router;
-

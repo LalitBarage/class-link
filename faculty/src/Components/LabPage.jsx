@@ -8,17 +8,24 @@ const LabPage = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [modalOpen, setModalOpen] = useState(false);
-  const [newLab, setNewLab] = useState({ date: "", timeSlot: "", status: false });
+  const [newLab, setNewLab] = useState({
+    date: "",
+    timeSlot: "",
+    status: false,
+  });
   const [addingLab, setAddingLab] = useState(false);
   const navigate = useNavigate();
   const { labid } = useParams();
-  const {practicalId } = useParams();
-  
+  const { practicalId } = useParams();
+
   const fetchLabs = async () => {
     try {
-      const response = await axios.get(`http://localhost:4000/lab/${labid}/practical`, {
-        withCredentials: true,
-      });
+      const response = await axios.get(
+        `http://localhost:4000/lab/${labid}/practical`,
+        {
+          withCredentials: true,
+        }
+      );
 
       const labData = Array.isArray(response.data.labs)
         ? response.data.labs
@@ -55,13 +62,16 @@ const LabPage = () => {
   };
 
   const markAttendance = (practicalId) => {
-    navigate(`/lab/${labid}/practical/${practicalId}`, { state: { action: "mark" } });
+    navigate(`/lab/${labid}/practical/${practicalId}`, {
+      state: { action: "mark" },
+    });
   };
-  
+
   const editAttendance = (practicalId) => {
-    navigate(`/course/${labid}/lecture/${practicalId}`, { state: { action: "edit" } });
+    navigate(`/lab/${labid}/practical/${practicalId}`, {
+      state: { action: "edit" },
+    });
   };
-  
 
   return (
     <div className="min-h-screen bg-white">
@@ -82,39 +92,39 @@ const LabPage = () => {
           <p>No labs available.</p>
         ) : (
           <ul className="space-y-4">
-  {labs.map((lab) => (
-    <li
-      key={lab._id}
-      className="bg-gray-100 p-4 rounded shadow"
-    >
-      <div>
-        <p>Lecture on {lab.date ? format(new Date(lab.date), "MMMM dd, yyyy") : "Invalid Date"}</p>
-        {lab.timeSlot && (
-          <p className="text-gray-500">Time Slot: {lab.timeSlot}</p>
-        )}
-      </div>
-      <div className="mt-4 flex justify-end space-x-2">
-        {lab.status === false ? (
-          <button
-            onClick={() => markAttendance(labid)}
-            className="bg-green-500 text-white px-4 py-2 rounded"
-          >
-            Mark Attendance
-          </button>
-        ) : (
-          <button
-            onClick={() => editAttendance (lab._id)}
-            className="bg-blue-500 text-white px-4 py-2 rounded"
-            
-          >
-            Edit Attendance
-          </button>
-        )}
-      </div>
-    </li>
-  ))}
-</ul>
-
+            {labs.map((lab) => (
+              <li key={lab._id} className="bg-gray-100 p-4 rounded shadow">
+                <div>
+                  <p>
+                    Lecture on{" "}
+                    {lab.date
+                      ? format(new Date(lab.date), "MMMM dd, yyyy")
+                      : "Invalid Date"}
+                  </p>
+                  {lab.timeSlot && (
+                    <p className="text-gray-500">Time Slot: {lab.timeSlot}</p>
+                  )}
+                </div>
+                <div className="mt-4 flex justify-end space-x-2">
+                  {lab.status === false ? (
+                    <button
+                      onClick={() => markAttendance(lab._id)}
+                      className="bg-green-500 text-white px-4 py-2 rounded"
+                    >
+                      Mark Attendance
+                    </button>
+                  ) : (
+                    <button
+                      onClick={() => editAttendance(lab._id)}
+                      className="bg-blue-500 text-white px-4 py-2 rounded"
+                    >
+                      Edit Attendance
+                    </button>
+                  )}
+                </div>
+              </li>
+            ))}
+          </ul>
         )}
       </div>
 

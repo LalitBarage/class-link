@@ -118,7 +118,9 @@ exports.updateAttendance = async (labid, practicalId, students) => {
       { new: true }
     );
     if (!updatedAttendance) {
-      throw new Error("Attendance record not found for the given lab and practical.");
+      throw new Error(
+        "Attendance record not found for the given lab and practical."
+      );
     }
     return updatedAttendance;
   } catch (error) {

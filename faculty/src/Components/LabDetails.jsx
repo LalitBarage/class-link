@@ -21,7 +21,7 @@ const LabDetails = () => {
             `http://localhost:4000/lab/${labid}/students`,
             { withCredentials: true }
           );
-          console.log("Response from server:", response.data); 
+          console.log("Response from server:", response.data);
 
           if (response.data?.students) {
             setStudents(
@@ -123,10 +123,14 @@ const LabDetails = () => {
         payload,
         { withCredentials: true }
       );
+
       console.log("Update Response:", response.data);
       alert("Attendance updated successfully!");
     } catch (err) {
-      console.error("Error updating attendance:", err.response?.data || err.message);
+      console.error(
+        "Error updating attendance:",
+        err.response?.data || err.message
+      );
       alert(`Failed to update attendance: ${err.message}`);
     }
   };
@@ -150,14 +154,17 @@ const LabDetails = () => {
       try {
         console.log("Payload for Marking Attendance:", payload);
         const response = await axios.post(
-          `http://localhost:4000/labid/${labid}/practical/${practicalId}/attendance`,
+          `http://localhost:4000/lab/${labid}/practical/${practicalId}/attendance`,
           payload,
           { withCredentials: true }
         );
         console.log("Mark Response:", response.data);
         alert("Attendance submitted successfully!");
       } catch (err) {
-        console.error("Error submitting attendance:", err.response?.data || err.message);
+        console.error(
+          "Error submitting attendance:",
+          err.response?.data || err.message
+        );
         alert(`Failed to submit attendance: ${err.message}`);
       }
     } else if (state?.action === "edit") {

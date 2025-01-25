@@ -144,8 +144,6 @@ module.exports.addPractical = async (req, res, next) => {
   }
 };
 
-
-
 module.exports.createAttendance = async (req, res) => {
   try {
     const { students } = req.body;
@@ -175,11 +173,9 @@ module.exports.createAttendance = async (req, res) => {
     }
 
     // Call service to create attendance
-    const attendance = await labService.createAttendance(
-      labid,
-      practicalId,
-      { students }
-    );
+    const attendance = await labService.createAttendance(labid, practicalId, {
+      students,
+    });
 
     return res.status(201).json({
       message: "Attendance record created successfully",
@@ -218,15 +214,15 @@ module.exports.updateAttendance = async (req, res) => {
 
     // Validate input
     if (!labid || !practicalId || !students || students.length === 0) {
-      return res
-        .status(400)
-        .json({ message: "Course ID, Lecture ID, and students data are required." });
+      return res.status(400).json({
+        message: "Course ID, Lecture ID, and students data are required.",
+      });
     }
 
     // Call service to update attendance
     const updatedAttendance = await labService.updateAttendance(
-      courseId,
-      lectureId,
+      labid,
+      practicalId,
       students
     );
 
