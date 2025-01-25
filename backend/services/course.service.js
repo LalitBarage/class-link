@@ -131,28 +131,16 @@ module.exports.createAttendance = async (courseId, lectureId, { students }) => {
 module.exports.getAttendanceByLecture = async (lectureId) => {
   try {
     // Fetch attendance record and populate student details
-    const attendance = await attendanceModel.findOne({ lectureId }).populate({
-      path: "student.studentId", // Populate the studentId field
-      select: "fullname rollno", // Select only fullname and rollno
-    });
+    const attendance = await attendanceModel.findOne({ lectureId })
 
     if (!attendance) {
       throw new Error("Attendance record not found.");
     }
 
     // Format the attendance data
-    const formattedAttendance = {
-      lectureId: attendance.lectureId,
-      courseId: attendance.courseId,
-      students: attendance.students.map((student) => ({
-        studentId: student.studentId._id,
-        fullname: `${student.studentId.fullname.firstname} ${student.studentId.fullname.middlename} ${student.studentId.fullname.lastname}`,
-        rollno: student.studentId.rollno,
-        status: student.status,
-      })),
-    };
+   
 
-    return formattedAttendance;
+    return attendance;
   } catch (error) {
     throw new Error(`Error fetching attendance: ${error.message}`);
   }

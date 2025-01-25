@@ -13,6 +13,7 @@ const LectureDetails = () => {
   useEffect(() => {
     const fetchStudents = async () => {
       try {
+        setLoading(true);
         console.log("Fetching students...");
         let response;
         if (state?.action === "mark") {
@@ -20,21 +21,49 @@ const LectureDetails = () => {
             `http://localhost:4000/course/students/${courseId}`,
             { withCredentials: true }
           );
-          console.log("Mark Attendance Response:", response.data);
+          setStudents(
+            response.data.students.map((student) => ({
+              ...student,
+              attended: false, // Default status for marking attendance
+            }))
+          );
+          setAttendanceData(
+            response.data.students.map((student) => ({
+              studentId: student._id,
+              fullname: `${student.fullname.firstname} ${student.fullname.lastname}`,
+              rollno: student.rollno,
+              status: "Present", // Default status
+            }))
+          );
         } else if (state?.action === "edit") {
           response = await axios.get(
             `http://localhost:4000/course/${courseId}/lecture/${lectureId}/attendance`,
             { withCredentials: true }
           );
-          console.log("Edit Attendance Response:", response.data);
+          const fetchedAttendance = response.data.attendance;
+          setStudents(
+            fetchedAttendance.map((record) => ({
+              ...record.student,
+              attended: record.status === "Present",
+            }))
+          );
+          setAttendanceData(
+            fetchedAttendance.map((record) => ({
+              studentId: record.student._id,
+              fullname: `${record.student.fullname.firstname} ${record.student.fullname.lastname}`,
+              status: record.status,
+            }))
+          );
         }
       } catch (err) {
         console.error("Error fetching students:", err);
+        setError("Failed to fetch students. Please try again.");
+      } finally {
+        setLoading(false);
       }
     };
     fetchStudents();
   }, [courseId, lectureId, state?.action]);
-  
 
   const handleAttendanceToggle = (studentId) => {
     setStudents((prev) =>
@@ -48,25 +77,43 @@ const LectureDetails = () => {
     setAttendanceData((prev) =>
       prev.map((data) =>
         data.studentId === studentId
-          ? { ...data, status: data.status === "Present" ? "Absent" : "Present" }
+          ? {
+              ...data,
+              status: data.status === "Present" ? "Present" : "Absent",
+            }
           : data
       )
     );
   };
 
   const handleSubmit = async () => {
-    console.log(attendanceData); // For debugging
+    const payload = {
+      courseId, // Extracted from useParams
+      lectureId, // Extracted from useParams
+      students: attendanceData.map((data) => ({
+        studentId: data.studentId,
+        fullname: {
+          firstname: data.fullname.split(" ")[0], // Extract firstname
+          lastname: data.fullname.split(" ")[1], // Extract lastname
+        },
+        rollno: data.rollno,
+        status: data.status,
+      })),
+    };
+  
     try {
       await axios.post(
         `http://localhost:4000/course/${courseId}/lecture/${lectureId}/attendance`,
-        { students: attendanceData },
+        payload,
         { withCredentials: true }
       );
       alert("Attendance submitted successfully!");
     } catch (err) {
+      console.error("Error submitting attendance:", err);
       alert(`Failed to submit attendance: ${err.message}`);
     }
   };
+  
 
   return (
     <div className="min-h-screen bg-white">
