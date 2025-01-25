@@ -8,7 +8,7 @@ const LabPage = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [modalOpen, setModalOpen] = useState(false);
-  const [newLab, setNewLab] = useState({ date: "", timeSlot: "" });
+  const [newLab, setNewLab] = useState({ date: "", timeSlot: "", status: false });
   const [addingLab, setAddingLab] = useState(false);
   const navigate = useNavigate();
   const { labid } = useParams();
@@ -40,7 +40,7 @@ const LabPage = () => {
     try {
       const response = await axios.post(
         `http://localhost:4000/lab/${labid}/lab`,
-        newLab,
+        { ...newLab, status: false },
         { withCredentials: true }
       );
       setLabs((prev) => [...prev, response.data]);
@@ -53,8 +53,8 @@ const LabPage = () => {
     }
   };
 
-  const handleLabClick = (labId) => {
-    navigate(`/labs/${labId}`);
+  const handleLabClick = (labid) => {
+    navigate(`/labs/${labid}`);
   };
 
   return (
@@ -76,21 +76,39 @@ const LabPage = () => {
           <p>No labs available.</p>
         ) : (
           <ul className="space-y-4">
-            {labs.map((lab) => (
-              <li
-                key={lab._id}
-                className="bg-gray-100 p-4 rounded shadow cursor-pointer"
-                onClick={() => handleLabClick(labid)}
-              >
-                <div>
-                <p>Lecture on {lab.date ? format(new Date(lab.date), "MMMM dd, yyyy") : "Invalid Date"}</p>
-                  {lab.timeSlot && (
-                    <p className="text-gray-500">Time Slot: {lab.timeSlot}</p>
-                  )}
-                </div>
-              </li>
-            ))}
-          </ul>
+  {labs.map((lab) => (
+    <li
+      key={lab._id}
+      className="bg-gray-100 p-4 rounded shadow"
+    >
+      <div>
+        <p>Lecture on {lab.date ? format(new Date(lab.date), "MMMM dd, yyyy") : "Invalid Date"}</p>
+        {lab.timeSlot && (
+          <p className="text-gray-500">Time Slot: {lab.timeSlot}</p>
+        )}
+      </div>
+      <div className="mt-4 flex justify-end space-x-2">
+        {lab.status === false ? (
+          <button
+            onClick={() => handleLabClick(labid)}
+            className="bg-green-500 text-white px-4 py-2 rounded"
+          >
+            Mark Attendance
+          </button>
+        ) : (
+          <button
+            onClick={() => handleEditAttendance(lab._id)}
+            className="bg-blue-500 text-white px-4 py-2 rounded"
+            
+          >
+            Edit Attendance
+          </button>
+        )}
+      </div>
+    </li>
+  ))}
+</ul>
+
         )}
       </div>
 
