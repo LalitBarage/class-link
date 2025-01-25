@@ -19,7 +19,6 @@ const CoursePage = () => {
         `http://localhost:4000/course/${courseId}/lecture`,
         { withCredentials: true }
       );
-      console.log("API Response:", response.data);
 
       // Extract lectures array from the response object
       const lectureData = Array.isArray(response.data.lectures)
@@ -27,7 +26,6 @@ const CoursePage = () => {
         : []; // Default to empty array if no lectures field or if it's not an array
 
       setLectures(lectureData); // Update state with the correct array
-      console.log("Lectures to be set:", lectureData); // Log the correct data to be set
     } catch (err) {
       console.error("Error fetching lectures:", err);
       setError(`Failed to load lectures: ${err.message}`);
@@ -60,13 +58,17 @@ const CoursePage = () => {
   };
 
   const markAttendance = (lectureId) => {
-    navigate(`/course/${courseId}/lecture/${lectureId}`, { state: { action: "mark" } });
+    navigate(`/course/${courseId}/lecture/${lectureId}`, {
+      state: { action: "mark" },
+    });
   };
-  
+
   const editAttendance = (lectureId) => {
-    navigate(`/course/${courseId}/lecture/${lectureId}`, { state: { action: "edit" } });
+    navigate(`/course/${courseId}/lecture/${lectureId}`, {
+      state: { action: "edit" },
+    });
   };
-  
+
   return (
     <div className="min-h-screen bg-white">
       <div className="px-6 py-8">
@@ -93,9 +95,13 @@ const CoursePage = () => {
                 // onClick={() => handleLectureClick(lecture._id)}
               >
                 <div>
-                  <p>Lecture on {new Date(lecture.date).toLocaleDateString()}</p>
+                  <p>
+                    Lecture on {new Date(lecture.date).toLocaleDateString()}
+                  </p>
                   {lecture.timeSlot && (
-                    <p className="text-gray-500">Time Slot: {lecture.timeSlot}</p>
+                    <p className="text-gray-500">
+                      Time Slot: {lecture.timeSlot}
+                    </p>
                   )}
                 </div>
                 <div className="mt-2">
@@ -124,67 +130,70 @@ const CoursePage = () => {
       {/* Modal for adding a lecture */}
       {modalOpen && (
         <div className="fixed inset-0 bg-gray-500 bg-opacity-50 flex justify-center items-center">
-        <div className="bg-white p-6 rounded shadow-lg w-96">
-          <h2 className="text-xl font-semibold mb-4">Add New Lecture</h2>
-          <form onSubmit={(e) => e.preventDefault()}>
-            <div className="mb-4">
-              <label htmlFor="date" className="block text-sm font-medium">
-                Date
-              </label>
-              <input
-                type="date"
-                id="date"
-                value={newLecture.date}
-                onChange={(e) =>
-                  setNewLecture({ ...newLecture, date: e.target.value })
-                }
-                className="w-full px-4 py-2 border border-gray-300 rounded-md"
-              />
-            </div>
-      
-            <div className="mb-4">
-              <label htmlFor="timeSlot" className="block text-sm font-medium">
-                Time Slot
-              </label>
-              <select
-                id="timeSlot"
-                value={newLecture.timeSlot}
-                onChange={(e) =>
-                  setNewLecture({ ...newLecture, timeSlot: e.target.value })
-                }
-                className="w-full px-4 py-2 border border-gray-300 rounded-md"
-              >
-                <option value="">Select a Time Slot</option>
-                <option value="9:15 am - 10:15 am">9:15 am - 10:15 am</option>
-                <option value="10:15 am - 11:15 am">10:15 am - 11:15 am</option>
-                <option value="11:30 am - 12:30 pm">11:30 am - 12:30 pm</option>
-                <option value="12:30 pm - 1:30 pm">12:30 pm - 1:30 pm</option>
-                <option value="2:15 pm - 3:15 pm">2:15 pm - 3:15 pm</option>
-                <option value="3:15 pm - 4:15 pm">3:15 pm - 4:15 pm</option>
-              </select>
-            </div>
-      
-            <div className="flex justify-end">
-              <button
-                type="button"
-                onClick={() => setModalOpen(false)}
-                className="bg-gray-300 px-4 py-2 rounded-md mr-5"
-              >
-                Cancel
-              </button>
-              <button
-                type="button"
-                onClick={handleAddLecture}
-                className="bg-black text-white px-4 py-2 rounded-md"
-                disabled={addingLecture}
-              >
-                {addingLecture ? "Adding..." : "Add Lecture"}
-              </button>
-            </div>
-          </form>
+          <div className="bg-white p-6 rounded shadow-lg w-96">
+            <h2 className="text-xl font-semibold mb-4">Add New Lecture</h2>
+            <form onSubmit={(e) => e.preventDefault()}>
+              <div className="mb-4">
+                <label htmlFor="date" className="block text-sm font-medium">
+                  Date
+                </label>
+                <input
+                  type="date"
+                  id="date"
+                  value={newLecture.date}
+                  onChange={(e) =>
+                    setNewLecture({ ...newLecture, date: e.target.value })
+                  }
+                  className="w-full px-4 py-2 border border-gray-300 rounded-md"
+                />
+              </div>
+
+              <div className="mb-4">
+                <label htmlFor="timeSlot" className="block text-sm font-medium">
+                  Time Slot
+                </label>
+                <select
+                  id="timeSlot"
+                  value={newLecture.timeSlot}
+                  onChange={(e) =>
+                    setNewLecture({ ...newLecture, timeSlot: e.target.value })
+                  }
+                  className="w-full px-4 py-2 border border-gray-300 rounded-md"
+                >
+                  <option value="">Select a Time Slot</option>
+                  <option value="9:15 am - 10:15 am">9:15 am - 10:15 am</option>
+                  <option value="10:15 am - 11:15 am">
+                    10:15 am - 11:15 am
+                  </option>
+                  <option value="11:30 am - 12:30 pm">
+                    11:30 am - 12:30 pm
+                  </option>
+                  <option value="12:30 pm - 1:30 pm">12:30 pm - 1:30 pm</option>
+                  <option value="2:15 pm - 3:15 pm">2:15 pm - 3:15 pm</option>
+                  <option value="3:15 pm - 4:15 pm">3:15 pm - 4:15 pm</option>
+                </select>
+              </div>
+
+              <div className="flex justify-end">
+                <button
+                  type="button"
+                  onClick={() => setModalOpen(false)}
+                  className="bg-gray-300 px-4 py-2 rounded-md mr-5"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="button"
+                  onClick={handleAddLecture}
+                  className="bg-black text-white px-4 py-2 rounded-md"
+                  disabled={addingLecture}
+                >
+                  {addingLecture ? "Adding..." : "Add Lecture"}
+                </button>
+              </div>
+            </form>
+          </div>
         </div>
-      </div>
-      
       )}
     </div>
   );
