@@ -25,9 +25,7 @@ const LabReport = () => {
         const practicals = response.data.attendance;
 
         if (!Array.isArray(practicals)) {
-          throw new Error(
-            "Invalid response: Expected an array in 'attendance'"
-          );
+          throw new Error("Invalid response: Expected an array in 'attendance'");
         }
 
         const formattedData = formatAttendanceData(practicals);
@@ -71,69 +69,81 @@ const LabReport = () => {
   const fetchPracticalDates = async (practicals) => {
     const dates = {}; // Object to store labId-date pairs
     const practicalIds = practicals.map((practical) => practical.practicalId);
-    console.log(practicalIds);
 
     for (let practicalId of practicalIds) {
       try {
         const dateResponse = await axios.get(
           `http://localhost:4000/lab/practical/${practicalId}/date`
         );
-
         const practicalDate = new Date(dateResponse.data.date);
-
-        const formattedDate = `${practicalDate.getDate()}-${
-          practicalDate.getMonth() + 1
-        }`;
-
-        // Store the formatted date in the dates object
+        const formattedDate = `${practicalDate.getDate()}-${practicalDate.getMonth() + 1}`;
         dates[practicalId] = formattedDate;
       } catch (error) {
         console.error("Error fetching date:", error);
-      }    
+      }
     }
     return dates;
   };
 
-  // Filter attendance data based on search query
   const filteredAttendanceData = attendanceData.filter((student) =>
     student.name.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-  // Function to download the data as Excel file
-  const downloadExcel = () => {
-    // Prepare the table headers
-    const headers = [
-      "Roll No",
-      "Name",
-      ...Object.values(practicalDates), // Add lab dates as columns
-    ];
+  const downloadExcel = (data, fileName, isDefaulter = false) => {
+    let headers, rows;
 
-    // Prepare the table rows
-    const rows = filteredAttendanceData.map((student) => [
-      student.rollno,
-      student.name,
-      ...Object.values(student.attendance), // Add attendance status for each lab
-    ]);
+    if (isDefaulter) {
+      headers = ["Roll No", "Name", "Total Labs", "Attended Labs", "Defaulter"];
+      rows = data.map((student) => [
+        student.rollno,
+        student.name,
+        student.totalLabs,
+        student.attendedLabs,
+        student.defaulter,
+      ]);
+    } else {
+      headers = ["Roll No", "Name", ...Object.values(practicalDates)];
+      rows = data.map((student) => [
+        student.rollno,
+        student.name,
+        ...Object.values(student.attendance || {}),
+      ]);
+    }
 
-    // Combine headers and rows
-    const data = [headers, ...rows];
-
-    // Create a worksheet from the data
-    const ws = XLSX.utils.aoa_to_sheet(data);
-
-    // Create a workbook from the worksheet
+    const excelData = [headers, ...rows];
+    const ws = XLSX.utils.aoa_to_sheet(excelData);
     const wb = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, ws, "Attendance");
-
-    // Download the Excel file
-    XLSX.writeFile(wb, "lab_attendance_report.xlsx");
+    XLSX.utils.book_append_sheet(wb, ws, "Report");
+    XLSX.writeFile(wb, `${fileName}.xlsx`);
   };
+
+  const calculateDefaulters = () => {
+    return filteredAttendanceData.map((student) => {
+      const totalLabs = Object.keys(practicalDates).length;
+      const attendedLabs = Object.values(student.attendance).filter(
+        (status) => status === "Present"
+      ).length;
+
+      const attendancePercentage = (attendedLabs / totalLabs) * 100;
+
+      return {
+        rollno: student.rollno,
+        name: student.name,
+        totalLabs,
+        attendedLabs,
+        defaulter: attendancePercentage < 75 ? "Yes" : "No",
+      };
+    });
+  };
+
+  const defaultersData = calculateDefaulters().filter(
+    (student) => student.defaulter === "Yes"
+  );
 
   return (
     <div className="min-h-screen bg-white p-6">
       <h1 className="text-2xl font-bold mb-6">Lab Attendance Report</h1>
 
-      {/* Search box */}
       <div className="mb-4">
         <input
           type="text"
@@ -144,13 +154,18 @@ const LabReport = () => {
         />
       </div>
 
-      {/* Download button */}
-      <div className="mb-4">
+      <div className="mb-4 flex gap-4">
         <button
-          onClick={downloadExcel}
+          onClick={() => downloadExcel(filteredAttendanceData, "lab_attendance_report")}
           className="px-4 py-2 bg-blue-500 text-white rounded"
         >
-          Download Excel
+          Download Attendance Excel
+        </button>
+        <button
+          onClick={() => downloadExcel(defaultersData, "lab_defaulter_report", true)}
+          className="px-4 py-2 bg-red-500 text-white rounded"
+        >
+          Download Defaulter Excel
         </button>
       </div>
 
@@ -158,19 +173,17 @@ const LabReport = () => {
         <p>Loading attendance data...</p>
       ) : error ? (
         <p className="text-red-500">{error}</p>
-      ) : filteredAttendanceData.length === 0 ? (
-        <p>No attendance data available or no results match your search.</p>
       ) : (
-        <div className="overflow-x-auto">
+        <>
+          <h2 className="text-xl font-bold mb-4">Attendance Report</h2>
           <table className="min-w-full bg-white border border-gray-200">
             <thead>
               <tr className="bg-gray-100">
-                <th className="px-4 py-2 border-b">Roll No</th>
-                <th className="px-4 py-2 border-b">Name</th>
-                {/* Render lab dates as table headers */}
+                <th className="px-2 py-2 border-b">Roll No</th>
+                <th className="px-2 py-2 border-b">Name</th>
                 {Object.keys(filteredAttendanceData[0]?.attendance || {}).map(
                   (practicalId) => (
-                    <th key={practicalId} className="px-4 py-2 border-b">
+                    <th key={practicalId} className="px-2 py-2 border-b">
                       {practicalDates[practicalId] || "Unknown Date"}
                     </th>
                   )
@@ -179,17 +192,13 @@ const LabReport = () => {
             </thead>
             <tbody>
               {filteredAttendanceData.map((student) => (
-                <tr key={student.rollno} className="hover:bg-gray-50">
-                  <td className="px-4 py-2 border-b text-center">
-                    {student.rollno}
-                  </td>
-                  <td className="px-4 py-2 border-b text-center">
-                    {student.name}
-                  </td>
+                <tr key={student.rollno}>
+                  <td className="px-2 py-2 border-b">{student.rollno}</td>
+                  <td className="px-2 py-2 border-b">{student.name}</td>
                   {Object.values(student.attendance).map((status, index) => (
                     <td
                       key={index}
-                      className={`px-4 py-2 border-b text-center ${
+                      className={`px-2 py-2 border-b ${
                         status === "Present"
                           ? "bg-green-100 text-green-700"
                           : "bg-red-100 text-red-700"
@@ -202,7 +211,39 @@ const LabReport = () => {
               ))}
             </tbody>
           </table>
-        </div>
+
+          <h2 className="text-xl font-bold mt-8">Defaulter Report</h2>
+          <table className="min-w-full bg-white border border-gray-200">
+            <thead>
+              <tr className="bg-gray-100">
+                <th className="px-2 py-2 border-b">Roll No</th>
+                <th className="px-2 py-2 border-b">Name</th>
+                <th className="px-2 py-2 border-b">Total Labs</th>
+                <th className="px-2 py-2 border-b">Attended Labs</th>
+                <th className="px-2 py-2 border-b">Defaulter</th>
+              </tr>
+            </thead>
+            <tbody>
+              {defaultersData.map((student) => (
+                <tr key={student.rollno}>
+                  <td className="px-2 py-2 border-b">{student.rollno}</td>
+                  <td className="px-2 py-2 border-b">{student.name}</td>
+                  <td className="px-2 py-2 border-b">{student.totalLabs}</td>
+                  <td className="px-2 py-2 border-b">{student.attendedLabs}</td>
+                  <td
+                    className={`px-2 py-2 border-b ${
+                      student.defaulter === "Yes"
+                        ? "bg-red-100 text-red-700"
+                        : "bg-green-100 text-green-700"
+                    }`}
+                  >
+                    {student.defaulter}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </>
       )}
     </div>
   );

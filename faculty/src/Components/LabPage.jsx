@@ -2,6 +2,8 @@ import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { format } from "date-fns";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const LabPage = () => {
   const [labs, setLabs] = useState([]);
@@ -16,24 +18,17 @@ const LabPage = () => {
   const [addingLab, setAddingLab] = useState(false);
   const navigate = useNavigate();
   const { labid } = useParams();
-  const { practicalId } = useParams();
 
   const fetchLabs = async () => {
     try {
       const response = await axios.get(
         `http://localhost:4000/lab/${labid}/practical`,
-        {
-          withCredentials: true,
-        }
+        { withCredentials: true }
       );
-
-      const labData = Array.isArray(response.data.labs)
-        ? response.data.labs
-        : [];
-      setLabs(labData);
-      console.log("Labs to be set:", labData);
+      setLabs(Array.isArray(response.data.labs) ? response.data.labs : []);
     } catch (err) {
       setError(`Failed to load labs: ${err.message}`);
+      toast.error(`Failed to load labs: ${err.message}`);
     } finally {
       setLoading(false);
     }
@@ -47,15 +42,15 @@ const LabPage = () => {
     setAddingLab(true);
     try {
       const response = await axios.post(
-        `http://localhost:4000/lab/${labid}/lab/practical`,
+        `http://localhost:4000/lab/${labid}/practical`,
         { ...newLab, status: false },
         { withCredentials: true }
       );
       setLabs((prev) => [...prev, response.data]);
       setModalOpen(false);
-      alert("Lab added successfully!");
+      toast.success("Lab added successfully!");
     } catch (err) {
-      alert(`Failed to add lab: ${err.message}`);
+      toast.error(`Failed to add lab: ${err.message}`);
     } finally {
       setAddingLab(false);
     }
@@ -75,6 +70,7 @@ const LabPage = () => {
 
   return (
     <div className="min-h-screen bg-white">
+      <ToastContainer />
       <div className="px-6 py-8">
         <h1 className="text-2xl font-bold mb-6">Labs</h1>
         <button
@@ -152,15 +148,26 @@ const LabPage = () => {
                 <label htmlFor="timeSlot" className="block text-sm font-medium">
                   Time Slot
                 </label>
-                <input
-                  type="text"
+                <select
                   id="timeSlot"
                   value={newLab.timeSlot}
                   onChange={(e) =>
                     setNewLab({ ...newLab, timeSlot: e.target.value })
                   }
                   className="w-full px-4 py-2 border border-gray-300 rounded-md"
-                />
+                >
+                  <option value="">Select a Time Slot</option>
+                  <option value="9:15 am - 10:15 am">9:15 am - 10:15 am</option>
+                  <option value="10:15 am - 11:15 am">
+                    10:15 am - 11:15 am
+                  </option>
+                  <option value="11:30 am - 12:30 pm">
+                    11:30 am - 12:30 pm
+                  </option>
+                  <option value="12:30 pm - 1:30 pm">12:30 pm - 1:30 pm</option>
+                  <option value="2:15 pm - 3:15 pm">2:15 pm - 3:15 pm</option>
+                  <option value="3:15 pm - 4:15 pm">3:15 pm - 4:15 pm</option>
+                </select>
               </div>
 
               <div className="flex justify-end">

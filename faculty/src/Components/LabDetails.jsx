@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import { useParams, useLocation } from "react-router-dom";
 import axios from "axios";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const LabDetails = () => {
   const { labid, practicalId } = useParams();
@@ -65,13 +67,15 @@ const LabDetails = () => {
             );
           } else {
             setError("No attendance data found.");
+            toast.error("No attendance data found.");
           }
         } else {
           setError("Invalid action. Please try again.");
+          toast.error("Invalid action. Please try again.");
         }
       } catch (err) {
-        console.error("Error fetching students:", err);
         setError("Failed to fetch students. Please try again.");
+        toast.error("Failed to fetch students. Please try again.");
       } finally {
         setLoading(false);
       }
@@ -124,24 +128,23 @@ const LabDetails = () => {
 
       const method = state?.action === "mark" ? "post" : "put";
 
-      const response = await axios[method](endpoint, payload, {
+      await axios[method](endpoint, payload, {
         withCredentials: true,
       });
 
-      console.log("Response:", response.data);
-      alert(
+      toast.success(
         state?.action === "mark"
           ? "Attendance submitted successfully!"
           : "Attendance updated successfully!"
       );
     } catch (err) {
-      console.error("Error submitting attendance:", err.response?.data || err.message);
-      alert(`Failed to submit attendance: ${err.message}`);
+      toast.error(`Failed to submit attendance: ${err.message}`);
     }
   };
 
   return (
     <div className="min-h-screen bg-white">
+      <ToastContainer />
       <div className="px-6 py-8">
         <h1 className="text-2xl font-bold mb-6">
           {state?.action === "mark" ? "Mark Attendance" : "Edit Attendance"}

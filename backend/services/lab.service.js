@@ -183,3 +183,38 @@ module.exports.getPracticalDateById = async (practicalId) => {
     throw new Error("Service layer error");
   }
 };
+
+module.exports.getStudentLectureCounts = async (labid, studentId) => {
+  try {
+    // Fetch total lectures and attended lectures for the given course and student
+    const attendanceRecords = await labattendanceModel.find({ labid, "students.studentId": studentId });
+
+    if (!attendanceRecords.length) {
+      return null;
+    }
+
+    const totalLabs = attendanceRecords.length;
+    const attendedLabs = attendanceRecords.reduce((count, record) => {
+      const student = record.students.find((s) => s.studentId.toString() === studentId);
+      return student && student.status === "Present" ? count + 1 : count;
+    }, 0);
+
+    // Fetch student details
+    const student = await studentModel.findById(studentId).select("fullname rollno");
+
+    if (!student) {
+      throw new Error("Student not found");
+    }
+
+    return {
+      studentId,
+      fullname: `${student.fullname.firstname} ${student.fullname.lastname}`,
+      rollno: student.rollno,
+      totalLabs,
+      attendedLabs,
+    };
+  } catch (error) {
+    throw new Error(error.message);
+  }
+};
+

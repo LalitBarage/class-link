@@ -29,6 +29,7 @@ const Navbar = () => {
     <>
       {isAuthenticated && ( // Render only if the user is authenticated
         <div className="bg-gray-200 shadow-lg">
+          
           <div className="h-20 flex justify-between items-center px-5 md:px-10">
             {/* Logo Section */}
             <div>

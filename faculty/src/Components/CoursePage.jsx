@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const CoursePage = () => {
   const { courseId } = useParams(); // Get courseId from route
@@ -12,7 +14,6 @@ const CoursePage = () => {
   const [addingLecture, setAddingLecture] = useState(false); // State for handling the button disabled state
   const navigate = useNavigate();
 
-  // Move fetchLectures function outside of useEffect
   const fetchLectures = async () => {
     try {
       const response = await axios.get(
@@ -20,40 +21,39 @@ const CoursePage = () => {
         { withCredentials: true }
       );
 
-      // Extract lectures array from the response object
       const lectureData = Array.isArray(response.data.lectures)
         ? response.data.lectures
-        : []; // Default to empty array if no lectures field or if it's not an array
+        : [];
 
-      setLectures(lectureData); // Update state with the correct array
+      setLectures(lectureData);
     } catch (err) {
-      console.error("Error fetching lectures:", err);
-      setError(`Failed to load lectures: ${err.message}`);
+      toast.error(`Failed to load lectures: ${err.message}`);
+      setError(`Failed to load lectures.`);
     } finally {
       setLoading(false);
     }
   };
 
   useEffect(() => {
-    fetchLectures(); // Fetch lectures when the component mounts
+    fetchLectures();
   }, [courseId]);
 
   const handleAddLecture = async () => {
-    setAddingLecture(true); // Disable button during the API call
+    setAddingLecture(true);
     try {
       const response = await axios.post(
         `http://localhost:4000/course/${courseId}/lecture`,
-        newLecture, // Pass the new lecture data
+        newLecture,
         { withCredentials: true }
       );
-      setLectures((prev) => [...prev, response.data]); // Add new lecture to the list
-      setModalOpen(false); // Close modal after successful submission
-      alert("Lecture added successfully!");
-      fetchLectures(); // Fetch lectures again to ensure data is updated
+      setLectures((prev) => [...prev, response.data]);
+      setModalOpen(false);
+      toast.success("Lecture added successfully!");
+      fetchLectures();
     } catch (err) {
-      alert(`Failed to add lecture: ${err.message}`);
+      toast.error(`Failed to add lecture: ${err.message}`);
     } finally {
-      setAddingLecture(false); // Enable the button again
+      setAddingLecture(false);
     }
   };
 
@@ -71,10 +71,11 @@ const CoursePage = () => {
 
   return (
     <div className="min-h-screen bg-white">
+      <ToastContainer position="top-right" autoClose={3000} />
       <div className="px-6 py-8">
         <h1 className="text-2xl font-bold mb-6">Course: {courseId}</h1>
         <button
-          onClick={() => setModalOpen(true)} // Open modal on button click
+          onClick={() => setModalOpen(true)}
           className="mb-4 bg-white text-black border-2 border-black px-2 py-1 rounded-lg"
         >
           Add Lecture
@@ -88,11 +89,10 @@ const CoursePage = () => {
           <p>No lectures available.</p>
         ) : (
           <ul className="space-y-4">
-            {(lectures || []).map((lecture) => (
+            {lectures.map((lecture) => (
               <li
                 key={lecture._id}
                 className="bg-gray-100 p-4 rounded shadow cursor-pointer"
-                // onClick={() => handleLectureClick(lecture._id)}
               >
                 <div>
                   <p>
@@ -127,7 +127,6 @@ const CoursePage = () => {
         )}
       </div>
 
-      {/* Modal for adding a lecture */}
       {modalOpen && (
         <div className="fixed inset-0 bg-gray-500 bg-opacity-50 flex justify-center items-center">
           <div className="bg-white p-6 rounded shadow-lg w-96">

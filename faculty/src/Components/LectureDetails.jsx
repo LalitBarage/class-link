@@ -1,6 +1,10 @@
 import { useEffect, useState } from "react";
 import { useParams, useLocation } from "react-router-dom";
 import axios from "axios";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+
+
 
 const LectureDetails = () => {
   const { courseId, lectureId } = useParams(); // Get IDs from route
@@ -69,8 +73,8 @@ const LectureDetails = () => {
           }
         }
       } catch (err) {
-        console.error("Error fetching students:", err);
-        setError("Failed to fetch students. Please try again.");
+        toast.error("Failed to fetch students. Please try again.");
+        setError("Failed to fetch students.");
       } finally {
         setLoading(false);
       }
@@ -116,17 +120,16 @@ const LectureDetails = () => {
     };
 
     try {
-      console.log("Payload:", payload);
-      const response = await axios.put(
+      await axios.put(
         `http://localhost:4000/course/${courseId}/lecture/${lectureId}/attendance`,
         payload,
         { withCredentials: true }
       );
-      console.log("Update Response:", response.data);
-      alert("Attendance updated successfully!");
+      toast.success("Attendance updated successfully!");
     } catch (err) {
-      console.error("Error updating attendance:", err.response?.data || err.message);
-      alert(`Failed to update attendance: ${err.message}`);
+      toast.error(
+        `Failed to update attendance: ${err.response?.data || err.message}`
+      );
     }
   };
 
@@ -147,17 +150,16 @@ const LectureDetails = () => {
       };
 
       try {
-        console.log("Payload for Marking Attendance:", payload);
-        const response = await axios.post(
+        await axios.post(
           `http://localhost:4000/course/${courseId}/lecture/${lectureId}/attendance`,
           payload,
           { withCredentials: true }
         );
-        console.log("Mark Response:", response.data);
-        alert("Attendance submitted successfully!");
+        toast.success("Attendance submitted successfully!");
       } catch (err) {
-        console.error("Error submitting attendance:", err.response?.data || err.message);
-        alert(`Failed to submit attendance: ${err.message}`);
+        toast.error(
+          `Failed to submit attendance: ${err.response?.data || err.message}`
+        );
       }
     } else if (state?.action === "edit") {
       updateAttendance();
@@ -166,6 +168,7 @@ const LectureDetails = () => {
 
   return (
     <div className="min-h-screen bg-white">
+      <ToastContainer position="top-right" autoClose={3000} />
       <div className="px-6 py-8">
         <h1 className="text-2xl font-bold mb-6">
           {state?.action === "mark" ? "Mark Attendance" : "Edit Attendance"}

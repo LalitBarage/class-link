@@ -20,25 +20,19 @@ const Login = () => {
         { withCredentials: true }
       );
 
-      console.log("Response from server:", response.data); // Log the entire response data
-
-      if (response.data && response.data) {
+      if (response.data) {
         setIsAuthenticated(true);
         setUser(response.data);
-
-        console.log("User data:", response.data); // Log user-specific data
+        toast.success("Login successful!");
         navigate("/"); // Redirect after login
       } else {
         toast.error("Invalid response format");
       }
     } catch (error) {
-      console.error(
-        "Error during login:",
-        error.response?.data || error.message
-      );
       toast.error(error.response?.data?.message || "Login failed. Try again.");
     }
   };
+
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-100 ">
       <div className="w-full max-w-sm p-20 bg-white rounded shadow-lg">
