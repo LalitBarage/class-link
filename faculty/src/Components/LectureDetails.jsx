@@ -60,6 +60,7 @@ const LectureDetails = () => {
               fetchedAttendance.map((record) => ({
                 studentId: record.studentId || record._id, // Ensure studentId is correctly mapped
                 fullname: `${record.fullname.firstname} ${record.fullname.lastname}`,
+                rollno: record.rollno,
                 status: record.status,
               }))
             );
