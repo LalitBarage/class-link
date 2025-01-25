@@ -51,10 +51,11 @@ function App() {
             path="/lab/:labid"
             element={isAuthenticated ? <LabPage /> : <Login />}
           />
-          <Route
-            path="/labs/:labid"
+            <Route
+            path="/lab/:labid/practical/:practicalId"
             element={isAuthenticated ? <LabDetails /> : <Login />}
           />
+         
         </Routes>
       </Router>
     </div>

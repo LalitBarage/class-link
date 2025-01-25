@@ -15,7 +15,7 @@ const LabPage = () => {
 
   const fetchLabs = async () => {
     try {
-      const response = await axios.get(`http://localhost:4000/lab/${labid}/practical`, {
+      const response = await axios.get(`http://localhost:4000/lab/${labid}`, {
         withCredentials: true,
       });
 
@@ -39,7 +39,7 @@ const LabPage = () => {
     setAddingLab(true);
     try {
       const response = await axios.post(
-        `http://localhost:4000/lab/${labid}/practical`,
+        `http://localhost:4000/lab/${labid}/lab`,
         { ...newLab, status: false },
         { withCredentials: true }
       );
@@ -53,9 +53,14 @@ const LabPage = () => {
     }
   };
 
-  const handleLabClick = (labid) => {
-    navigate(`/labs/${labid}`);
+  const markAttendance = (practicalId) => {
+    navigate(`/lab/${labid}/practical/${practicalId}`, { state: { action: "mark" } });
   };
+  
+  const editAttendance = (practicalId) => {
+    navigate(`/course/${labid}/lecture/${practicalId}`, { state: { action: "edit" } });
+  };
+  
 
   return (
     <div className="min-h-screen bg-white">
@@ -90,14 +95,14 @@ const LabPage = () => {
       <div className="mt-4 flex justify-end space-x-2">
         {lab.status === false ? (
           <button
-            onClick={() => handleLabClick(labid)}
+            onClick={() => markAttendance(labid)}
             className="bg-green-500 text-white px-4 py-2 rounded"
           >
             Mark Attendance
           </button>
         ) : (
           <button
-            onClick={() => handleEditAttendance(lab._id)}
+            onClick={() => editAttendance (lab._id)}
             className="bg-blue-500 text-white px-4 py-2 rounded"
             
           >
