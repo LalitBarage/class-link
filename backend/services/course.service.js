@@ -133,13 +133,26 @@ module.exports.getAttendanceByLecture = async (lectureId) => {
     // Fetch attendance record
     const attendance = await attendanceModel
       .findOne({ lectureId })
-      .populate("students.studentId");
+      .populate("students.studentId"); // Populate student details
 
     if (!attendance) {
       throw new Error("Attendance record not found.");
     }
 
-    return attendance;
+    // Format the attendance data for the frontend
+    const formattedAttendance = {
+      lectureId: attendance.lectureId,
+      courseId: attendance.courseId,
+      students: attendance.students.map((student) => ({
+        studentId: student.studentId._id,
+        fullname: `${student.studentId.fullname.firstname} ${student.studentId.fullname.middlename} ${student.studentId.fullname.lastname}`,
+        rollno: student.studentId.rollno,
+        prnno: student.studentId.prnno,
+        status: student.status,
+      })),
+    };
+
+    return formattedAttendance;
   } catch (error) {
     throw new Error(`Error fetching attendance: ${error.message}`);
   }
