@@ -60,11 +60,13 @@ const CoursePage = () => {
   };
 
   const markAttendance = (lectureId) => {
-    navigate(`/course/${courseId}/lecture/${lectureId}`); // Navigate to lecture details
+    navigate(`/course/${courseId}/lecture/${lectureId}`, { state: { action: "mark" } });
   };
+  
   const editAttendance = (lectureId) => {
-    navigate(`/course/${courseId}/lecture/${lectureId}`); // Navigate to lecture details
+    navigate(`/course/${courseId}/lecture/${lectureId}`, { state: { action: "edit" } });
   };
+  
   return (
     <div className="min-h-screen bg-white">
       <div className="px-6 py-8">
