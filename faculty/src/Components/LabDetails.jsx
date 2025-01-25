@@ -3,8 +3,8 @@ import { useParams, useLocation } from "react-router-dom";
 import axios from "axios";
 
 const LabDetails = () => {
-  const { labid, practicalId } = useParams(); // Get IDs from route
-  const { state } = useLocation(); // Get state from navigate
+  const { labid, practicalId } = useParams();
+  const { state } = useLocation();
   const [students, setStudents] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -15,35 +15,31 @@ const LabDetails = () => {
       try {
         setLoading(true);
 
-        let response;
         if (state?.action === "mark") {
-          response = await axios.get(
+          const response = await axios.get(
             `http://localhost:4000/lab/${labid}/students`,
             { withCredentials: true }
           );
-          console.log("Response from server:", response.data);
 
-          if (response.data?.students) {
-            setStudents(
-              response.data.students.map((student) => ({
-                ...student,
-                attended: true, // Default to Present for marking attendance
-                studentId: student.studentId || student._id, // Ensure studentId is correctly mapped
-              }))
-            );
-            setAttendanceData(
-              response.data.students.map((student) => ({
-                studentId: student.studentId || student._id, // Ensure studentId is correctly mapped
-                fullname: `${student.fullname.firstname} ${student.fullname.lastname}`,
-                rollno: student.rollno,
-                status: "Present", // Default status to Present
-              }))
-            );
-          } else {
-            setError("No students data found.");
-          }
+          const students = response.data.students[0]?.students || [];
+          const formattedData = students.map((student) => ({
+            studentId: student.studentId || student._id,
+            fullname: `${student.fullname.firstname} ${student.fullname.lastname}`,
+            rollno: student.rollno,
+            attended: true,
+          }));
+
+          setStudents(formattedData);
+          setAttendanceData(
+            formattedData.map((data) => ({
+              studentId: data.studentId,
+              fullname: data.fullname,
+              rollno: data.rollno,
+              status: "Present",
+            }))
+          );
         } else if (state?.action === "edit") {
-          response = await axios.get(
+          const response = await axios.get(
             `http://localhost:4000/lab/${labid}/practical/${practicalId}/attendance`,
             { withCredentials: true }
           );
@@ -53,13 +49,15 @@ const LabDetails = () => {
             setStudents(
               fetchedAttendance.map((record) => ({
                 ...record,
-                attended: record.status === "Present", // Correct status mapping
-                studentId: record.studentId || record._id, // Ensure studentId is correctly mapped
+                attended: record.status === "Present",
+                fullname: `${record.fullname.firstname} ${record.fullname.lastname}`,
+                studentId: record.studentId || record._id,
               }))
             );
+
             setAttendanceData(
               fetchedAttendance.map((record) => ({
-                studentId: record.studentId || record._id, // Ensure studentId is correctly mapped
+                studentId: record.studentId || record._id,
                 fullname: `${record.fullname.firstname} ${record.fullname.lastname}`,
                 rollno: record.rollno,
                 status: record.status,
@@ -68,6 +66,8 @@ const LabDetails = () => {
           } else {
             setError("No attendance data found.");
           }
+        } else {
+          setError("Invalid action. Please try again.");
         }
       } catch (err) {
         console.error("Error fetching students:", err);
@@ -94,81 +94,49 @@ const LabDetails = () => {
         data.studentId === studentId
           ? {
               ...data,
-              status: data.status === "Present" ? "Absent" : "Present", // Toggle between Present and Absent
+              status: data.status === "Present" ? "Absent" : "Present",
             }
           : data
       )
     );
   };
 
-  const updateAttendance = async () => {
+  const handleSubmit = async () => {
     const payload = {
       labid,
       practicalId,
       students: attendanceData.map((data) => ({
         studentId: data.studentId,
         fullname: {
-          firstname: data.fullname.split(" ")[0], // Extract firstname
-          lastname: data.fullname.split(" ")[1], // Extract lastname
+          firstname: data.fullname.split(" ")[0],
+          lastname: data.fullname.split(" ")[1],
         },
         rollno: data.rollno,
-        status: data.status, // Ensure the correct status is being sent
+        status: data.status,
       })),
     };
 
     try {
-      console.log("Payload:", payload);
-      const response = await axios.put(
-        `http://localhost:4000/lab/${labid}/practical/${practicalId}/attendance`,
-        payload,
-        { withCredentials: true }
-      );
+      const endpoint =
+        state?.action === "mark"
+          ? `http://localhost:4000/lab/${labid}/practical/${practicalId}/attendance`
+          : `http://localhost:4000/lab/${labid}/practical/${practicalId}/attendance`;
 
-      console.log("Update Response:", response.data);
-      alert("Attendance updated successfully!");
+      const method = state?.action === "mark" ? "post" : "put";
+
+      const response = await axios[method](endpoint, payload, {
+        withCredentials: true,
+      });
+
+      console.log("Response:", response.data);
+      alert(
+        state?.action === "mark"
+          ? "Attendance submitted successfully!"
+          : "Attendance updated successfully!"
+      );
     } catch (err) {
-      console.error(
-        "Error updating attendance:",
-        err.response?.data || err.message
-      );
-      alert(`Failed to update attendance: ${err.message}`);
-    }
-  };
-
-  const handleSubmit = async () => {
-    if (state?.action === "mark") {
-      const payload = {
-        labid,
-        practicalId,
-        students: attendanceData.map((data) => ({
-          studentId: data.studentId,
-          fullname: {
-            firstname: data.fullname.split(" ")[0],
-            lastname: data.fullname.split(" ")[1],
-          },
-          rollno: data.rollno,
-          status: data.status,
-        })),
-      };
-
-      try {
-        console.log("Payload for Marking Attendance:", payload);
-        const response = await axios.post(
-          `http://localhost:4000/lab/${labid}/practical/${practicalId}/attendance`,
-          payload,
-          { withCredentials: true }
-        );
-        console.log("Mark Response:", response.data);
-        alert("Attendance submitted successfully!");
-      } catch (err) {
-        console.error(
-          "Error submitting attendance:",
-          err.response?.data || err.message
-        );
-        alert(`Failed to submit attendance: ${err.message}`);
-      }
-    } else if (state?.action === "edit") {
-      updateAttendance();
+      console.error("Error submitting attendance:", err.response?.data || err.message);
+      alert(`Failed to submit attendance: ${err.message}`);
     }
   };
 
@@ -190,9 +158,7 @@ const LabDetails = () => {
                   key={student.studentId}
                   className="flex items-center justify-between bg-gray-100 p-4 rounded shadow"
                 >
-                  <p>
-                    {student.fullname.firstname} {student.fullname.lastname}
-                  </p>
+                  <p>{student.fullname}</p>
                   <button
                     onClick={() => handleAttendanceToggle(student.studentId)}
                     className={`px-4 py-2 rounded ${
@@ -208,7 +174,7 @@ const LabDetails = () => {
             </ul>
             <button
               onClick={handleSubmit}
-              className="mt-6 px-6 py-2 bg-black justify-end text-white rounded shadow"
+              className="mt-6 px-6 py-2 bg-black text-white rounded shadow"
             >
               {state?.action === "mark"
                 ? "Submit Attendance"

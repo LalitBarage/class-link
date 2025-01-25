@@ -251,3 +251,23 @@ module.exports.getLectureDate = async (req, res) => {
     res.status(500).json({ message: "Internal Server Error" });
   }
 };
+
+module.exports.getStudentLectureCounts = async (req, res) => {
+  const { courseId, studentId } = req.params;
+
+  try {
+    const data = await courseService.getStudentLectureCounts(courseId, studentId);
+
+    if (!data) {
+      return res.status(404).json({ message: "No data found for the given course and student." });
+    }
+
+    res.status(200).json({
+      message: "Lecture counts retrieved successfully",
+      data,
+    });
+  } catch (error) {
+    console.error("Error fetching lecture counts:", error);
+    res.status(500).json({ message: "Internal Server Error", error: error.message });
+  }
+};

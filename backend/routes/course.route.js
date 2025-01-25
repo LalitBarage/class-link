@@ -88,4 +88,6 @@ router.put(
 
 router.get("/lecture/:lectureId/date", courseController.getLectureDate);
 
+router.get("/:courseId/students/:studentId/lecture-counts", courseController.getStudentLectureCounts);
+
 module.exports = router;
