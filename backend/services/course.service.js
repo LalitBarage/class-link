@@ -131,14 +131,13 @@ module.exports.createAttendance = async (courseId, lectureId, { students }) => {
 module.exports.getAttendanceByLecture = async (lectureId) => {
   try {
     // Fetch attendance record and populate student details
-    const attendance = await attendanceModel.findOne({ lectureId })
+    const attendance = await attendanceModel.findOne({ lectureId });
 
     if (!attendance) {
       throw new Error("Attendance record not found.");
     }
 
     // Format the attendance data
-   
 
     return attendance;
   } catch (error) {
@@ -152,12 +151,14 @@ module.exports.updateAttendance = async (courseId, lectureId, students) => {
     // Update attendance for specific course and lecture
     const updatedAttendance = await attendanceModel.findOneAndUpdate(
       { courseId, lectureId }, // Query to find the document
-      { $set: { students } },  // Update the students array
-      { new: true }            // Return the updated document
+      { $set: { students } }, // Update the students array
+      { new: true } // Return the updated document
     );
 
     if (!updatedAttendance) {
-      throw new Error("Attendance record not found for the given course and lecture.");
+      throw new Error(
+        "Attendance record not found for the given course and lecture."
+      );
     }
 
     return updatedAttendance;
@@ -166,3 +167,17 @@ module.exports.updateAttendance = async (courseId, lectureId, students) => {
   }
 };
 
+module.exports.getAttendanceByCourse = async (courseId) => {
+  try {
+    // Fetch attendance records for a specific course
+    const attendance = await attendanceModel.find({ courseId });
+
+    if (!attendance) {
+      throw new Error("Attendance records not found.");
+    }
+
+    return attendance;
+  } catch (error) {
+    throw new Error(`Error fetching attendance: ${error.message}`);
+  }
+};

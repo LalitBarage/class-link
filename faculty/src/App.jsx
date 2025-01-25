@@ -10,6 +10,7 @@ import CoursePage from "./Components/CoursePage";
 import LectureDetails from "./Components/LectureDetails";
 import LabPage from "./Components/LabPage";
 import LabDetails from "./Components/LabDetails";
+import CourseReport from "./Components/CourseReport";
 
 function App() {
   const { isAuthenticated, setIsAuthenticated, user, setUser } =
@@ -44,6 +45,10 @@ function App() {
             element={isAuthenticated ? <CoursePage /> : <Login />}
           />
           <Route
+            path="/course/:courseId/report"
+            element={isAuthenticated ? <CourseReport /> : <Login />}
+          />
+          <Route
             path="/course/:courseId/lecture/:lectureId"
             element={isAuthenticated ? <LectureDetails /> : <Login />}
           />
@@ -51,11 +56,10 @@ function App() {
             path="/lab/:labid"
             element={isAuthenticated ? <LabPage /> : <Login />}
           />
-            <Route
+          <Route
             path="/lab/:labid/practical/:practicalId"
             element={isAuthenticated ? <LabDetails /> : <Login />}
           />
-         
         </Routes>
       </Router>
     </div>

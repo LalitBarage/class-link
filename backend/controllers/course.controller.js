@@ -200,9 +200,9 @@ module.exports.updateAttendance = async (req, res) => {
 
     // Validate input
     if (!courseId || !lectureId || !students || students.length === 0) {
-      return res
-        .status(400)
-        .json({ message: "Course ID, Lecture ID, and students data are required." });
+      return res.status(400).json({
+        message: "Course ID, Lecture ID, and students data are required.",
+      });
     }
 
     // Call service to update attendance
@@ -219,5 +219,16 @@ module.exports.updateAttendance = async (req, res) => {
   } catch (error) {
     console.error("Error updating attendance:", error.message);
     return res.status(500).json({ message: error.message });
+  }
+};
+
+module.exports.getAttendanceByCourse = async (req, res) => {
+  const { courseId } = req.params;
+
+  try {
+    const attendance = await courseService.getAttendanceByCourse(courseId);
+    res.status(200).json({ attendance });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
   }
 };

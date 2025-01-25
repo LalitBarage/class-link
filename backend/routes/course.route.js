@@ -69,6 +69,8 @@ router.post("/:courseId/lecture", courseController.addLecture);
 
 router.get("/students/:courseId", courseController.getStudentsByCourseId);
 
+router.get("/:courseId/attendance", courseController.getAttendanceByCourse);
+
 router.post(
   "/:courseId/lecture/:lectureId/attendance",
   courseController.createAttendance
