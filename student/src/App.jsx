@@ -42,8 +42,8 @@ function App() {
           path="/lab/:labid/report"
           element={isAuthenticated ? <LabReport /> : <Navigate to="/login" />}
         />
-        {/* Catch-all route for 404 */}
-        <Route path="*" element={<Navigate to="/" />} />
+       
+       
       </Routes>
     </Router>
   );
