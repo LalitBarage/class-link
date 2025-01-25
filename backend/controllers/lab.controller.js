@@ -255,7 +255,7 @@ module.exports.getLabAttendance = async (req, res) => {
   const { labid } = req.params;
 
   try {
-    const attendanceData = await labService.getAttendanceByLab(labid);
+    const attendanceData = await labService.fetchLabAttendance(labid);
 
     if (!attendanceData) {
       return res.status(404).json({ message: "Lab attendance not found." });
