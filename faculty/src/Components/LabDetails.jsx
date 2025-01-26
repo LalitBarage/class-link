@@ -23,7 +23,8 @@ const LabDetails = () => {
             { withCredentials: true }
           );
 
-          const students = response.data.students[0]?.students || [];
+          const students = response.data.students || [];
+          console.log(students)
           const formattedData = students.map((student) => ({
             studentId: student.studentId || student._id,
             fullname: `${student.fullname.firstname} ${student.fullname.lastname}`,

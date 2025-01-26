@@ -9,7 +9,7 @@ const AddLab = () => {
   const [showAddModal, setShowAddModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [currentLab, setCurrentLab] = useState(null);
-  const [selectedClass, setSelectedClass] = useState("");
+  const [selectedyear, setSelectedyear] = useState("");
   const [selectedDivision, setSelectedDivision] = useState("");
   const [selectedDepartment, setSelectedDepartment] = useState("");
 
@@ -20,7 +20,7 @@ const AddLab = () => {
     endrollno: "",
     department: "",
     division: "",
-    class: "",
+    year: "",
     labname: "",
     batch: "",
   });
@@ -51,7 +51,7 @@ const AddLab = () => {
   };
 
   const handleDeptSelect = (e) => setSelectedDepartment(e.target.value);
-  const handleClassSelect = (e) => setSelectedClass(e.target.value);
+  const handleYearSelect = (e) => setSelectedyear(e.target.value);
   const handleDivisionSelect = (e) => setSelectedDivision(e.target.value);
 
   // Handle Add or Edit Lab
@@ -60,7 +60,7 @@ const AddLab = () => {
       ...formData,
       department: selectedDepartment,
       division: selectedDivision,
-      class: selectedClass,
+      year: selectedyear,
     };
 
     const url =
@@ -112,12 +112,12 @@ const AddLab = () => {
         endrollno: "",
         department: "",
         division: "",
-        class: "",
+        year: "",
         labname: "",
         batch: "",
       });
       setSelectedDepartment("");
-      setSelectedClass("");
+      setSelectedyear("");
       setSelectedDivision("");
       setCurrentLab(null);
       setShowAddModal(false);
@@ -144,7 +144,7 @@ const AddLab = () => {
           endrollno: "",
           department: "",
           division: "",
-          class: "",
+          year: "",
           labname: "",
           batch: "",
         }); // Reset the form
@@ -230,7 +230,7 @@ const AddLab = () => {
                     {lab.department}
                   </td>
                   <td className="px-4 py-3 border border-gray-300">
-                    {lab.class}
+                    {lab.year}
                   </td>
                   <td className="px-4 py-3 border border-gray-300">
                     {lab.division}
@@ -249,7 +249,7 @@ const AddLab = () => {
                           setCurrentLab(lab._id); // Set the current lab ID
                           setFormData(lab); // Populate the form with the lab data
                           setSelectedDepartment(lab.department || ""); // Set the selected department
-                          setSelectedClass(lab.class || ""); // Set the selected class
+                          setSelectedyear(lab.year || ""); // Set the selected class
                           setSelectedDivision(lab.division || ""); // Set the selected division
                           setShowAddModal(true); // Show the modal
                         }}
@@ -348,8 +348,8 @@ const AddLab = () => {
               </select>
               <select
                 id="class"
-                value={selectedClass}
-                onChange={handleClassSelect}
+                value={selectedyear}
+                onChange={handleYearSelect}
                 className="w-full bg-gray-100 border rounded-md p-2"
               >
                 <option value="" disabled>

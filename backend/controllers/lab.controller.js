@@ -241,7 +241,7 @@ module.exports.getStudentsBylabId = async (req, res) => {
 
   try {
     // Call the service function to get students by courseId
-    const students = await labService.fetchLabAttendance(labid);
+    const students = await labService.getStudentsByLabId(labid);
 
     // Return the students as a response
     res.status(200).json({ students });

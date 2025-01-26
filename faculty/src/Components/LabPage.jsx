@@ -92,10 +92,7 @@ const LabPage = () => {
               <li key={lab._id} className="bg-gray-100 p-4 rounded shadow">
                 <div>
                   <p>
-                    Lecture on{" "}
-                    {lab.date
-                      ? format(new Date(lab.date), "MMMM dd, yyyy")
-                      : "Invalid Date"}
+                    Lab on {new Date(lab.date).toLocaleDateString()}
                   </p>
                   {lab.timeSlot && (
                     <p className="text-gray-500">Time Slot: {lab.timeSlot}</p>
