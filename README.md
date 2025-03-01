@@ -1,1 +1,1 @@
-Simple attendance syste for collages
+Simple attendance system for collages
