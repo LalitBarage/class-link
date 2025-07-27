@@ -98,7 +98,7 @@ npm start
 ### 2️⃣ Start the Admin Dashboard
 
 ```bash
-cd ../admin
+cd admin
 npm install
 npm run dev
 ```
@@ -106,7 +106,7 @@ npm run dev
 ### 3️⃣ Start the Faculty Dashboard
 
 ```bash
-cd ../faculty
+cd faculty
 npm install
 npm run dev
 ```
@@ -114,7 +114,7 @@ npm run dev
 ### 4️⃣ Start the Student Dashboard
 
 ```bash
-cd ../student
+cd student
 npm install
 npm run dev
 ```
