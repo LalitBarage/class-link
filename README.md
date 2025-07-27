@@ -77,19 +77,7 @@ Traditional attendance methods are slow, error-prone, and not scalable. The **Sm
 
 ## 🚀 Getting Started
 
-Follow these steps to run the project locally. Make sure you have **Node.js**, **npm**, and **MongoDB** installed on your machine.
-
----
-
-### 📁 Project Structure
-
-smart-attendance-system/
-├── backend/ # Node.js + Express REST API
-├── admin/ # Admin dashboard (React)
-├── faculty/ # Faculty dashboard (React)
-├── student/ # Student dashboard (React)
-├── screenshots/ # Screenshots used in README
-└── README.md # Project documentation
+Follow these steps to run the project locally. Make sure you have **Node.js** and **npm** installed on your machine.
 
 ---
 
