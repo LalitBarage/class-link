@@ -18,10 +18,10 @@ const CourseReport = () => {
   useEffect(() => {
     const fetchCourseData = async () => {
       try {
-        const response = await fetch(`http://localhost:4000/course/${courseId}/students/${studentIdFromContext}/lecture-counts`);
+        const response = await fetch(`https://class-link-7ptd.onrender.com/course/${courseId}/students/${studentIdFromContext}/lecture-counts`);
         const text = await response.text(); // Read the response as text
         console.log(text); // Log the raw response
-    
+
         // Now, try parsing the response as JSON if it seems valid
         const data = JSON.parse(text);
         setCourseData(data.data); // Assuming the data is in the 'data' field

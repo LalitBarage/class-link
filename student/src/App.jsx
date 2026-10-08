@@ -21,7 +21,7 @@ function App() {
     const fetchUser = async () => {
       try {
         const response = await axios.get(
-          "http://localhost:4000/student/profile",
+          "https://class-link-7ptd.onrender.com/student/profile",
           { withCredentials: true }
         );
         setIsAuthenticated(true);

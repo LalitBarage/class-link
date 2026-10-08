@@ -17,7 +17,7 @@ const CoursePage = () => {
   const fetchLectures = async () => {
     try {
       const response = await axios.get(
-        `http://localhost:4000/course/${courseId}/lecture`,
+        `https://class-link-7ptd.onrender.com/course/${courseId}/lecture`,
         { withCredentials: true }
       );
 
@@ -42,7 +42,7 @@ const CoursePage = () => {
     setAddingLecture(true);
     try {
       const response = await axios.post(
-        `http://localhost:4000/course/${courseId}/lecture`,
+        `https://class-link-7ptd.onrender.com/course/${courseId}/lecture`,
         newLecture,
         { withCredentials: true }
       );

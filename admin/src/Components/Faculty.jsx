@@ -41,7 +41,7 @@ const Faculty = () => {
 
     try {
       const response = await axios.put(
-        `http://localhost:4000/faculty/update/${editingFaculty.id}`, // Use facultyId here
+        `https://class-link-7ptd.onrender.com/faculty/update/${editingFaculty.id}`, // Use facultyId here
         updatedData
       );
 
@@ -52,12 +52,11 @@ const Faculty = () => {
           prevData.map((faculty) =>
             faculty.facultyId === editingFaculty.id
               ? {
-                  ...faculty,
-                  ...updatedData,
-                  name: `${updatedData.fullname?.firstname || ""} ${
-                    updatedData.fullname?.middlename || ""
+                ...faculty,
+                ...updatedData,
+                name: `${updatedData.fullname?.firstname || ""} ${updatedData.fullname?.middlename || ""
                   } ${updatedData.fullname?.lastname || ""}`,
-                }
+              }
               : faculty
           )
         );
@@ -77,7 +76,7 @@ const Faculty = () => {
   useEffect(() => {
     const fetchFacultyData = async () => {
       try {
-        const response = await axios.get("http://localhost:4000/faculty/list");
+        const response = await axios.get("https://class-link-7ptd.onrender.com/faculty/list");
 
         // Access the array inside the `faculties` key
         const data = response.data.faculties;
@@ -148,7 +147,7 @@ const Faculty = () => {
     };
 
     try {
-      const response = await fetch("http://localhost:4000/faculty/register", {
+      const response = await fetch("https://class-link-7ptd.onrender.com/faculty/register", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -178,7 +177,7 @@ const Faculty = () => {
     if (!facultyToDelete) return;
     try {
       const response = await axios.delete(
-        `http://localhost:4000/faculty/remove/${facultyToDelete}`,
+        `https://class-link-7ptd.onrender.com/faculty/remove/${facultyToDelete}`,
         {
           headers: {
             "Content-Type": "application/json",

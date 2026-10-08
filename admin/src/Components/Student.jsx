@@ -17,7 +17,7 @@ const Student = () => {
   useEffect(() => {
     const fetchStudents = async () => {
       try {
-        const response = await fetch("http://localhost:4000/student/list");
+        const response = await fetch("https://class-link-7ptd.onrender.com/student/list");
         if (response.ok) {
           const result = await response.json();
           const formattedData = result.students.map((student) => ({
@@ -90,7 +90,7 @@ const Student = () => {
     if (!confirmed) return;
 
     try {
-      const response = await fetch(`http://localhost:4000/student/student/${id}`, {
+      const response = await fetch(`https://class-link-7ptd.onrender.com/student/student/${id}`, {
         method: "DELETE",
       });
 
@@ -113,7 +113,7 @@ const Student = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-  
+
     const formData = {
       fullname: {
         firstname: e.target.studentFName.value.trim(),
@@ -135,7 +135,7 @@ const Student = () => {
       parentmobileno: e.target.pmobileNo.value.trim(),
       password: "pass@123",
     };
-  
+
     // Add password field if editing
     if (editingStudent) {
       const password = e.target.password.value.trim();
@@ -143,14 +143,14 @@ const Student = () => {
         formData.password = password;
       }
     }
-  
+
     try {
       const url = editingStudent
-        ? `http://localhost:4000/student/update/${editingStudent.id}`
-        : "http://localhost:4000/student/register";
-  
+        ? `https://class-link-7ptd.onrender.com/student/update/${editingStudent.id}`
+        : "https://class-link-7ptd.onrender.com/student/register";
+
       const method = editingStudent ? "PUT" : "POST";
-  
+
       const response = await fetch(url, {
         method,
         headers: {
@@ -158,7 +158,7 @@ const Student = () => {
         },
         body: JSON.stringify(formData),
       });
-  
+
       if (response.ok) {
         const data = await response.json();
         toast.success(editingStudent ? "Student updated successfully!" : "Student registered successfully");
@@ -167,11 +167,11 @@ const Student = () => {
             ? prev.map((stu) => (stu.id === editingStudent.id ? { ...stu, ...formData } : stu))
             : [...prev, { ...formData, id: data.student.id }]
         );
-       
+
         setShowForm(false);
         setEditingStudent(null);
       } else {
-        
+
         toast.error("Failed to register student. Please try again.")
       }
     } catch (error) {
@@ -181,7 +181,7 @@ const Student = () => {
 
     }
   };
-  
+
 
   return (
     <div className="p-5">
@@ -299,7 +299,7 @@ const Student = () => {
                 id="stuEmail"
                 name="stuEmail"
                 placeholder="Student Email"
-                defaultValue={editingStudent?.email|| ""}
+                defaultValue={editingStudent?.email || ""}
                 required
                 className="w-full border rounded-md p-2 mb-2 bg-gray-100"
               />
@@ -343,11 +343,11 @@ const Student = () => {
                   <option value="" disabled>
                     Department
                   </option>
-                 
+
                   <option value="CSE">CSE</option>
-                <option value="DS">DATA SCIENCE</option>
-                <option value="ELECTRICAL">ELECTRICAL</option>
-                <option value="CIVIL">CIVIL</option>
+                  <option value="DS">DATA SCIENCE</option>
+                  <option value="ELECTRICAL">ELECTRICAL</option>
+                  <option value="CIVIL">CIVIL</option>
                 </select>
                 <select
                   id="class"
@@ -421,15 +421,15 @@ const Student = () => {
                 className="w-full border rounded-md p-2 mb-2 bg-gray-100"
               />
 
-            {editingStudent && (
-             <input
-               type="password"
-               id="password"
-               name="password"
-               placeholder="Enter Password"
-               className="w-full border rounded-md p-2 mb-2 bg-gray-100"
-               />
-               )}
+              {editingStudent && (
+                <input
+                  type="password"
+                  id="password"
+                  name="password"
+                  placeholder="Enter Password"
+                  className="w-full border rounded-md p-2 mb-2 bg-gray-100"
+                />
+              )}
 
               <div className="flex justify-end gap-3">
                 <button
@@ -439,18 +439,18 @@ const Student = () => {
                 >
                   Cancel
                 </button>
-              <button
-                type="submit"
-                className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600"
-              >
-                {editingStudent ? "Update" : "Add"}
-              </button>
-                </div>
+                <button
+                  type="submit"
+                  className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600"
+                >
+                  {editingStudent ? "Update" : "Add"}
+                </button>
+              </div>
             </form>
           </div>
         </div>
       )}
-       <ToastContainer />
+      <ToastContainer />
     </div>
   );
 };

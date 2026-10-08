@@ -18,7 +18,7 @@ const LabReport = () => {
       try {
         // Fetch attendance data
         const response = await axios.get(
-          `http://localhost:4000/lab/${labid}/attendance`,
+          `https://class-link-7ptd.onrender.com/lab/${labid}/attendance`,
           { withCredentials: true }
         );
 
@@ -73,7 +73,7 @@ const LabReport = () => {
     for (let practicalId of practicalIds) {
       try {
         const dateResponse = await axios.get(
-          `http://localhost:4000/lab/practical/${practicalId}/date`
+          `https://class-link-7ptd.onrender.com/lab/practical/${practicalId}/date`
         );
         const practicalDate = new Date(dateResponse.data.date);
         const formattedDate = `${practicalDate.getDate()}-${practicalDate.getMonth() + 1}`;
@@ -198,11 +198,10 @@ const LabReport = () => {
                   {Object.values(student.attendance).map((status, index) => (
                     <td
                       key={index}
-                      className={`px-2 py-2 border-b ${
-                        status === "Present"
+                      className={`px-2 py-2 border-b ${status === "Present"
                           ? "bg-green-100 text-green-700"
                           : "bg-red-100 text-red-700"
-                      }`}
+                        }`}
                     >
                       {status}
                     </td>
@@ -231,11 +230,10 @@ const LabReport = () => {
                   <td className="px-2 py-2 border-b">{student.totalLabs}</td>
                   <td className="px-2 py-2 border-b">{student.attendedLabs}</td>
                   <td
-                    className={`px-2 py-2 border-b ${
-                      student.defaulter === "Yes"
+                    className={`px-2 py-2 border-b ${student.defaulter === "Yes"
                         ? "bg-red-100 text-red-700"
                         : "bg-green-100 text-green-700"
-                    }`}
+                      }`}
                   >
                     {student.defaulter}
                   </td>

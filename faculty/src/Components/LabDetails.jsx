@@ -19,7 +19,7 @@ const LabDetails = () => {
 
         if (state?.action === "mark") {
           const response = await axios.get(
-            `http://localhost:4000/lab/${labid}/students`,
+            `https://class-link-7ptd.onrender.com/lab/${labid}/students`,
             { withCredentials: true }
           );
 
@@ -43,7 +43,7 @@ const LabDetails = () => {
           );
         } else if (state?.action === "edit") {
           const response = await axios.get(
-            `http://localhost:4000/lab/${labid}/practical/${practicalId}/attendance`,
+            `https://class-link-7ptd.onrender.com/lab/${labid}/practical/${practicalId}/attendance`,
             { withCredentials: true }
           );
 
@@ -98,9 +98,9 @@ const LabDetails = () => {
       prev.map((data) =>
         data.studentId === studentId
           ? {
-              ...data,
-              status: data.status === "Present" ? "Absent" : "Present",
-            }
+            ...data,
+            status: data.status === "Present" ? "Absent" : "Present",
+          }
           : data
       )
     );
@@ -124,8 +124,8 @@ const LabDetails = () => {
     try {
       const endpoint =
         state?.action === "mark"
-          ? `http://localhost:4000/lab/${labid}/practical/${practicalId}/attendance`
-          : `http://localhost:4000/lab/${labid}/practical/${practicalId}/attendance`;
+          ? `https://class-link-7ptd.onrender.com/lab/${labid}/practical/${practicalId}/attendance`
+          : `https://class-link-7ptd.onrender.com/lab/${labid}/practical/${practicalId}/attendance`;
 
       const method = state?.action === "mark" ? "post" : "put";
 
@@ -165,11 +165,10 @@ const LabDetails = () => {
                   <p>{student.fullname}</p>
                   <button
                     onClick={() => handleAttendanceToggle(student.studentId)}
-                    className={`px-4 py-2 rounded ${
-                      student.attended
+                    className={`px-4 py-2 rounded ${student.attended
                         ? "bg-green-500 text-white"
                         : "bg-red-500 text-white"
-                    }`}
+                      }`}
                   >
                     {student.attended ? "Present" : "Absent"}
                   </button>

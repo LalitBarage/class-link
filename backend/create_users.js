@@ -1,7 +1,7 @@
 async function createUsers() {
   try {
     console.log("Creating Admin...");
-    let res = await fetch('http://localhost:4000/admin/register', {
+    let res = await fetch('https://class-link-7ptd.onrender.com/admin/register', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -19,7 +19,7 @@ async function createUsers() {
 
   try {
     console.log("Creating Faculty...");
-    let res = await fetch('http://localhost:4000/faculty/register', {
+    let res = await fetch('https://class-link-7ptd.onrender.com/faculty/register', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -42,7 +42,7 @@ async function createUsers() {
 
   try {
     console.log("Creating Student...");
-    let res = await fetch('http://localhost:4000/student/register', {
+    let res = await fetch('https://class-link-7ptd.onrender.com/student/register', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({

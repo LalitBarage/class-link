@@ -13,7 +13,7 @@ const Navbar = () => {
 
   const handleLogout = async () => {
     try {
-      await axios.get("http://localhost:4000/faculty/logout", {
+      await axios.get("https://class-link-7ptd.onrender.com/faculty/logout", {
         withCredentials: true,
       });
       setIsAuthenticated(false); // Set authentication state to false
@@ -29,7 +29,7 @@ const Navbar = () => {
     <>
       {isAuthenticated && ( // Render only if the user is authenticated
         <div className="bg-gray-200 shadow-lg">
-          
+
           <div className="h-20 flex justify-between items-center px-5 md:px-10">
             {/* Logo Section */}
             <div>
@@ -38,7 +38,7 @@ const Navbar = () => {
 
             {/* Logout Button */}
             <div>
-              <FaSignOutAlt className="text-3xl" onClick={handleLogout} />              
+              <FaSignOutAlt className="text-3xl" onClick={handleLogout} />
             </div>
           </div>
         </div>

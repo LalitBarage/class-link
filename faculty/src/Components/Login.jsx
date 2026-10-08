@@ -15,7 +15,7 @@ const Login = () => {
     e.preventDefault();
     try {
       const response = await axios.post(
-        "http://localhost:4000/faculty/login",
+        "https://class-link-7ptd.onrender.com/faculty/login",
         { email, password },
         { withCredentials: true }
       );

@@ -13,7 +13,7 @@ const Navbar = () => {
 
   const handleLogout = async () => {
     try {
-      await axios.get("http://localhost:4000/faculty/logout", {
+      await axios.get("https://class-link-7ptd.onrender.com/faculty/logout", {
         withCredentials: true,
       });
       setIsAuthenticated(false); // Set authentication state to false
@@ -37,7 +37,7 @@ const Navbar = () => {
 
             {/* Logout Button */}
             <div>
-              <FaSignOutAlt className="text-3xl" onClick={handleLogout} />              
+              <FaSignOutAlt className="text-3xl" onClick={handleLogout} />
             </div>
           </div>
         </div>

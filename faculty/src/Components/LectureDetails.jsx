@@ -22,7 +22,7 @@ const LectureDetails = () => {
         let response;
         if (state?.action === "mark") {
           response = await axios.get(
-            `http://localhost:4000/course/students/${courseId}`,
+            `https://class-link-7ptd.onrender.com/course/students/${courseId}`,
             { withCredentials: true }
           );
 
@@ -47,7 +47,7 @@ const LectureDetails = () => {
           }
         } else if (state?.action === "edit") {
           response = await axios.get(
-            `http://localhost:4000/course/${courseId}/lecture/${lectureId}/attendance`,
+            `https://class-link-7ptd.onrender.com/course/${courseId}/lecture/${lectureId}/attendance`,
             { withCredentials: true }
           );
 
@@ -96,9 +96,9 @@ const LectureDetails = () => {
       prev.map((data) =>
         data.studentId === studentId
           ? {
-              ...data,
-              status: data.status === "Present" ? "Absent" : "Present", // Toggle between Present and Absent
-            }
+            ...data,
+            status: data.status === "Present" ? "Absent" : "Present", // Toggle between Present and Absent
+          }
           : data
       )
     );
@@ -121,7 +121,7 @@ const LectureDetails = () => {
 
     try {
       await axios.put(
-        `http://localhost:4000/course/${courseId}/lecture/${lectureId}/attendance`,
+        `https://class-link-7ptd.onrender.com/course/${courseId}/lecture/${lectureId}/attendance`,
         payload,
         { withCredentials: true }
       );
@@ -151,7 +151,7 @@ const LectureDetails = () => {
 
       try {
         await axios.post(
-          `http://localhost:4000/course/${courseId}/lecture/${lectureId}/attendance`,
+          `https://class-link-7ptd.onrender.com/course/${courseId}/lecture/${lectureId}/attendance`,
           payload,
           { withCredentials: true }
         );
@@ -190,11 +190,10 @@ const LectureDetails = () => {
                   </p>
                   <button
                     onClick={() => handleAttendanceToggle(student.studentId)}
-                    className={`px-4 py-2 rounded ${
-                      student.attended
+                    className={`px-4 py-2 rounded ${student.attended
                         ? "bg-green-500 text-white"
                         : "bg-red-500 text-white"
-                    }`}
+                      }`}
                   >
                     {student.attended ? "Present" : "Absent"}
                   </button>

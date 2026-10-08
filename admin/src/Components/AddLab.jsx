@@ -29,7 +29,7 @@ const AddLab = () => {
   useEffect(() => {
     const fetchLabs = async () => {
       try {
-        const response = await fetch("http://localhost:4000/lab/all");
+        const response = await fetch("https://class-link-7ptd.onrender.com/lab/all");
         if (response.ok) {
           const data = await response.json();
           setLabs(data.labs); // Populate labs state with the fetched array of labs
@@ -65,8 +65,8 @@ const AddLab = () => {
 
     const url =
       currentLab === null
-        ? "http://localhost:4000/lab/create"
-        : `http://localhost:4000/lab/update/${formData.labid}`;
+        ? "https://class-link-7ptd.onrender.com/lab/create"
+        : `https://class-link-7ptd.onrender.com/lab/update/${formData.labid}`;
     const method = currentLab === null ? "POST" : "PUT";
 
     try {
@@ -128,7 +128,7 @@ const AddLab = () => {
   const handleDeleteLab = async () => {
     try {
       const response = await fetch(
-        `http://localhost:4000/lab/delete/${formData.labid}`,
+        `https://class-link-7ptd.onrender.com/lab/delete/${formData.labid}`,
         {
           method: "DELETE",
         }

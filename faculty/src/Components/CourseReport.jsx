@@ -17,7 +17,7 @@ const CourseReport = () => {
       setError("");
       try {
         const response = await axios.get(
-          `http://localhost:4000/course/${courseId}/attendance`,
+          `https://class-link-7ptd.onrender.com/course/${courseId}/attendance`,
           { withCredentials: true }
         );
 
@@ -68,7 +68,7 @@ const CourseReport = () => {
     for (let lectureId of lectureIds) {
       try {
         const dateResponse = await axios.get(
-          `http://localhost:4000/course/lecture/${lectureId}/date`
+          `https://class-link-7ptd.onrender.com/course/lecture/${lectureId}/date`
         );
         const lectureDate = new Date(dateResponse.data.date);
         const formattedDate = `${lectureDate.getDate()}-${lectureDate.getMonth() + 1}`;
@@ -197,11 +197,10 @@ const CourseReport = () => {
                     {Object.values(student.attendance).map((status, index) => (
                       <td
                         key={index}
-                        className={`px-2 py-2 border-b ${
-                          status === "Present"
+                        className={`px-2 py-2 border-b ${status === "Present"
                             ? "bg-green-100 text-green-700"
                             : "bg-red-100 text-red-700"
-                        }`}
+                          }`}
                       >
                         {status}
                       </td>
@@ -233,11 +232,10 @@ const CourseReport = () => {
                     <td className="px-2 py-2 border-b">{student.totalLectures}</td>
                     <td className="px-2 py-2 border-b">{student.attendedLectures}</td>
                     <td
-                      className={`px-2 py-2 border-b ${
-                        student.defaulter === "Yes"
+                      className={`px-2 py-2 border-b ${student.defaulter === "Yes"
                           ? "bg-red-100 text-red-700"
                           : "bg-green-100 text-green-700"
-                      }`}
+                        }`}
                     >
                       {student.defaulter}
                     </td>

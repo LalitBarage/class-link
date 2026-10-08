@@ -50,7 +50,7 @@ const Course = () => {
 
     try {
       const response = await axios.put(
-        `http://localhost:4000/course/update/${editingCourse.courseId}`,
+        `https://class-link-7ptd.onrender.com/course/update/${editingCourse.courseId}`,
         updatedData
       );
 
@@ -77,7 +77,7 @@ const Course = () => {
   useEffect(() => {
     const fetchCourseData = async () => {
       try {
-        const response = await axios.get("http://localhost:4000/course/list");
+        const response = await axios.get("https://class-link-7ptd.onrender.com/course/list");
         const data = response.data.courses;
 
         const formattedData = data.map((course) => ({
@@ -137,7 +137,7 @@ const Course = () => {
     };
 
     try {
-      const response = await fetch("http://localhost:4000/course/register", {
+      const response = await fetch("https://class-link-7ptd.onrender.com/course/register", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -165,7 +165,7 @@ const Course = () => {
     if (!courseToDelete) return;
     try {
       const response = await axios.delete(
-        `http://localhost:4000/course/remove/${courseToDelete}`,
+        `https://class-link-7ptd.onrender.com/course/remove/${courseToDelete}`,
         {
           headers: {
             "Content-Type": "application/json",

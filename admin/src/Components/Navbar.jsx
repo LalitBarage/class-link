@@ -27,7 +27,7 @@ const Navbar = () => {
 
   const handleLogout = async () => {
     try {
-      await axios.get("http://localhost:4000/admin/logout", {
+      await axios.get("https://class-link-7ptd.onrender.com/admin/logout", {
         withCredentials: true,
       });
       setIsAuthenticated(false); // Set authentication state to false

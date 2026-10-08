@@ -16,8 +16,8 @@ const Home = () => {
       try {
         const endpoint =
           view === "courses"
-            ? "http://localhost:4000/faculty/assignedcourses"
-            : "http://localhost:4000/faculty/assignedLabs";
+            ? "https://class-link-7ptd.onrender.com/faculty/assignedcourses"
+            : "https://class-link-7ptd.onrender.com/faculty/assignedLabs";
 
         const response = await axios.get(endpoint, { withCredentials: true });
 
@@ -52,21 +52,19 @@ const Home = () => {
         <div className="flex gap-4 mb-6">
           <button
             onClick={() => setView("courses")}
-            className={`px-2 py-1 rounded-lg ${
-              view === "courses"
+            className={`px-2 py-1 rounded-lg ${view === "courses"
                 ? "bg-white border-2 border-black text-black"
                 : "bg-white"
-            }`}
+              }`}
           >
             Courses
           </button>
           <button
             onClick={() => setView("labs")}
-            className={`px-2 py-1 rounded-lg ${
-              view === "labs"
+            className={`px-2 py-1 rounded-lg ${view === "labs"
                 ? "bg-white border-2 border-black text-black"
                 : "bg-white"
-            }`}
+              }`}
           >
             Labs
           </button>
