@@ -1,7 +1,7 @@
 const studentModel = require("../models/student.model");
 const LabModel = require("../models/lab.model");
 const CourseModel = require("../models/course.model");
-const bcrypt = require("bcrypt");
+const bcrypt = require("bcryptjs");
 
 module.exports.createStudent = async ({
   firstname,

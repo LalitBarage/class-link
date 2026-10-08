@@ -1,7 +1,7 @@
 const studentModel = require("../models/student.model");
 const studentService = require("../services/student.service");
 const { validationResult } = require("express-validator");
-const bcrypt = require("bcrypt");
+const bcrypt = require("bcryptjs");
 const blacklistTokenModel = require("../models/blacklistToken.model");
 
 module.exports.registerStudent = async (req, res, next) => {
